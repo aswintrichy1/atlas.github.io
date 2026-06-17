@@ -1,5 +1,5 @@
 /* =====================================================================
-   BLUEPRINT · Data Structures & Algorithms curriculum
+   CODEX · Data Structures & Algorithms curriculum
    window.TRACKS.dsa
    Self-contained: every lesson teaches the topic from first principles.
    Same block grammar as the HLD/LLD tracks.

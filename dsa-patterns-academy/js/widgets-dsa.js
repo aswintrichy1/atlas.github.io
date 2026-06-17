@@ -1,5 +1,5 @@
 /* =====================================================================
-   BLUEPRINT · Interactive DSA widgets
+   CODEX · Interactive DSA widgets
    Adds graph traversal, sorting, heap, trie, two-pointer, prefix-sum,
    backtracking and big-O labs onto window.Widgets (set up by widgets.js).
    ===================================================================== */

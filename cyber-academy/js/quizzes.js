@@ -194,10 +194,10 @@ window.QUIZZES = {
     sub: "OWASP Top 10, injection, and XSS.",
     questions: [
       {
-        q: "Which category sits at #1 in the OWASP Top 10 (2021)?",
-        options: ["Injection", "Broken Access Control", "Cross-site scripting", "Server-side request forgery"],
+        q: "Which category sits at #1 in the OWASP Top 10 (2025)?",
+        options: ["Injection", "Broken Access Control", "Cross-site scripting", "Mishandling of Exceptional Conditions"],
         answer: 1,
-        explain: "Broken Access Control rose to #1 — authenticated users reaching data or actions that are not theirs. Authentication being fine says nothing about authorization."
+        explain: "Broken Access Control remains #1 in the 2025 list. Authentication being correct says nothing about whether a user may access this specific object, function or data field."
       },
       {
         q: "The robust fix for SQL injection is",

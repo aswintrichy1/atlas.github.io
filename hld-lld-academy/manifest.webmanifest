@@ -1,7 +1,7 @@
 {
-  "name": "Blueprint — HLD, LLD & DSA Atlas",
+  "name": "Blueprint · The HLD & LLD Atlas",
   "short_name": "Blueprint",
-  "description": "An interactive, fully-offline atlas for mastering High-Level Design, Low-Level Design, Data Structures & Algorithms, and the 16 coding-interview patterns.",
+  "description": "An interactive, fully-offline atlas for mastering High-Level Design, Low-Level Design, reliability, architecture trade-offs, and object-oriented design.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

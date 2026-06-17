@@ -1,35 +1,22 @@
 /* =====================================================================
-   BLUEPRINT · Service worker
+   CODEX · Service worker
    Offline-first: precache the core shell + curriculum, then cache every
    same-origin asset (same-origin assets) on first fetch. The whole app works
    with no network after the first visit.
    ===================================================================== */
-const CACHE = "citadel-v22";
-const CACHE_PREFIX = "citadel-";
+const CACHE = "codex-v4";
+const CACHE_PREFIX = "codex-";
 const CORE = [
   "./",
   "./index.html",
   "./css/styles.css",
-  "./css/track-reversing.css",
-  "./css/attack-matrix.css",
   "./css/exam.css",
   "./css/pwa.css",
-  "./js/widgets.js",
-  "./js/widgets-crypto.js",
-  "./js/widgets-ext.js",
-  "./js/widgets-rev.js",
-  "./js/widgets-attack-matrix.js",
+  "./js/widgets-dsa.js",
+  "./js/widgets-patterns.js",
   "./js/quizzes.js",
-  "./js/quizzes-ext.js",
-  "./js/quizzes-rev.js",
-  "./js/curriculum-core.js",
-  "./js/curriculum-crypto.js",
-  "./js/curriculum-appsec.js",
-  "./js/curriculum-defense.js",
-  "./js/curriculum-offensive.js",
-  "./js/curriculum-threats.js",
-  "./js/curriculum-domains.js",
-  "./js/curriculum-reversing.js",
+  "./js/curriculum-dsa.js",
+  "./js/curriculum-patterns.js",
   "./js/practice-content.js",
   "./js/exam.js",
   "./js/pwa.js",

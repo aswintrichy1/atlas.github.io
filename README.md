@@ -1,10 +1,11 @@
 # The Atlas Collection
 
-Three interactive, **fully-offline** learning atlases behind a single hub. Read a concept, then *poke* it — every idea has an interactive lab, quiz, or visualization. Progress is saved locally in your browser; nothing is ever sent to a server.
+Four interactive, **fully-offline** learning atlases behind a single hub. Read a concept, then *poke* it — every idea has an interactive lab, quiz, or visualization. Progress is saved locally in your browser; nothing is ever sent to a server.
 
 | Atlas | Topic | Highlights |
 | --- | --- | --- |
-| **Blueprint** | System & software design | HLD · LLD · DSA · interview patterns |
+| **Blueprint** | System & software design | HLD · LLD · reliability · architecture |
+| **Codex** | DSA & coding interviews | Data structures · algorithms · problem-solving patterns |
 | **Citadel** | Cybersecurity | 8 tracks · crypto · AppSec · defense · threats & forensics · reverse engineering |
 | **Cascade** | Data engineering | Storage · modeling · batch · streaming · orchestration · SQL · Spark |
 
@@ -34,7 +35,7 @@ This folder is self-contained and Pages-ready — real files (no symlinks), a `.
 2. In the repo: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, then choose **`main`** and **`/ (root)`**, and save.
 3. Wait for the Pages build, then visit the URL shown there. The hub loads, and each card opens its atlas.
 
-No build step runs on GitHub — the deployable copies are already in `blueprint`/`citadel`/`cascade`'s folders (`hld-lld-academy/`, `cyber-academy/`, `data-eng-academy/`).
+No build step runs on GitHub — the deployable copies are already in the app folders (`hld-lld-academy/`, `dsa-patterns-academy/`, `cyber-academy/`, `data-eng-academy/`).
 
 ## Structure
 
@@ -46,13 +47,14 @@ atlas/
 ├── sw.js                   hub service worker (caches only the hub's own files)
 ├── assemble.sh             local-only: rebuild the app copies from sibling sources
 ├── hld-lld-academy/        Blueprint (real files)
+├── dsa-patterns-academy/   Codex (real files)
 ├── cyber-academy/          Citadel (real files)
 └── data-eng-academy/       Cascade (real files)
 ```
 
 ## Updating an app
 
-The three app folders are **built copies**. To change an app, edit its source elsewhere and re-run `./assemble.sh` (it rebuilds each app via its own `build.sh`, strips dev artifacts and symlinks, and refreshes the copies here), then commit. `assemble.sh` only works on the machine that has the source apps; it is not needed to deploy.
+The four app folders are **built copies**. To change an app, edit its source elsewhere and re-run `./assemble.sh` (it rebuilds each app via its own `build.sh`, strips dev artifacts and symlinks, and refreshes the copies here), then commit. `assemble.sh` only works on the machine that has the source apps; it is not needed to deploy.
 
 ## License
 

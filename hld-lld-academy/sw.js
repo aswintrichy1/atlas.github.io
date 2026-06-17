@@ -1,10 +1,11 @@
 /* =====================================================================
    BLUEPRINT · Service worker
    Offline-first: precache the core shell + curriculum, then cache every
-   same-origin asset (fonts, etc.) on first fetch. The whole app works
+   same-origin asset (same-origin assets) on first fetch. The whole app works
    with no network after the first visit.
    ===================================================================== */
-const CACHE = "blueprint-v15";
+const CACHE = "blueprint-v19";
+const CACHE_PREFIX = "blueprint-";
 const CORE = [
   "./",
   "./index.html",
@@ -12,13 +13,9 @@ const CORE = [
   "./css/exam.css",
   "./css/pwa.css",
   "./js/widgets.js",
-  "./js/widgets-dsa.js",
-  "./js/widgets-patterns.js",
   "./js/quizzes.js",
   "./js/curriculum-hld.js",
   "./js/curriculum-lld.js",
-  "./js/curriculum-dsa.js",
-  "./js/curriculum-patterns.js",
   "./js/practice-content.js",
   "./js/exam.js",
   "./js/pwa.js",
@@ -38,7 +35,7 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

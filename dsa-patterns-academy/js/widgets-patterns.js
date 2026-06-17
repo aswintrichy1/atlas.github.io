@@ -1,5 +1,5 @@
 /* =====================================================================
-   BLUEPRINT · Interactive pattern widgets (interview track)
+   CODEX · Interactive pattern widgets
    Sliding window, fast/slow pointers, in-place reversal, monotonic stack,
    merge intervals, modified binary search, tree traversal, matrix flood
    fill, DP table and a bitwise playground. Registered on window.Widgets.

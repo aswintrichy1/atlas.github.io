@@ -1,10 +1,11 @@
 /* =====================================================================
    The Atlas Collection · hub service worker
    Caches only the hub's OWN root-level files. It deliberately never
-   touches the three sub-apps (each ships its own service worker with a
+   touches the four sub-apps (each ships its own service worker with a
    more specific scope), so it cannot interfere with their caching.
    ===================================================================== */
-const CACHE = "atlas-hub-v1";
+const CACHE = "atlas-hub-v3";
+const CACHE_PREFIX = "atlas-hub-";
 const CORE = [
   "./",
   "./index.html",
@@ -12,7 +13,7 @@ const CORE = [
   "./manifest.webmanifest"
 ];
 // Sub-app directories the hub must never intercept.
-const SUBAPPS = /\/(hld-lld-academy|cyber-academy|data-eng-academy)\//;
+const SUBAPPS = /\/(hld-lld-academy|dsa-patterns-academy|cyber-academy|data-eng-academy)\//;
 
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()));
@@ -21,7 +22,7 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

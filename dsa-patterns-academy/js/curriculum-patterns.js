@@ -1,5 +1,5 @@
 /* =====================================================================
-   BLUEPRINT · DSA Interview Patterns curriculum
+   CODEX · DSA Interview Patterns curriculum
    window.TRACKS.patterns
    The 16 problem-solving patterns that unlock thousands of LeetCode
    problems — recognition signals, reusable templates, most-asked
@@ -28,7 +28,7 @@
           {
             id: "prefix-sum",
             title: "1 · Prefix Sum",
-            summary: "Pre-compute cumulative totals once, then answer any range-sum query — or 'how many subarrays sum to k' — in O(1).",
+            summary: "Pre-compute cumulative totals once to answer range sums in O(1); pair them with a hash map to count subarrays in O(n).",
             minutes: 7,
             tags: ["array", "prefix-sum"],
             blocks: [
@@ -269,6 +269,7 @@
             blocks: [
               { t: "p", html: "The <strong>Top-K Elements</strong> pattern keeps a <strong>heap of size K</strong> while scanning. For the K <em>largest</em>, use a <em>min</em>-heap and pop the smallest whenever it overflows; what remains is your answer. Cost is <strong>O(n log K)</strong> and space <strong>O(K)</strong> — better than sorting all n when K ≪ n." },
               { t: "cue", html: "<b>Recognize it when</b> you see <em>“K largest / smallest / closest / most frequent”</em>, a streaming median, or “merge K sorted …”. The words <em>top K</em> or <em>Kth</em> are the giveaway — reach for a priority queue." },
+              { t: "note", variant: "tip", html: "The heap lab below shows the priority-queue mechanics. For Top-K, mentally add one rule while you click: keep the heap capped at size <code class='tok'>k</code>, and evict the least useful item whenever it grows too large." },
               { t: "widget", id: "heap" },
               { t: "code", lang: "python", code:
                 "import heapq\n\n" +
@@ -427,6 +428,7 @@
             blocks: [
               { t: "p", html: "<strong>DFS</strong> plunges as deep as possible before backtracking, using the call stack (or an explicit stack). On graphs it visits each vertex and edge once — <strong>O(V + E)</strong> — and a <code class='tok'>visited</code> set stops it from looping forever. It's the natural fit for <em>“explore everything reachable.”</em>" },
               { t: "cue", html: "<b>Recognize it when</b> you must explore <em>all</em> nodes/paths, find <em>connected components</em>, detect <em>cycles</em>, do <em>topological sort</em>, or answer reachability. If the problem is about going as far as you can down each branch, it's DFS." },
+              { t: "note", variant: "tip", html: "The shared traversal lab starts on BFS so you can compare behaviors. Switch the toggle to <strong>DFS</strong> before stepping through this lesson's example." },
               { t: "widget", id: "graphtraversal" },
               { t: "code", lang: "python", code:
                 "# Recursive DFS over a graph\n" +
@@ -577,7 +579,7 @@
                 "def climb(n):\n" +
                 "    if n <= 2: return n\n" +
                 "    return climb(n - 1) + climb(n - 2)    # reuse cached subproblems\n\n" +
-                "# Bottom-up: tabulation, O(1) space (coin change -> min coins)\n" +
+                "# Bottom-up: tabulation, O(amount) space (coin change -> min coins)\n" +
                 "def coin_change(coins, amount):\n" +
                 "    INF = amount + 1\n" +
                 "    dp = [0] + [INF] * amount             # dp[x] = min coins for x\n" +
@@ -610,7 +612,8 @@
                 "x >> 1         # divide by 2\n" +
                 "x & (x - 1)    # drop the lowest set bit (count bits with this)\n" +
                 "x & -x         # isolate the lowest set bit\n" +
-                "x | (1 << i)   # set bit i      x & ~(1 << i)  # clear bit i\n\n" +
+                "x | (1 << i)   # set bit i\n" +
+                "x & ~(1 << i)  # clear bit i\n\n" +
                 "# Single Number — XOR cancels every pair, leaving the loner\n" +
                 "def single_number(nums):\n" +
                 "    r = 0\n" +

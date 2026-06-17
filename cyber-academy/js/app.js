@@ -1272,6 +1272,30 @@
     }
   });
 
+
+  /* ---------------- feature pane ---------------- */
+  const layoutEl = $(".layout");
+  const featurePane = $("#featurePane");
+  const featureToggle = $("#featureToggle");
+  const featurePaneClose = $("#featurePaneClose");
+  function closeFeaturePane() {
+    if (!featurePane || !featureToggle || !layoutEl) return;
+    featurePane.hidden = true;
+    layoutEl.classList.remove("features-open");
+    featureToggle.setAttribute("aria-expanded", "false");
+  }
+  function openFeaturePane() {
+    if (!featurePane || !featureToggle || !layoutEl) return;
+    featurePane.hidden = false;
+    layoutEl.classList.add("features-open");
+    featureToggle.setAttribute("aria-expanded", "true");
+  }
+  if (featureToggle) featureToggle.addEventListener("click", () => {
+    featurePane && featurePane.hidden ? openFeaturePane() : closeFeaturePane();
+  });
+  if (featurePaneClose) featurePaneClose.addEventListener("click", closeFeaturePane);
+  if (featurePane) featurePane.addEventListener("click", (e) => { if (e.target.closest("a")) closeFeaturePane(); });
+
   /* ---------------- command palette (Cmd-K) ---------------- */
   const palette = el("div", { class: "palette", hidden: "true", role: "dialog", "aria-modal": "true", "aria-label": "Command palette" },
     el("div", { class: "palette-box" },

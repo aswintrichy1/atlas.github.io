@@ -3,18 +3,16 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Citadel — an interactive atlas for mastering cybersecurity: security foundations (CIA triad, threat modeling, risk), applied cryptography (AES, RSA, hashing, TLS, PKI), web & application security (the OWASP Top 10, XSS, SQL injection, CSRF, access control), and network defense & operations (firewalls, zero trust, detection, incident response). Learn by reading, then by doing — with interactive labs and quizzes." />
-  <meta name="theme-color" content="#0a0f0d" />
+  <meta name="description" content="Codex — an interactive atlas for mastering Data Structures, Algorithms, and coding-interview patterns through visual labs, quizzes, scenario drills, cheat sheets, and offline practice." />
+  <meta name="theme-color" content="#0b0e14" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon.svg" />
-  <title>Citadel · The Cybersecurity Atlas</title>
+  <title>Codex · The DSA &amp; Patterns Atlas</title>
 
   <link rel="stylesheet" href="css/styles.css" />
-  <link rel="stylesheet" href="css/track-reversing.css" />
-  <link rel="stylesheet" href="css/attack-matrix.css" />
   <link rel="stylesheet" href="css/exam.css" />
   <link rel="stylesheet" href="css/pwa.css" />
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0f0d'/%3E%3Cpath d='M50 16 L80 28 V52 C80 70 67 81 50 87 C33 81 20 70 20 52 V28 Z' fill='none' stroke='%2334d399' stroke-width='6' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='46' r='7' fill='none' stroke='%23818cf8' stroke-width='5'/%3E%3Cpath d='M50 53 V66' stroke='%23818cf8' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230b0e14'/%3E%3Cpath d='M20 70 L50 24 L80 70 M32 70 L50 40 L68 70' stroke='%23f5a623' stroke-width='6' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
 </head>
 <body>
   <!-- Atmospheric layers -->
@@ -31,13 +29,11 @@
       <span></span><span></span><span></span>
     </button>
 
-    <a class="brand" href="#/" aria-label="Citadel home">
+    <a class="brand" href="#/" aria-label="Codex home">
       <svg class="brand-mark" viewBox="0 0 100 100" aria-hidden="true">
-        <path class="bm-shield" d="M50 14 L82 26 V52 C82 71 68 82 50 88 C32 82 18 71 18 52 V26 Z" />
-        <circle class="bm-lock" cx="50" cy="45" r="8" />
-        <path class="bm-lock" d="M50 53 V68" stroke-linecap="round" />
+        <path d="M18 74 L50 22 L82 74 M32 74 L50 44 L68 74" />
       </svg>
-      <span class="brand-text">Citadel<em>the cybersecurity atlas</em></span>
+      <span class="brand-text">Codex<em>the coding interview atlas</em></span>
     </a>
 
     <a class="atlas-home-top" href="../index.html" aria-label="Atlas Home">
@@ -110,22 +106,11 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- Scripts: order matters -->
-  <script src="js/widgets.js" defer></script>
-  <script src="js/widgets-crypto.js" defer></script>
-  <script src="js/widgets-ext.js" defer></script>
-  <script src="js/widgets-rev.js" defer></script>
-  <script src="js/widgets-attack-matrix.js" defer></script>
+  <script src="js/widgets-dsa.js" defer></script>
+  <script src="js/widgets-patterns.js" defer></script>
   <script src="js/quizzes.js" defer></script>
-  <script src="js/quizzes-ext.js" defer></script>
-  <script src="js/quizzes-rev.js" defer></script>
-  <script src="js/curriculum-core.js" defer></script>
-  <script src="js/curriculum-crypto.js" defer></script>
-  <script src="js/curriculum-appsec.js" defer></script>
-  <script src="js/curriculum-defense.js" defer></script>
-  <script src="js/curriculum-offensive.js" defer></script>
-  <script src="js/curriculum-threats.js" defer></script>
-  <script src="js/curriculum-domains.js" defer></script>
-  <script src="js/curriculum-reversing.js" defer></script>
+  <script src="js/curriculum-dsa.js" defer></script>
+  <script src="js/curriculum-patterns.js" defer></script>
   <script src="js/practice-content.js" defer></script>
   <script src="js/exam.js" defer></script>
   <script src="js/pwa.js" defer></script>

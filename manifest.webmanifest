@@ -1,7 +1,7 @@
 {
   "name": "The Atlas Collection",
   "short_name": "Atlas",
-  "description": "A local launcher for three interactive, fully-offline learning atlases: Blueprint (system & software design), Citadel (cybersecurity), and Cascade (data engineering).",
+  "description": "A local launcher for four interactive, fully-offline learning atlases: Blueprint (system & software design), Codex (DSA & coding interviews), Citadel (cybersecurity), and Cascade (data engineering).",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

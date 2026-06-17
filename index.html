@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="The Atlas Collection — a local launcher for three interactive, fully-offline learning atlases: Blueprint (system & software design), Citadel (cybersecurity), and Cascade (data engineering)." />
+  <meta name="description" content="The Atlas Collection — a local launcher for four interactive, fully-offline learning atlases: Blueprint (system & software design), Codex (DSA & coding interviews), Citadel (cybersecurity), and Cascade (data engineering)." />
   <meta name="theme-color" content="#0a0d12" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -154,10 +154,10 @@
     <header class="masthead">
       <span class="eyebrow reveal"><span class="dot"></span>Local · offline · no account</span>
       <h1 class="reveal d1">The <span class="grad">Atlas</span> Collection</h1>
-      <p class="lede reveal d2">Three interactive, fully-offline learning atlases. Read the concept, then <em>poke</em> it — every idea has something you can drive. Your progress lives in your browser; nothing leaves your machine.</p>
+      <p class="lede reveal d2">Four interactive, fully-offline learning atlases. Read the concept, then <em>poke</em> it — every idea has something you can drive. Your progress lives in your browser; nothing leaves your machine.</p>
       <div class="totals reveal d3" id="totals">
         <span class="pill" id="pillTotal" hidden></span>
-        <span class="pill">3 <b>atlases</b></span>
+        <span class="pill">4 <b>atlases</b></span>
       </div>
     </header>
 
@@ -194,9 +194,17 @@
       {
         name: "Blueprint", tag: "system & software design", color: "var(--amber)",
         href: "./hld-lld-academy/index.html", key: "bp_progress_v1",
-        desc: "Architect systems that scale and write code that bends — high-level design, low-level design, data structures & algorithms, and the interview patterns that tie them together.",
-        chips: ["HLD", "LLD", "DSA", "Patterns"],
+        desc: "Architect systems that scale and code that bends — high-level design, low-level design, reliability, architecture trade-offs, and production-ready object design.",
+        chips: ["HLD", "LLD", "Reliability", "Architecture"],
         glyph: '<path d="M24 74 L50 24 L76 74 M35 74 L50 46 L65 74"/>'
+      },
+
+      {
+        name: "Codex", tag: "DSA & interview patterns", color: "#f472b6",
+        href: "./dsa-patterns-academy/index.html", key: "cd_progress_v1",
+        desc: "Build the coding-interview core — data structures, algorithms, graph and DP fundamentals, reusable problem-solving patterns, and timed practice references.",
+        chips: ["DSA", "Patterns", "Graphs", "DP", "Interview"],
+        glyph: '<path d="M24 28 H76 M24 50 H76 M24 72 H76"/><path d="M32 20 L24 28 L32 36 M68 42 L76 50 L68 58 M32 64 L24 72 L32 80"/>'
       },
       {
         name: "Citadel", tag: "cybersecurity", color: "var(--emerald)",

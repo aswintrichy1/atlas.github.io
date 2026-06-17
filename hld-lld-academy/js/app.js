@@ -26,13 +26,15 @@
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   /* ---------------- data model ---------------- */
-  const TRACKS = [window.TRACKS.hld, window.TRACKS.lld, window.TRACKS.dsa, window.TRACKS.patterns].filter(Boolean);
+  const TRACKS = [window.TRACKS.hld, window.TRACKS.lld].filter(Boolean);
   const QUIZZES = window.QUIZZES || {};
+  const ACTIVE_QUIZ_PREFIXES = ["hld-", "lld-"];
+  const activeQuizKeys = () => Object.keys(QUIZZES).filter((qid) => ACTIVE_QUIZ_PREFIXES.some((p) => qid.startsWith(p)));
   const Widgets = window.Widgets || {};
   const Practice = window.BlueprintPractice || {};
 
   // attach a stable id to every quiz question (for weak-spot tracking)
-  Object.keys(QUIZZES).forEach((qzid) => {
+  activeQuizKeys().forEach((qzid) => {
     (QUIZZES[qzid].questions || []).forEach((qq, idx) => { qq._qid = qzid + "#" + idx; qq._quiz = qzid; });
   });
 
@@ -153,6 +155,12 @@
     }
   ];
 
+
+  for (let i = LEARNING_PATHS.length - 1; i >= 0; i--) {
+    LEARNING_PATHS[i].routes = LEARNING_PATHS[i].routes.filter((r) => !r.startsWith("#/dsa/") && !r.startsWith("#/patterns/"));
+    if (!LEARNING_PATHS[i].routes.length) LEARNING_PATHS.splice(i, 1);
+  }
+
   /* ---------------- progress (localStorage) ---------------- */
   const PKEY = "bp_progress_v1";
   let done = new Set();
@@ -186,7 +194,7 @@
   window.Academy.recordAnswer = recordAnswer;
   function weakQuestions() {
     const out = [];
-    Object.keys(QUIZZES).forEach((qzid) => {
+    activeQuizKeys().forEach((qzid) => {
       (QUIZZES[qzid].questions || []).forEach((qq) => {
         const w = weak[qq._qid];
         if (w && w.wrong > 0) out.push({ q: qq, wrong: w.wrong, quiz: QUIZZES[qzid] });
@@ -406,9 +414,9 @@
 
   function renderHome() {
     document.title = "Blueprint · The HLD & LLD Atlas";
-    const qTotal = Object.keys(QUIZZES).reduce((a, k) => a + QUIZZES[k].questions.length, 0);
+    const qTotal = activeQuizKeys().reduce((a, k) => a + QUIZZES[k].questions.length, 0);
     const feat = [
-      ["bolt", "Interactive labs", "Drive a load balancer, slide a window, merge intervals, watch binary search halve the array, fill a DP table, and flood-fill a grid of islands."],
+      ["bolt", "Interactive labs", "Drive a load balancer, tune a token bucket, compare cache writes, explore CAP trade-offs, route tenants through cells, and estimate launch capacity."],
       ["check", "Checkpoint quizzes", "Short, explained quizzes after each module lock the ideas in \u2014 with the reasoning, not just the answer."],
       ["save", "Progress, saved locally", "Completed lessons, your study list, and missed-question weak spots all persist in your browser \u2014 no account, no server."],
       ["wifi", "Works fully offline", "Self-contained with zero external requests. Install it as an app and the whole atlas \u2014 lessons, labs and quizzes \u2014 runs with no network."]
@@ -425,20 +433,19 @@
       '<section class="hero">' +
         '<span class="hero-tag reveal reveal-1"><span class="pulse"></span>Interactive system-design atlas</span>' +
         '<h1 class="reveal reveal-2">Design systems<br>that <span class="grad">scale</span> &amp; code<br>that <span class="grad">bends</span>.</h1>' +
-        '<p class="lede reveal reveal-3">Master software design end to end \u2014 the <strong>High-Level Design</strong> of distributed systems, the <strong>Low-Level Design</strong> of clean code, the <strong>Data Structures &amp; Algorithms</strong> they stand on, and the <strong>interview Patterns</strong> that crack the coding round. Learn by reading, then by <em>doing</em>.</p>' +
+        '<p class="lede reveal reveal-3">Master software design end to end \u2014 the <strong>High-Level Design</strong> of distributed systems, the <strong>Low-Level Design</strong> of clean code, and the production trade-offs that connect architecture to implementation. Learn by reading, then by <em>doing</em>.</p>' +
         '<div class="hero-cta reveal reveal-4">' +
           (resumeF
             ? '<a class="btn btn-primary" href="' + resumeF.route + '">Resume \u00b7 ' + escapeHtml(resumeF.lesson.title) + ARR + "</a>" +
               '<a class="btn btn-ghost" href="#/hld/foundations/what-is-hld">Start with HLD' + ARR + "</a>"
             : '<a class="btn btn-primary" href="#/hld/foundations/what-is-hld">Start with HLD' + ARR + "</a>" +
-              '<a class="btn btn-ghost" href="#/dsa/foundations/arrays">DSA from scratch' + ARR + "</a>") +
-          '<a class="btn btn-ghost" href="#/patterns/arrays/prefix-sum">16 interview patterns' + ARR + "</a>" +
+              '<a class="btn btn-ghost" href="#/lld/oop/what-is-lld">Start with LLD' + ARR + "</a>") +
           '<a class="btn btn-ghost" href="#/paths">Guided paths' + ARR + "</a>" +
         "</div>" +
         '<div class="hero-stats reveal reveal-5">' +
           '<div class="hero-stat"><div class="num">' + TOTAL + '</div><div class="lbl">lessons</div></div>' +
           '<div class="hero-stat"><div class="num">' + Object.keys(Widgets).length + '</div><div class="lbl">interactive labs</div></div>' +
-          '<div class="hero-stat"><div class="num">' + Object.keys(QUIZZES).length + '</div><div class="lbl">quizzes</div></div>' +
+          '<div class="hero-stat"><div class="num">' + activeQuizKeys().length + '</div><div class="lbl">quizzes</div></div>' +
           '<div class="hero-stat"><div class="num">' + TRACKS.length + '</div><div class="lbl">full tracks</div></div>' +
         "</div>" +
       "</section>" +
@@ -452,7 +459,7 @@
       '<div class="track-cards">' + TRACKS.map(trackCard).join("") + "</div>" +
       '<a class="practice-banner" href="#/practice">' +
         '<div class="pb-ico"><svg viewBox="0 0 24 24"><path d="M9.1 9a3 3 0 1 1 4 2.8c-.8.4-1.1 1-1.1 1.7v.5M12 17h.01"/><circle cx="12" cy="12" r="10"/></svg></div>' +
-        '<div class="pb-text"><h3>Test yourself in Practice mode</h3><p>A shuffled mix of every checkpoint quiz across all four tracks \u2014 ' + qTotal + ' questions for spaced-repetition review.</p></div>' +
+        '<div class="pb-text"><h3>Test yourself in Practice mode</h3><p>A shuffled mix of every HLD and LLD checkpoint quiz \u2014 ' + qTotal + ' questions for spaced-repetition review.</p></div>' +
         '<span class="pb-go">Start <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>' +
       "</a>" +
       '<h2 class="home-section-title">Why this works</h2>' +
@@ -660,7 +667,7 @@
       pool = weakList.map((w) => w.q);
     } else {
       pool = [];
-      Object.keys(QUIZZES).forEach((qid) => { (QUIZZES[qid].questions || []).forEach((qq) => pool.push(qq)); });
+      activeQuizKeys().forEach((qid) => { (QUIZZES[qid].questions || []).forEach((qq) => pool.push(qq)); });
       for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); const t = pool[i]; pool[i] = pool[j]; pool[j] = t; }
     }
     const total = pool.length;
@@ -674,7 +681,7 @@
           "<h1>Practice mode</h1>" +
           '<p class="summary">' + (mode === "weak"
             ? "Just the questions you\u2019ve missed before \u2014 a quick spaced-repetition drill. Get one right and it leaves the weak-spots list."
-            : "A shuffled mix drawn from every checkpoint quiz across all four tracks. Perfect for spaced repetition before an interview.") + "</p>" +
+            : "A shuffled mix drawn from every active checkpoint quiz. Perfect for spaced repetition before an interview.") + "</p>" +
           '<div class="practice-modes widget-controls"></div>' +
           (mode === "all" ? '<div class="practice-sizes widget-controls"></div>' : "") +
         "</header>" +
@@ -703,7 +710,7 @@
     } else {
       mountQuiz($("#practiceSlot"), {
         title: mode === "weak" ? "Weak-spot drill" : "Question set",
-        sub: count + (mode === "weak" ? " missed question" + (count === 1 ? "" : "s") + " to re-master" : " questions, shuffled across HLD, LLD, DSA & Patterns"),
+        sub: count + (mode === "weak" ? " missed question" + (count === 1 ? "" : "s") + " to re-master" : " questions, shuffled across HLD & LLD"),
         questions: picked
       });
     }
@@ -1278,6 +1285,30 @@
       toast("Progress reset");
     }
   });
+
+
+  /* ---------------- feature pane ---------------- */
+  const layoutEl = $(".layout");
+  const featurePane = $("#featurePane");
+  const featureToggle = $("#featureToggle");
+  const featurePaneClose = $("#featurePaneClose");
+  function closeFeaturePane() {
+    if (!featurePane || !featureToggle || !layoutEl) return;
+    featurePane.hidden = true;
+    layoutEl.classList.remove("features-open");
+    featureToggle.setAttribute("aria-expanded", "false");
+  }
+  function openFeaturePane() {
+    if (!featurePane || !featureToggle || !layoutEl) return;
+    featurePane.hidden = false;
+    layoutEl.classList.add("features-open");
+    featureToggle.setAttribute("aria-expanded", "true");
+  }
+  if (featureToggle) featureToggle.addEventListener("click", () => {
+    featurePane && featurePane.hidden ? openFeaturePane() : closeFeaturePane();
+  });
+  if (featurePaneClose) featurePaneClose.addEventListener("click", closeFeaturePane);
+  if (featurePane) featurePane.addEventListener("click", (e) => { if (e.target.closest("a")) closeFeaturePane(); });
 
   /* ---------------- command palette (Cmd-K) ---------------- */
   const palette = el("div", { class: "palette", hidden: "true", role: "dialog", "aria-modal": "true", "aria-label": "Command palette" },

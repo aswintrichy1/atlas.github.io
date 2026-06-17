@@ -25,26 +25,26 @@ window.TRACKS.appsec = {
           minutes: 7,
           tags: ["owasp", "overview"],
           blocks: [
-            { t: "p", html: "The <strong>OWASP Top 10</strong> is a community-built, regularly updated list of the most critical web application security risks. It isn't exhaustive, but it's the shared vocabulary teams use to prioritize \u2014 and a great syllabus for what to learn." },
+            { t: "p", html: "The <strong>OWASP Top 10</strong> is a community-built, regularly updated list of the most critical web application security risks. It is not exhaustive, but it is the shared vocabulary teams use to prioritize \u2014 and a great syllabus for what to learn." },
             {
               t: "table",
-              headers: ["#", "Category (2021)", "In one line"],
+              headers: ["#", "Category (2025)", "In one line"],
               rows: [
                 ["A01", "Broken Access Control", "Users do things they shouldn't"],
-                ["A02", "Cryptographic Failures", "Weak/missing crypto exposes data"],
-                ["A03", "Injection", "Untrusted input runs as code/query"],
-                ["A04", "Insecure Design", "The flaw is in the design itself"],
-                ["A05", "Security Misconfiguration", "Defaults, verbose errors, open buckets"],
-                ["A06", "Vulnerable Components", "Outdated, flawed dependencies"],
-                ["A07", "Auth Failures", "Weak login, session, credential handling"],
-                ["A08", "Integrity Failures", "Unverified updates / deserialization"],
-                ["A09", "Logging & Monitoring Failures", "You can't see the attack"],
-                ["A10", "Server-Side Request Forgery", "Server tricked into making requests"]
+                ["A02", "Security Misconfiguration", "Unsafe defaults, exposed services, verbose errors"],
+                ["A03", "Software Supply Chain Failures", "Dependencies, builds, packages or CI/CD become the weak link"],
+                ["A04", "Cryptographic Failures", "Weak or missing crypto exposes data"],
+                ["A05", "Injection", "Untrusted input runs as code or query"],
+                ["A06", "Insecure Design", "The flaw is in the design itself"],
+                ["A07", "Authentication Failures", "Weak login, recovery, MFA or session handling"],
+                ["A08", "Software or Data Integrity Failures", "Unverified code, data, updates or serialized state"],
+                ["A09", "Security Logging and Alerting Failures", "You cannot see or respond to the attack"],
+                ["A10", "Mishandling of Exceptional Conditions", "Unexpected states, errors and edge cases become exploitable"]
               ]
             },
-            { t: "note", variant: "key", html: "Notice the shift over the years: <strong>Broken Access Control</strong> rose to #1 and <strong>Insecure Design</strong> appeared. Security has moved upstream \u2014 from \u201cfilter bad input\u201d to \u201cdesign the system so the bad thing is impossible.\u201d" },
+            { t: "note", variant: "key", html: "Notice the 2025 shift: <strong>Broken Access Control</strong> remains #1, <strong>Security Misconfiguration</strong> moved up, and <strong>Software Supply Chain Failures</strong> became a top category. SSRF is no longer a standalone web Top 10 category; it is treated as part of broader access-control and design failures." },
             { t: "h", text: "One root cause behind many" },
-            { t: "p", html: "A huge share of these reduce to a single sin: <strong>trusting data that crossed a trust boundary.</strong> Injection, XSS, SSRF and broken access control are all variations on \u201cthe app believed something the attacker controlled.\u201d Keep that lens as we go." },
+            { t: "p", html: "A huge share of these reduce to two habits: <strong>trusting data that crossed a trust boundary</strong> and <strong>letting design or operational assumptions go untested</strong>. Injection, XSS, SSRF, broken authorization, unsafe dependencies and error-state bugs all become easier to reason about through that lens." },
             { t: "note", variant: "tip", html: "OWASP also publishes focused lists \u2014 the API Security Top 10, the Mobile Top 10, and the ASVS verification standard. When you build something specific, there's usually a tailored checklist." }
           ]
         },

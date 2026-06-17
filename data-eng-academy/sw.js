@@ -1,10 +1,11 @@
 /* =====================================================================
    CASCADE · Service worker
    Offline-first: precache the core shell + curriculum, then cache every
-   same-origin asset (fonts, etc.) on first fetch. The whole app works
+   same-origin asset (same-origin assets) on first fetch. The whole app works
    with no network after the first visit.
    ===================================================================== */
-const CACHE = "cascade-v14";
+const CACHE = "cascade-v17";
+const CACHE_PREFIX = "cascade-";
 const CORE = [
   "./",
   "./index.html",
@@ -38,7 +39,7 @@ self.addEventListener("install", (e) => {
 self.addEventListener("activate", (e) => {
   e.waitUntil(
     caches.keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith(CACHE_PREFIX) && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim())
   );
 });

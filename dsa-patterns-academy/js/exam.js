@@ -1,5 +1,5 @@
 /* =====================================================================
-   BLUEPRINT · Exam mode + Flashcards
+   CODEX · Exam mode + Flashcards
    Self-contained module. Exposes window.AcademyExam = { mountExam, mountFlashcards }.
    Vanilla JS, zero dependencies, fully offline (no network, no external URLs).
    Reads window.QUIZZES / window.TRACKS at call time (load order independent).
@@ -58,12 +58,14 @@
   function checkIco() { return ico("0 0 24 24", [["path", { d: "M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11" }]]); }
 
   /* ---------------- track helpers ---------------- */
-  // Quiz ids in Blueprint use these prefixes: hld-, lld-.
-  var PREFIX_ALIAS = {};
-  var ACTIVE_QUIZ_PREFIXES = ["hld", "lld"];
+  // Quiz ids in Codex use these prefixes: dsa-, pat-.
+  // The "pat" prefix maps to the window.TRACKS id "patterns".
+  var PREFIX_ALIAS = { pat: "patterns" };
+  var ACTIVE_QUIZ_PREFIXES = ["dsa", "pat"];
   var TRACK_NAMES = {
-    hld: "High-Level Design",
-    lld: "Low-Level Design",
+    dsa: "Data Structures & Algorithms",
+    pat: "DSA Interview Patterns",
+    patterns: "DSA Interview Patterns"
   };
   function trackOf(quizId) { return String(quizId).split("-")[0]; }
   function isActiveQuiz(quizId) { return ACTIVE_QUIZ_PREFIXES.indexOf(trackOf(quizId)) !== -1; }
@@ -131,8 +133,8 @@
   }
 
   /* ---------------- localStorage (all wrapped) ---------------- */
-  var EXAM_KEY = "bp_exam_v1";   // { best, bestPct, takenAt }
-  var FLASH_KEY = "bp_flash_v1"; // { "<cardIndex>": "known" | "review" }
+  var EXAM_KEY = "cd_exam_v1";   // { best, bestPct, takenAt }
+  var FLASH_KEY = "cd_flash_v1"; // { "<cardIndex>": "known" | "review" }
   function readBest() { try { return JSON.parse(localStorage.getItem(EXAM_KEY) || "null"); } catch (e) { return null; } }
   function saveBest(score, pct) {
     try {
@@ -147,7 +149,7 @@
   // Optional weak-spot hook — works with whichever global the host app exposes.
   function feedWeakSpot(qid, ok) {
     try {
-      var host = window.Academy || window.Blueprint || window.Citadel;
+      var host = window.Academy || window.Codex || window.Citadel;
       if (host && typeof host.recordAnswer === "function") host.recordAnswer(qid, ok);
     } catch (e) {}
   }
@@ -443,100 +445,46 @@
   /* =====================================================================
      FLASHCARDS
      A curated, original deck. front = term, back = concise definition.
-     Tracks match Blueprint's window.TRACKS ids: hld, lld.
+     Tracks match Codex's window.TRACKS ids: dsa, patterns.
      ===================================================================== */
   var CARDS = [
-    /* ---- HLD · High-Level Design ---- */
-    { front: "Horizontal vs vertical scaling", track: "hld", back: "Vertical scaling adds more power (CPU, RAM) to one machine; horizontal scaling adds more machines behind a balancer. Horizontal scales further and survives node loss, but forces you to handle distributed state." },
-    { front: "Load balancer", track: "hld", back: "A component that spreads incoming requests across many servers using a policy such as round-robin or least-connections, improving throughput and removing any single server as a point of failure." },
-    { front: "CAP theorem", track: "hld", back: "In the presence of a network partition, a distributed store can guarantee either consistency or availability, not both. Outside a partition you can still have both; the trade-off only bites when nodes can't talk." },
-    { front: "Consistent hashing", track: "hld", back: "A hashing scheme that maps keys and nodes onto a ring so that adding or removing a node only remaps a small slice of keys, instead of reshuffling almost everything as plain modulo hashing would." },
-    { front: "Sharding", track: "hld", back: "Splitting one dataset across multiple databases by a shard key so each holds a subset. It scales writes and storage horizontally but complicates cross-shard queries and rebalancing." },
-    { front: "Replication", track: "hld", back: "Keeping copies of data on multiple nodes for durability and read scaling. Synchronous replication favors consistency; asynchronous favors latency and availability at the risk of stale reads." },
-    { front: "Cache-aside", track: "hld", back: "A caching pattern where the app checks the cache first, and on a miss reads the database then populates the cache. The cache holds only requested data, but stale entries need a TTL or explicit invalidation." },
-    { front: "CDN", track: "hld", back: "A Content Delivery Network caches static assets on edge servers near users, cutting latency and offloading the origin. It shines for cacheable content but adds invalidation complexity." },
-    { front: "Eventual consistency", track: "hld", back: "A model where replicas may temporarily disagree but converge to the same value once updates stop. It trades immediate consistency for higher availability and lower latency." },
-    { front: "Idempotency", track: "hld", back: "A property where performing the same operation many times has the same effect as doing it once. It lets clients safely retry requests after timeouts without causing duplicate side effects." },
-    { front: "Rate limiting", track: "hld", back: "Capping how many requests a client may make in a window (often via token-bucket or leaky-bucket) to protect a service from overload and abuse while keeping it fair." },
-    { front: "Message queue", track: "hld", back: "A buffer that decouples producers from consumers: work is enqueued and processed asynchronously. It smooths traffic spikes, enables retries, and lets components scale independently." },
-    { front: "Publish / subscribe", track: "hld", back: "A messaging model where publishers emit events to topics and any number of subscribers receive them, decoupling senders from receivers and enabling fan-out to many consumers." },
-    { front: "Database index", track: "hld", back: "An auxiliary structure (often a B-tree) that lets the database find rows by a column without scanning the whole table. It speeds reads but adds write overhead and storage cost." },
-    { front: "SQL vs NoSQL", track: "hld", back: "SQL stores favor structured schemas, joins, and strong transactions; NoSQL stores trade some of that for flexible schemas and horizontal scale. The right pick depends on access patterns, not hype." },
-    { front: "Read replica", track: "hld", back: "A read-only copy of a primary database that serves queries to scale reads and isolate analytics. Because replication lags, replicas can return slightly stale data." },
-    { front: "Write-ahead log", track: "hld", back: "A durability technique where changes are appended to an append-only log before being applied. After a crash the log is replayed to recover committed state without data loss." },
-    { front: "Latency vs throughput", track: "hld", back: "Latency is how long one request takes; throughput is how many requests complete per unit time. Batching and parallelism can raise throughput while sometimes increasing individual latency." },
-    { front: "Availability (the nines)", track: "hld", back: "The fraction of time a system is operational, quoted as nines: 99.9% allows about 8.7 hours of downtime per year, 99.99% only about 52 minutes. Each extra nine is sharply harder to reach." },
-    { front: "Bloom filter", track: "hld", back: "A compact probabilistic structure that answers set membership with possible false positives but never false negatives, often used to skip expensive lookups for keys that are definitely absent." },
-    { front: "Cell", track: "hld", back: "An isolated serving slice containing app tier, queues, caches and datastores for a bounded tenant or resource cohort, used to limit blast radius from deploys, overload and dependency failures." },
-    { front: "Bulkhead", track: "hld", back: "A resource isolation pattern: separate thread pools, queues, connection pools or capacity budgets so one overloaded feature or tenant cannot consume resources needed by the rest of the system." },
-    { front: "Shuffle sharding", track: "hld", back: "Assigning each tenant to a small deterministic subset of resources so noisy neighbors overlap only partially, reducing the percentage of tenants affected by one bad tenant or worker group." },
-    { front: "Graceful degradation", track: "hld", back: "Serving a simpler but useful experience during overload or dependency failure, such as cached data, disabled recommendations or reduced model quality, instead of failing the whole request." },
-    { front: "RAG reranking", track: "hld", back: "A second ranking pass over retrieved chunks, often with a stronger relevance model, to put the best evidence into the prompt after broad vector or keyword retrieval." },
-    { front: "Golden eval set", track: "hld", back: "A curated set of representative inputs, expected evidence and quality rubrics used to catch regressions when prompts, retrieval, models or guardrails change." },
-    { front: "Capacity chain", track: "hld", back: "The planning flow from users to daily actions, average QPS, peak QPS, app instances, database capacity, queue drain rate and cache working set. Each layer needs its own bottleneck estimate." },
-    { front: "N+1 capacity", track: "hld", back: "Enough headroom for the system to handle expected peak even after one capacity unit is unavailable. N+2 adds another failure or deploy buffer when the blast radius justifies it." },
-    { front: "Cost per answer", track: "hld", back: "The unit cost of an LLM-backed response, including prompt tokens, completion tokens, embeddings, reranking, retries and provider overhead. Track it like latency because prompt changes can double spend." },
-    { front: "Launch readiness", track: "hld", back: "A release gate covering load tests, canary metrics, rollback, dashboards, alerts, runbooks and error-budget status before real traffic arrives." },
-    { front: "ADR", track: "hld", back: "An Architecture Decision Record captures context, decision, alternatives and consequences so future engineers understand why a trade-off was accepted." },
-    { front: "RAG ingestion path", track: "hld", back: "The offline or async pipeline that parses documents, chunks them, embeds chunks, indexes vectors and checks freshness before queries rely on them." },
-    { front: "RAG online path", track: "hld", back: "The request-time path: rewrite the query, retrieve candidates, apply metadata and ACL filters, rerank, build the prompt, call the model, run safety checks and return an answer with trace evidence." },
-    { front: "Hybrid retrieval", track: "hld", back: "Combining vector similarity with lexical search so semantic matches and exact identifiers both have a chance to appear before reranking." },
-    { front: "Prompt injection in RAG", track: "hld", back: "Retrieved documents can contain malicious instructions. Treat them as untrusted data: do not let them override system policy, access controls or tool permissions." },
-    { front: "Semantic cache", track: "hld", back: "A cache for repeated or near-duplicate model requests. Safe keys include tenant, permissions, freshness, prompt version and model version so one user's context never leaks to another." },
-    { front: "Expand-contract migration", track: "hld", back: "A zero-downtime schema pattern: add the new shape first, run old and new code paths together, backfill and verify, cut over, then remove the old shape only after rollback is no longer needed." },
-    { front: "Checkpointed backfill", track: "hld", back: "A background migration that processes small idempotent batches and persists progress after each batch, so it can pause, crash, throttle and resume without corrupting data." },
-    { front: "Shadow read", track: "hld", back: "Read the new path in parallel and compare it with the old path, while still returning the old result to users. It validates real traffic before cutover." },
-    { front: "CDC validation", track: "hld", back: "Tailing the source change stream and confirming every committed mutation reaches the target, usually per key and in order, to catch live drift during migration." },
-    { front: "Tenant / cell migration", track: "hld", back: "Moving one tenant cohort between isolated serving cells by copy, replay, verify and atomic routing cutover, while keeping the source readable for rollback." },
-    { front: "Offline-first source of truth", track: "hld", back: "A mobile pattern where the UI reads and writes a local database first; the server is updated later through sync, so the app remains useful without network access." },
-    { front: "Operation log / sync queue", track: "hld", back: "A durable append-only list of local mutations with stable operation ids. It lets the client retry safely and lets the server dedupe duplicate sends." },
-    { front: "Tombstone", track: "hld", back: "A retained delete marker that tells other devices a record was removed, preventing stale offline copies from resurrecting it during later sync." },
-    { front: "Hybrid logical clock", track: "hld", back: "A versioning technique that blends physical time with a logical counter to provide a useful ordering across devices without trusting wall clocks alone." },
-    { front: "CRDT-style merge", track: "hld", back: "A data-type-specific merge rule that can converge automatically for suitable shapes such as counters, sets or collaborative text. It is powerful, but it does not replace product conflict policy." },
-    { front: "Transactional outbox", track: "hld", back: "Commit the business row and an outbox event in the same database transaction; a relay publishes the event later so commit and publish cannot drift apart." },
-    { front: "Inbox / consumer dedupe", track: "hld", back: "A durable record of processed event ids or business keys that lets a consumer skip duplicate deliveries before applying side effects." },
-    { front: "CDC", track: "hld", back: "Change Data Capture reads database commit logs and emits changes as a stream, useful for search indexing, analytics, replication and event pipelines without fragile dual writes." },
-    { front: "OLTP vs OLAP", track: "hld", back: "OLTP serves short transactional reads and writes for live applications; OLAP scans and aggregates large datasets for analytics. They have different storage layouts and latency goals." },
-    { front: "LSM tree", track: "hld", back: "An append-optimized storage engine that buffers writes and flushes sorted files, then compacts them later. It offers high write throughput with compaction cost." },
-    { front: "Hot partition", track: "hld", back: "A shard, key range, tenant or partition receiving disproportionate traffic. Fix with better keys, salting, splitting, quotas or isolated capacity." },
-    { front: "Pooled / bridge / silo tenancy", track: "hld", back: "Three SaaS isolation models: pooled shares most resources, bridge separates selected data or dependencies, and silo gives a tenant dedicated capacity." },
-    { front: "Tenant-aware deploy waves", track: "hld", back: "Rolling changes through tenant cohorts while watching tenant-level metrics, so a bad release stops before it reaches every customer." },
-    { front: "Cursor pagination", track: "hld", back: "A pagination style where the next page is anchored to a stable sort position instead of an offset, avoiding skips and duplicates as lists change." },
-    { front: "Webhook delivery", track: "hld", back: "An async callback contract that should include signed payloads, event ids, retry policy, delivery logs and idempotent receivers." },
-    { front: "Security threat model", track: "hld", back: "A structured pass over assets, actors, trust boundaries, abuse cases and controls. In HLD it should cover authn, authz, tenant isolation, API abuse, secrets, TLS and data flows." },
-    { front: "Resource-scoped authorization", track: "hld", back: "An authorization decision that binds user, tenant, action and specific resource, rather than trusting identity alone." },
-    { front: "RAG prompt injection", track: "hld", back: "Malicious retrieved content can try to steer the model or tools. Mitigate with ACL filters, prompt boundaries, tool limits, citations, evals and monitoring." },
-    { front: "Incident commander", track: "hld", back: "The person coordinating an incident: sets severity, assigns roles, keeps responders focused on mitigation, and ensures clear updates." },
-    { front: "Runbook", track: "hld", back: "A tested guide for diagnosing and mitigating a known failure mode, including dashboards, commands, rollback steps, owners and escalation paths." },
-    { front: "Candidate retrieval", track: "hld", back: "The first stage in search or recommendations that cheaply finds plausible items before a richer ranker orders them." },
-    { front: "Ranking signals", track: "hld", back: "Features used to order candidates, such as lexical match, semantic score, freshness, popularity, user affinity, quality and availability." },
+    /* ---- DSA · Data Structures & Algorithms ---- */
+    { front: "Big-O notation", track: "dsa", back: "An upper bound describing how an algorithm's running time or space grows with input size, ignoring constants and lower-order terms so different approaches can be compared at scale." },
+    { front: "Time vs space complexity", track: "dsa", back: "Time complexity measures operations as input grows; space complexity measures extra memory used. Many problems trade one for the other, such as caching results to save recomputation." },
+    { front: "Array", track: "dsa", back: "A contiguous block of elements offering O(1) access by index, but O(n) insertion or deletion in the middle because elements must shift. Cache-friendly and the basis of many structures." },
+    { front: "Hash map", track: "dsa", back: "A structure mapping keys to values via a hash function, giving average O(1) insert, lookup, and delete. Collisions are handled by chaining or open addressing; worst case degrades to O(n)." },
+    { front: "Linked list", track: "dsa", back: "A chain of nodes each pointing to the next, giving O(1) insertion or removal at a known position but O(n) access by index and poor cache locality compared with arrays." },
+    { front: "Stack", track: "dsa", back: "A last-in, first-out collection supporting push and pop in O(1). It underpins function call frames, expression evaluation, undo features, and depth-first traversal." },
+    { front: "Queue", track: "dsa", back: "A first-in, first-out collection where items are added at the back and removed from the front in O(1). It models fair processing and drives breadth-first traversal." },
+    { front: "Binary search tree", track: "dsa", back: "An ordered tree where each node's left subtree holds smaller keys and the right holds larger, giving O(log n) search when balanced but O(n) if it degenerates into a list." },
+    { front: "Heap / priority queue", track: "dsa", back: "A tree-shaped structure that keeps the minimum or maximum at the root, supporting O(log n) insertion and extraction. Ideal for scheduling, top-K problems, and Dijkstra's algorithm." },
+    { front: "Graph", track: "dsa", back: "A set of vertices connected by edges, modeling networks, dependencies, and maps. It can be directed or undirected, weighted or not, and stored as an adjacency list or matrix." },
+    { front: "Hash collision", track: "dsa", back: "When two distinct keys hash to the same bucket. Resolution strategies such as separate chaining or open addressing keep lookups correct, though heavy collisions hurt performance." },
+    { front: "Recursion", track: "dsa", back: "A technique where a function solves a problem by calling itself on smaller inputs until a base case. It expresses divide-and-conquer cleanly but uses stack space proportional to its depth." },
+    { front: "Amortized analysis", track: "dsa", back: "Averaging the cost of an operation over a sequence so occasional expensive steps are spread out, as with a dynamic array whose resize cost averages to O(1) per append." },
+    { front: "Quicksort", track: "dsa", back: "A divide-and-conquer sort that partitions around a pivot and recurses on each side, averaging O(n log n) in place but degrading to O(n\u00b2) on bad pivots without good pivot choice." },
+    { front: "Merge sort", track: "dsa", back: "A stable divide-and-conquer sort that splits the input, sorts halves, and merges them, guaranteeing O(n log n) time at the cost of O(n) extra space." },
+    { front: "Stable sort", track: "dsa", back: "A sort that preserves the relative order of equal elements. Stability matters when sorting by multiple keys in succession, so earlier orderings survive later passes." },
 
-    /* ---- LLD · Low-Level Design (OOP + design patterns) ---- */
-    { front: "SOLID", track: "lld", back: "Five object-oriented design principles \u2014 Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion \u2014 that together keep code modular, testable, and easy to change." },
-    { front: "Single Responsibility Principle", track: "lld", back: "A class should have one reason to change, owning a single well-defined responsibility. Mixing concerns makes a class fragile because unrelated changes start to collide." },
-    { front: "Open/Closed Principle", track: "lld", back: "Software entities should be open for extension but closed for modification: add new behavior by adding code (new subclasses or strategies) rather than editing tested existing code." },
-    { front: "Liskov Substitution Principle", track: "lld", back: "Objects of a subtype must be usable anywhere the base type is expected without breaking correctness. A subclass that violates the base's contract signals a flawed hierarchy." },
-    { front: "Interface Segregation Principle", track: "lld", back: "Prefer many small, focused interfaces over one fat interface, so clients depend only on the methods they actually use and aren't forced to implement irrelevant ones." },
-    { front: "Dependency Inversion Principle", track: "lld", back: "High-level modules should depend on abstractions, not concrete low-level details. Injecting interfaces decouples policy from implementation and makes components swappable and testable." },
-    { front: "Encapsulation", track: "lld", back: "Bundling data with the methods that operate on it and hiding internal state behind a public interface, so objects protect their invariants and expose only what callers need." },
-    { front: "Composition over inheritance", track: "lld", back: "Building behavior by assembling objects (has-a) rather than deep class hierarchies (is-a). Composition is more flexible and avoids the rigidity and fragility of tall inheritance trees." },
-    { front: "Coupling vs cohesion", track: "lld", back: "Coupling is how dependent modules are on each other; cohesion is how focused a module's responsibilities are. Good design aims for low coupling and high cohesion." },
-    { front: "Polymorphism", track: "lld", back: "The ability to treat different types through a common interface, so the same call dispatches to type-specific behavior. It lets code work with new types without being rewritten." },
-    { front: "Strategy pattern", track: "lld", back: "Defines a family of interchangeable algorithms behind a common interface and lets the caller pick one at runtime, replacing sprawling conditionals with pluggable behavior." },
-    { front: "Observer pattern", track: "lld", back: "Lets a subject notify a list of dependent observers automatically when its state changes, decoupling the source of an event from the components that react to it." },
-    { front: "Factory pattern", track: "lld", back: "Encapsulates object creation behind a method or class so callers request a product by intent without naming concrete classes, centralizing and isolating construction logic." },
-    { front: "Singleton pattern", track: "lld", back: "Ensures a class has exactly one instance with a global access point. Useful for shared resources but easily overused, since it introduces hidden global state that complicates testing." },
-    { front: "Decorator pattern", track: "lld", back: "Wraps an object to add responsibilities dynamically while preserving its interface, offering a flexible alternative to subclassing for extending behavior at runtime." },
-    { front: "Adapter pattern", track: "lld", back: "Translates one interface into another that a client expects, letting otherwise incompatible classes work together without changing their source." },
-    { front: "Idempotency key store", track: "lld", back: "A durable dedupe table keyed by tenant and request key that atomically stores request hash, workflow status, final response and expiry so retries return the original result without repeating side effects." },
-    { front: "SyncOperation", track: "lld", back: "An immutable local command containing operation id, entity id, patch, base version and device id. The sync engine sends it until the server acknowledges or reports a conflict." },
-    { front: "ConflictResolver strategy", track: "lld", back: "An interface that lets the sync engine swap conflict policies such as LWW, field merge, domain-specific merge or user resolution without changing queue-draining code." },
-    { front: "MigrationStep", track: "lld", back: "A small migration object with run, verify, checkpoint and rollback behavior, making expand, backfill and cutover phases restartable and testable." },
-
+    /* ---- patterns · DSA Interview Patterns ---- */
+    { front: "Two pointers", track: "patterns", back: "Walking two indices through a sequence \u2014 often from both ends or at different speeds \u2014 to solve pair, partition, or in-place problems in O(n) time without extra space." },
+    { front: "Sliding window", track: "patterns", back: "Maintaining a moving range over an array or string and updating an aggregate as the window grows and shrinks, turning many O(n\u00b2) substring or subarray problems into O(n)." },
+    { front: "Fast & slow pointers", track: "patterns", back: "Advancing two pointers at different speeds through a linked list or sequence to detect cycles, find a midpoint, or locate a cycle's start, using O(1) extra space." },
+    { front: "Binary search on the answer", track: "patterns", back: "When a feasibility check is monotonic, binary-search the answer space itself \u2014 not just a sorted array \u2014 to find the smallest or largest value that satisfies a condition in O(log n) checks." },
+    { front: "Breadth-first search", track: "patterns", back: "Exploring a graph or tree level by level with a queue, which finds the shortest path in an unweighted graph and visits nodes in order of distance from the start." },
+    { front: "Depth-first search", track: "patterns", back: "Exploring as far as possible along each branch before backtracking, using recursion or a stack. It suits connectivity, cycle detection, and exhaustive traversal." },
+    { front: "Backtracking", track: "patterns", back: "Building candidates incrementally and abandoning a partial solution as soon as it can't lead to a valid one, systematically exploring combinations, permutations, and constraint puzzles." },
+    { front: "Dynamic programming", track: "patterns", back: "Solving a problem by combining solutions to overlapping subproblems and storing each result once. It turns exponential brute force into polynomial time when optimal substructure holds." },
+    { front: "Memoization vs tabulation", track: "patterns", back: "Two ways to do dynamic programming: memoization caches results top-down during recursion, while tabulation fills a table bottom-up. Both avoid recomputation; they differ in direction and overhead." },
+    { front: "Greedy algorithm", track: "patterns", back: "Making the locally optimal choice at each step in hopes of a global optimum. It's fast and simple but only correct when the problem has the greedy-choice property, which must be proven." },
+    { front: "Divide and conquer", track: "patterns", back: "Splitting a problem into independent subproblems, solving each recursively, and combining their results \u2014 the engine behind merge sort, quicksort, and many O(n log n) algorithms." },
+    { front: "Merge intervals", track: "patterns", back: "Sorting intervals by start, then sweeping through and combining any that overlap. It underlies scheduling, calendar, and range-consolidation problems in O(n log n)." },
+    { front: "Topological sort", track: "patterns", back: "Ordering the vertices of a directed acyclic graph so every edge points forward, used to schedule tasks with dependencies. A cycle makes a valid ordering impossible." },
+    { front: "Top-K with a heap", track: "patterns", back: "Maintaining a heap of size K while scanning a stream to keep the K largest or smallest elements in O(n log K), far cheaper than fully sorting when K is small." },
+    { front: "Union-Find", track: "patterns", back: "A disjoint-set structure that tracks connected groups with near-constant union and find operations via path compression and union by rank, key to connectivity and cycle detection." },
+    { front: "Prefix sum", track: "patterns", back: "Precomputing cumulative totals so any range sum can be answered in O(1) by subtracting two prefixes, trading O(n) preprocessing for fast repeated range queries." }
   ];
 
-
-  CARDS = CARDS.filter(function (c) { return c.track === "hld" || c.track === "lld"; });
 
   function mountFlashcards(mountEl) {
     if (!mountEl) return;
@@ -558,7 +506,7 @@
       flashIco("fc-ico"),
       el("div", {},
         el("h1", { class: "fc-title" }, "Flashcards"),
-        el("p", { class: "fc-sub" }, "Flip through key HLD and LLD terms and self-grade each one. Your progress saves locally in this browser.")
+        el("p", { class: "fc-sub" }, "Flip through key DSA and pattern terms and self-grade each one. Your progress saves locally in this browser.")
       )
     ));
 

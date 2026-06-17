@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Blueprint — an interactive atlas for mastering High-Level Design (HLD), Low-Level Design (LLD), and Data Structures & Algorithms (DSA). Learn scalability, caching, databases, distributed systems, SOLID, design patterns, graphs, sorting and recursion through interactive visualizations and quizzes." />
+  <meta name="description" content="Blueprint — an interactive atlas for mastering High-Level Design (HLD), Low-Level Design (LLD), system design, reliability, architecture trade-offs, and object-oriented design through interactive visualizations and quizzes." />
   <meta name="theme-color" content="#0b0e14" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -36,6 +36,11 @@
       <span class="brand-text">Blueprint<em>the design atlas</em></span>
     </a>
 
+    <a class="atlas-home-top" href="../index.html" aria-label="Atlas Home">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
+      <span>Atlas Home</span>
+    </a>
+
     <div class="search-wrap">
       <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
       <input id="search" type="search" placeholder="Search concepts…  (press /)" autocomplete="off" aria-label="Search concepts" />
@@ -64,37 +69,31 @@
     <aside class="sidebar" id="sidebar" aria-label="Curriculum navigation">
       <nav id="nav" class="nav"></nav>
       <div class="sidebar-foot">
-        <a href="../index.html" class="foot-link" id="atlasHomeLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/><path d="M9 20v-6h6v6"/></svg>
-          Atlas Home
-        </a>
-        <a href="#/review" class="foot-link" id="studyListLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg>
-          Study list
-        </a>
-        <a href="#/paths" class="foot-link" id="pathsLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg>
-          Learning paths
-        </a>
-        <a href="#/scenarios" class="foot-link" id="practiceLibraryLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6M8 11h6M8 15h4"/></svg>
-          Practice library
-        </a>
-        <a href="#/exam" class="foot-link" id="examLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
-          Exam mode
-        </a>
-        <a href="#/flashcards" class="foot-link" id="flashcardsLink">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg>
-          Flashcards
-        </a>
+        <button class="foot-link feature-toggle" id="featureToggle" type="button" aria-controls="featurePane" aria-expanded="false">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5h16M4 12h16M4 19h10"/></svg>
+          Features
+        </button>
+      </div>
+    </aside>
+    <aside class="feature-pane" id="featurePane" aria-label="Feature navigation" hidden>
+      <div class="feature-pane-head">
+        <span>Features</span>
+        <button class="feature-pane-close" id="featurePaneClose" type="button" aria-label="Close features">×</button>
+      </div>
+      <nav class="feature-list">
+        <a href="#/paths"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg><span>Learning paths</span></a>
+        <a href="#/scenarios"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6M8 11h6M8 15h4"/></svg><span>Practice library</span></a>
+        <a href="#/review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span>Study list</span></a>
+        <a href="#/exam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Exam mode</span></a>
+        <a href="#/flashcards"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/></svg><span>Flashcards</span></a>
+      </nav>
+      <div class="feature-utilities">
         <div class="foot-backup">
           <button id="exportData" class="ghost-btn ghost-sm" title="Download a backup of your progress">Export</button>
           <button id="importData" class="ghost-btn ghost-sm" title="Restore progress from a backup file">Import</button>
           <input id="importFile" type="file" accept="application/json,.json" hidden aria-hidden="true" />
         </div>
         <button id="resetProgress" class="ghost-btn">Reset progress</button>
-        <p class="sidebar-credit">Built for engineers who sketch before they ship. Press <kbd>?</kbd> for shortcuts.</p>
       </div>
     </aside>
     <div class="scrim" id="scrim" hidden></div>
@@ -108,13 +107,9 @@
 
   <!-- Scripts: order matters -->
   <script src="js/widgets.js" defer></script>
-  <script src="js/widgets-dsa.js" defer></script>
-  <script src="js/widgets-patterns.js" defer></script>
   <script src="js/quizzes.js" defer></script>
   <script src="js/curriculum-hld.js" defer></script>
   <script src="js/curriculum-lld.js" defer></script>
-  <script src="js/curriculum-dsa.js" defer></script>
-  <script src="js/curriculum-patterns.js" defer></script>
   <script src="js/practice-content.js" defer></script>
   <script src="js/exam.js" defer></script>
   <script src="js/pwa.js" defer></script>
