@@ -540,7 +540,10 @@
     const meta = practicePageMeta(kind);
     document.title = meta.title + " · Blueprint";
     const nav = practiceNav().map((item) =>
-      '<a class="' + (item.id === kind ? "active" : "") + '" href="' + escapeHtml(item.route) + '" style="--tc:' + escapeHtml(item.color || "var(--accent)") + '">' + escapeHtml(item.title) + "</a>"
+      '<a class="' + (item.id === kind ? "active" : "") + '" href="' + escapeHtml(item.route) + '" style="--tc:' + escapeHtml(item.color || "var(--accent)") + '">' +
+        '<span>' + escapeHtml(item.title) + "</span>" +
+        '<em>' + escapeHtml(item.label || item.summary || "") + "</em>" +
+      "</a>"
     ).join("");
     main.innerHTML =
       '<article class="lesson practice-ref-page" style="--accent:' + escapeHtml(meta.color || "var(--accent)") + '">' +
@@ -550,8 +553,10 @@
           "<h1>" + escapeHtml(meta.title) + "</h1>" +
           '<p class="summary">' + escapeHtml(meta.summary || "") + "</p>" +
         "</header>" +
-        '<nav class="practice-ref-tabs" aria-label="Practice reference pages">' + nav + "</nav>" +
-        body +
+        '<div class="practice-two-pane">' +
+          '<aside class="practice-side-nav" aria-label="Practice library sections">' + nav + "</aside>" +
+          '<div class="practice-pane-body">' + body + "</div>" +
+        "</div>" +
       "</article>";
     main.scrollTop = 0;
     window.scrollTo(0, 0);

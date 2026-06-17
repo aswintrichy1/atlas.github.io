@@ -706,6 +706,30 @@ table.data td:first-child { font-weight: 600; }
 .home-practice-grid { margin-top: 0; }
 .practice-subnav { grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); margin-bottom: 34px; }
 .practice-subnav .practice-route-card { min-height: 118px; padding: 15px; }
+.practice-two-pane {
+  display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  gap: 22px; align-items: start;
+}
+.practice-side-nav {
+  position: sticky; top: calc(var(--topbar-h) + 14px);
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 12px; border: 1px solid var(--glass-border); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+.practice-side-nav a {
+  display: block; padding: 11px 12px; border-radius: 11px;
+  border: 1px solid transparent; color: var(--text-dim); transition: 0.16s var(--ease);
+}
+.practice-side-nav a:hover, .practice-side-nav a.active {
+  color: var(--text); border-color: color-mix(in srgb, var(--violet) 48%, transparent);
+  background: color-mix(in srgb, var(--violet) 12%, transparent);
+}
+.practice-side-nav span { display: block; font-weight: 750; font-size: 0.86rem; }
+.practice-side-nav em {
+  display: block; margin-top: 2px; font-family: var(--font-mono);
+  font-style: normal; font-size: 0.62rem; color: var(--text-faint);
+}
+.practice-pane-body { min-width: 0; }
 
 .scenario-stack { display: grid; gap: 20px; }
 .scenario-card, .prompt-card, .rubric-card, .cheat-card, .glossary-card {
@@ -784,6 +808,8 @@ table.data td:first-child { font-weight: 600; }
 .glossary-related a:hover { border-color: var(--accent); transform: translateY(-1px); }
 @media (max-width: 560px) {
   .practice-route-grid, .prompt-grid, .rubric-grid, .cheat-grid, .glossary-grid { grid-template-columns: 1fr; }
+  .practice-two-pane { grid-template-columns: 1fr; }
+  .practice-side-nav { position: static; }
   .scenario-card, .prompt-card, .rubric-card, .cheat-card, .glossary-card { padding: 18px; }
 }
 

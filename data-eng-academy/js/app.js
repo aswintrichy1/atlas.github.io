@@ -637,11 +637,11 @@
 
   /* ---------------- practice/content-quality pages ---------------- */
   function practiceNavHtml(activeRoute) {
-    return '<div class="practice-tabs">' + PRACTICE_LINKS.map((link) =>
+    return '<aside class="practice-side-nav" aria-label="Practice library sections">' + PRACTICE_LINKS.map((link) =>
       '<a class="' + (link.route === activeRoute ? "active" : "") + '" href="' + link.route + '" style="--pc:' + link.accent + '">' +
-        '<strong>' + escapeHtml(link.title) + "</strong><span>" + escapeHtml(link.sub) + "</span>" +
+        '<span>' + escapeHtml(link.title) + "</span><em>" + escapeHtml(link.sub) + "</em>" +
       "</a>"
-    ).join("") + "</div>";
+    ).join("") + "</aside>";
   }
 
   function practiceHomeCardsHtml() {
@@ -664,8 +664,10 @@
           "<h1>" + escapeHtml(title) + "</h1>" +
           '<p class="summary">' + escapeHtml(summary) + "</p>" +
         "</header>" +
-        practiceNavHtml(activeRoute) +
-        bodyHtml +
+        '<div class="practice-two-pane">' +
+          practiceNavHtml(activeRoute) +
+          '<div class="practice-pane-body">' + bodyHtml + "</div>" +
+        "</div>" +
       "</article>";
     main.scrollTop = 0;
     window.scrollTo(0, 0);

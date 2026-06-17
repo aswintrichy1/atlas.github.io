@@ -453,6 +453,16 @@
     ).join("") + "</div>";
   }
 
+  function practiceSideNavHtml(activeId) {
+    const routes = PracticeContent.routes || [];
+    return '<aside class="practice-side-nav" aria-label="Practice library sections">' + routes.map((r) =>
+      '<a class="' + (r.id === activeId ? "active" : "") + '" href="' + safeRoute(r.route) + '">' +
+        '<span>' + escapeHtml(r.title) + "</span>" +
+        '<em>' + escapeHtml(r.count || r.summary || "") + "</em>" +
+      "</a>"
+    ).join("") + "</aside>";
+  }
+
   function practiceLinksHtml(links) {
     if (!links || !links.length) return "";
     return '<div class="practice-links">' + links.map((link) =>
@@ -471,8 +481,10 @@
           '<p class="summary">' + escapeHtml(meta.summary) + "</p>" +
           '<div class="tags"><span class="read">' + escapeHtml(meta.count || "offline") + '</span><span class="tag">static</span><span class="tag">offline</span></div>' +
         "</header>" +
-        practiceRouteCards("practice-subnav") +
-        body +
+        '<div class="practice-two-pane">' +
+          practiceSideNavHtml(id) +
+          '<div class="practice-pane-body">' + body + "</div>" +
+        "</div>" +
       "</article>";
     const target = targetId && document.getElementById(targetId);
     if (target) target.scrollIntoView();

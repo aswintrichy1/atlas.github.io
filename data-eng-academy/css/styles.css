@@ -664,12 +664,28 @@ table.data td:first-child { font-weight: 600; }
 .practice-link-card em { position: relative; display: inline-flex; align-items: center; gap: 6px; margin-top: 12px; font-family: var(--font-mono); font-style: normal; font-size: 0.68rem; color: var(--pc); }
 .practice-link-card em svg { width: 14px; height: 14px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 
-.practice-content-page { max-width: 980px; }
-.practice-tabs { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 10px; margin: 0 0 28px; }
-.practice-tabs a { border: 1px solid var(--glass-border); border-radius: 13px; background: var(--surface); padding: 12px 14px; transition: 0.18s; }
-.practice-tabs a:hover, .practice-tabs a.active { border-color: color-mix(in srgb, var(--pc) 54%, transparent); background: color-mix(in srgb, var(--pc) 10%, var(--surface)); transform: translateY(-1px); }
-.practice-tabs strong { display: block; font-size: 0.9rem; color: var(--text); }
-.practice-tabs span { display: block; margin-top: 2px; font-family: var(--font-mono); font-size: 0.62rem; letter-spacing: 0.04em; color: var(--text-faint); }
+.practice-content-page { max-width: 1080px; }
+.practice-two-pane {
+  display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  gap: 22px; align-items: start;
+}
+.practice-side-nav {
+  position: sticky; top: calc(var(--topbar-h) + 14px);
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 12px; border: 1px solid var(--glass-border); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+.practice-side-nav a {
+  border: 1px solid transparent; border-radius: 11px; padding: 11px 12px;
+  color: var(--text-dim); transition: 0.18s var(--ease);
+}
+.practice-side-nav a:hover, .practice-side-nav a.active {
+  color: var(--text); border-color: color-mix(in srgb, var(--pc) 54%, transparent);
+  background: color-mix(in srgb, var(--pc) 10%, var(--surface)); transform: translateY(-1px);
+}
+.practice-side-nav span { display: block; font-weight: 750; font-size: 0.86rem; color: var(--text); }
+.practice-side-nav em { display: block; margin-top: 2px; font-family: var(--font-mono); font-style: normal; font-size: 0.62rem; letter-spacing: 0.04em; color: var(--text-faint); }
+.practice-pane-body { min-width: 0; }
 .practice-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; }
 .practice-card { scroll-margin-top: 84px; border: 1px solid var(--glass-border); border-radius: var(--radius-lg); background: var(--surface); padding: 22px; margin: 0 0 18px; }
 .practice-card.wide { margin-bottom: 22px; }
@@ -690,6 +706,10 @@ table.data td:first-child { font-weight: 600; }
 .practice-refs a { color: var(--accent); border-bottom: 1px solid color-mix(in srgb, var(--accent) 35%, transparent); }
 .practice-refs a:hover { border-bottom-color: var(--accent); }
 .glossary-card h2 { color: var(--accent); }
+@media (max-width: 680px) {
+  .practice-two-pane { grid-template-columns: 1fr; }
+  .practice-side-nav { position: static; }
+}
 
 /* ---------- Command palette ---------- */
 .palette { position: fixed; inset: 0; z-index: 300; background: color-mix(in srgb, var(--ink-900) 62%, transparent); backdrop-filter: blur(6px); display: flex; align-items: flex-start; justify-content: center; padding: 12vh 20px 20px; }

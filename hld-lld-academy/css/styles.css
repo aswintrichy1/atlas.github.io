@@ -685,6 +685,30 @@ table.data td:first-child { font-weight: 600; }
 .practice-ref-card .tc-go { display: inline-flex; align-items: center; gap: 7px; margin-top: 16px; font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--tc); }
 .practice-ref-card .tc-go svg { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
 .practice-ref-page { max-width: 1080px; }
+.practice-two-pane {
+  display: grid; grid-template-columns: minmax(190px, 240px) minmax(0, 1fr);
+  gap: 22px; align-items: start;
+}
+.practice-side-nav {
+  position: sticky; top: calc(var(--topbar-h) + 14px);
+  display: flex; flex-direction: column; gap: 9px;
+  padding: 12px; border: 1px solid var(--glass-border); border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface) 86%, transparent);
+}
+.practice-side-nav a {
+  display: block; border: 1px solid transparent; border-radius: 11px;
+  padding: 11px 12px; color: var(--text-dim); transition: 0.16s var(--ease);
+}
+.practice-side-nav a:hover, .practice-side-nav a.active {
+  color: var(--text); border-color: color-mix(in srgb, var(--tc, var(--accent)) 50%, transparent);
+  background: color-mix(in srgb, var(--tc, var(--accent)) 12%, transparent);
+}
+.practice-side-nav span { display: block; font-weight: 750; font-size: 0.86rem; }
+.practice-side-nav em {
+  display: block; margin-top: 2px; font-family: var(--font-mono);
+  font-style: normal; font-size: 0.62rem; color: var(--text-faint);
+}
+.practice-pane-body { min-width: 0; }
 .practice-ref-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: -4px 0 24px; }
 .practice-ref-tabs a {
   font-family: var(--font-mono); font-size: 0.72rem; font-weight: 700; color: var(--text-dim);
@@ -714,7 +738,8 @@ table.data td:first-child { font-weight: 600; }
 .practice-use { color: var(--text-dim); font-size: 0.92rem; margin-top: -4px; }
 .glossary-term h2 { font-size: 1.35rem; }
 @media (max-width: 560px) {
-  .practice-ref-grid, .practice-outline.two-col { grid-template-columns: 1fr; }
+  .practice-ref-grid, .practice-outline.two-col, .practice-two-pane { grid-template-columns: 1fr; }
+  .practice-side-nav { position: static; }
   .practice-ref-card { min-height: 0; }
 }
 
