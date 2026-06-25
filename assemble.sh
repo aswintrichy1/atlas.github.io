@@ -2,7 +2,7 @@
 # =====================================================================
 # assemble.sh — build the self-contained "Atlas Collection" for GitHub Pages.
 #
-# GitHub Pages does NOT follow symbolic links, so the four academy apps
+# GitHub Pages does NOT follow symbolic links, so the five academy apps
 # must live inside this folder as REAL files. This script rebuilds each
 # app's clean distributable (via that app's own build.sh, which already
 # strips dev artifacts and symlinks) and copies it in beside the hub.
@@ -17,7 +17,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 SRC="$(dirname "$ROOT")"
-APPS=(hld-lld-academy dsa-patterns-academy cyber-academy data-eng-academy)
+APPS=(hld-lld-academy dsa-patterns-academy cyber-academy data-eng-academy techno-managerial-academy)
 
 for app in "${APPS[@]}"; do
   src="$SRC/$app"

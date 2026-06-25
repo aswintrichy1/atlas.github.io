@@ -2331,6 +2331,6 @@ window.TRACKS.hld = {
           ]
         }
       ]
-    }
+    },
   ]
 };

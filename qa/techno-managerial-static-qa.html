@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechLead Static QA</title>
+  <style>
+    body { margin: 0; font-family: system-ui, sans-serif; background: #0b0e14; color: #e7ecf5; padding: 28px; }
+    h1 { margin-bottom: 8px; }
+    button { padding: 10px 14px; border: 1px solid #334155; border-radius: 10px; background: #f59e0b; color: #160d00; font-weight: 800; cursor: pointer; }
+    .log { display: grid; gap: 8px; margin-top: 18px; }
+    .row { border: 1px solid #263246; background: #11161f; border-radius: 10px; padding: 10px 12px; }
+    .pass { border-color: #34d399; }
+    .fail { border-color: #fb7185; color: #fecdd3; }
+    iframe { width: 100%; height: 520px; margin-top: 18px; border: 1px solid #334155; border-radius: 14px; background: #fff; }
+  </style>
+</head>
+<body>
+  <h1>TechLead Static QA</h1>
+  <p>No-dependency smoke test for the Techno Managerial Atlas. Serve the repo and open this page from the same origin.</p>
+  <button id="run" type="button">Run QA</button>
+  <div class="log" id="log" aria-live="polite"></div>
+  <iframe id="frame" title="TechLead route smoke frame"></iframe>
+
+  <script>
+    "use strict";
+    const log = document.getElementById("log");
+    function row(ok, msg) {
+      const el = document.createElement("div");
+      el.className = "row " + (ok ? "pass" : "fail");
+      el.textContent = (ok ? "PASS: " : "FAIL: ") + msg;
+      log.appendChild(el);
+      if (!ok) throw new Error(msg);
+    }
+    async function text(path) {
+      const res = await fetch(path, { cache: "no-store" });
+      row(res.ok, path + " returned " + res.status);
+      return res.text();
+    }
+    function parseClassicScript(src, name) {
+      new Function(src);
+      row(true, name + " parses");
+    }
+    async function run() {
+      log.innerHTML = "";
+      const appHtml = await text("../techno-managerial-academy/index.html");
+      const css = await text("../techno-managerial-academy/css/styles.css");
+      const content = await text("../techno-managerial-academy/js/content.js");
+      const app = await text("../techno-managerial-academy/js/app.js");
+      const sw = await text("../techno-managerial-academy/sw.js");
+      const hub = await text("../index.html");
+      const hubSw = await text("../sw.js");
+      const manifest = JSON.parse(await text("../techno-managerial-academy/manifest.webmanifest"));
+
+      parseClassicScript(content, "content.js");
+      parseClassicScript(app, "app.js");
+      parseClassicScript(sw, "sw.js");
+      row(manifest.name === "Techno Managerial Atlas", "manifest name is correct");
+      row(manifest.short_name === "TechLead", "manifest short_name is correct");
+      row(sw.includes("techno-managerial-v3"), "service worker cache is v3");
+      ["./css/styles.css", "./js/content.js", "./js/app.js"].forEach((asset) => row(sw.includes(asset), "SW precaches " + asset));
+      row(hub.includes("techno-managerial-academy/index.html") && hub.includes("tm_progress_v1"), "hub card wired");
+      row(hubSw.includes("techno-managerial-academy"), "hub SW excludes TechLead scope");
+      ["tm_progress_v1", "tm_weak_v1", "tm_story_bank_v1", "tm_theme", "tm_flash_v1", "tm_interview_history_v1"].forEach((key) => row(app.includes(key), "localStorage key present: " + key));
+      row(app.includes("techno-managerial-story-bank.json"), "story bank export filename present");
+      row(!appHtml.match(/https?:\/\//) && !css.match(/https?:\/\//) && !content.match(/https?:\/\//) && !app.match(/https?:\/\//), "no external http URLs");
+      row(!app.includes("#/hld/techno-managerial"), "no stale Blueprint techno-managerial routes");
+
+      const dataWindow = {};
+      new Function("window", content)(dataWindow);
+      const lessons = dataWindow.TM_DATA.tracks.flatMap((t) => t.modules.flatMap((m) => m.lessons.map((l) => `#/${t.id}/${m.id}/${l.id}`)));
+      row(lessons.length >= 30, "lesson count is " + lessons.length);
+      row(dataWindow.TM_DATA.questions.length >= 24, "quiz count is " + dataWindow.TM_DATA.questions.length);
+      row(dataWindow.TM_DATA.rubrics.dimensions.length >= 5, "rubric dimensions present");
+      row(dataWindow.TM_DATA.simulatorPrompts.length >= 8, "simulator prompts present");
+
+      await smokeRoutes(["#/", "#/practice", "#/rubrics", "#/interview", "#/quiz", "#/flashcards", "#/models", "#/companies", "#/story-bank"].concat(lessons.slice(0, 6)));
+      row(true, "all QA checks completed");
+    }
+    function smokeRoutes(routes) {
+      return new Promise((resolve, reject) => {
+        const frame = document.getElementById("frame");
+        const errors = [];
+        frame.onload = () => {
+          const win = frame.contentWindow;
+          win.console.error = (...args) => errors.push(args.join(" "));
+          win.addEventListener("error", (e) => errors.push(e.message));
+          let idx = 0;
+          function next() {
+            if (idx >= routes.length) {
+              row(errors.length === 0, "no iframe runtime errors");
+              resolve();
+              return;
+            }
+            const route = routes[idx++];
+            win.location.hash = route;
+            win.dispatchEvent(new HashChangeEvent("hashchange"));
+            setTimeout(() => {
+              const main = win.document.getElementById("main");
+              row(!!main && main.textContent.trim().length > 20, "route rendered " + route);
+              next();
+            }, 30);
+          }
+          next();
+        };
+        frame.onerror = reject;
+        frame.src = "../techno-managerial-academy/index.html";
+      });
+    }
+    document.getElementById("run").addEventListener("click", () => run().catch((err) => {
+      const el = document.createElement("div");
+      el.className = "row fail";
+      el.textContent = "STOPPED: " + err.message;
+      log.appendChild(el);
+    }));
+  </script>
+</body>
+</html>

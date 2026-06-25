@@ -1,6 +1,6 @@
 # The Atlas Collection
 
-Four interactive, **fully-offline** learning atlases behind a single hub. Read a concept, then *poke* it — every idea has an interactive lab, quiz, or visualization. Progress is saved locally in your browser; nothing is ever sent to a server.
+Five interactive, **fully-offline** learning atlases behind a single hub. Read a concept, then *poke* it — every idea has an interactive lab, quiz, or visualization. Progress is saved locally in your browser; nothing is ever sent to a server.
 
 | Atlas | Topic | Highlights |
 | --- | --- | --- |
@@ -8,6 +8,7 @@ Four interactive, **fully-offline** learning atlases behind a single hub. Read a
 | **Codex** | DSA & coding interviews | Data structures · algorithms · problem-solving patterns |
 | **Citadel** | Cybersecurity | 8 tracks · crypto · AppSec · defense · threats & forensics · reverse engineering |
 | **Cascade** | Data engineering | Storage · modeling · batch · streaming · orchestration · SQL · Spark |
+| **TechLead** | Techno managerial interviews | HLD · LLD · Data Engineering · delivery risk · stakeholders · model answers |
 
 Each atlas includes exam mode, flashcards, interactive widgets, light/dark themes, keyboard shortcuts, a command palette, progress export/import, and installable-PWA support — all with **zero external requests**.
 
@@ -22,6 +23,10 @@ python3 -m http.server 8000
 
 Then open <http://localhost:8000/>. (Opening `index.html` via `file://` still works, just without offline caching.)
 
+## QA
+
+The TechLead app includes a no-dependency smoke page at `qa/techno-managerial-static-qa.html`. Serve the repo locally, open that page, and click **Run QA** to validate static assets, app routes, offline wiring, localStorage keys, and stale-route checks.
+
 ## Deploy to GitHub Pages
 
 This folder is self-contained and Pages-ready — real files (no symlinks), a `.nojekyll` marker, and only relative paths, so it works whether the repo is served from a subpath (`https://USER.github.io/REPO/`) or a user site (`https://USER.github.io/`).
@@ -35,7 +40,7 @@ This folder is self-contained and Pages-ready — real files (no symlinks), a `.
 2. In the repo: **Settings → Pages → Build and deployment → Source: Deploy from a branch**, then choose **`main`** and **`/ (root)`**, and save.
 3. Wait for the Pages build, then visit the URL shown there. The hub loads, and each card opens its atlas.
 
-No build step runs on GitHub — the deployable copies are already in the app folders (`hld-lld-academy/`, `dsa-patterns-academy/`, `cyber-academy/`, `data-eng-academy/`).
+No build step runs on GitHub — the deployable copies are already in the app folders (`hld-lld-academy/`, `dsa-patterns-academy/`, `cyber-academy/`, `data-eng-academy/`, `techno-managerial-academy/`).
 
 ## Structure
 
@@ -49,12 +54,14 @@ atlas/
 ├── hld-lld-academy/        Blueprint (real files)
 ├── dsa-patterns-academy/   Codex (real files)
 ├── cyber-academy/          Citadel (real files)
-└── data-eng-academy/       Cascade (real files)
+├── data-eng-academy/       Cascade (real files)
+└── techno-managerial-academy/
+                            TechLead (real files)
 ```
 
 ## Updating an app
 
-The four app folders are **built copies**. To change an app, edit its source elsewhere and re-run `./assemble.sh` (it rebuilds each app via its own `build.sh`, strips dev artifacts and symlinks, and refreshes the copies here), then commit. `assemble.sh` only works on the machine that has the source apps; it is not needed to deploy.
+The five app folders are **built copies**. To change an app, edit its source elsewhere and re-run `./assemble.sh` (it rebuilds each app via its own `build.sh`, strips dev artifacts and symlinks, and refreshes the copies here), then commit. `assemble.sh` only works on the machine that has the source apps; it is not needed to deploy.
 
 ## License
 

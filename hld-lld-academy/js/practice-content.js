@@ -244,7 +244,7 @@ window.BlueprintPractice = {
           ]
         }
       ]
-    }
+    },
   ],
 
   interview: [
@@ -357,7 +357,7 @@ window.BlueprintPractice = {
         { label: "CAP/PACELC", route: "#/glossary/cap-pacelc" },
         { label: "State machines", route: "#/cheatsheets/state-machine-invariants" }
       ]
-    }
+    },
   ],
 
   rubrics: {
@@ -367,7 +367,7 @@ window.BlueprintPractice = {
       "Correctness and consistency",
       "Scale, reliability, and operations",
       "Communication and trade-off reasoning",
-      "LLD handoff or class design"
+      "LLD handoff or class design",
     ],
     bands: [
       {
@@ -405,8 +405,8 @@ window.BlueprintPractice = {
           "Defines SLOs, p99 targets, dashboards, alert signals, launch gates, and rollback plans.",
           "LLD answer is testable, extensible, concurrency-aware, and maps cleanly from the HLD."
         ]
-      }
-    ]
+      },
+      ]
   },
 
   cheatsheets: [
@@ -475,7 +475,7 @@ window.BlueprintPractice = {
         "Persist state after every side effect boundary so retries resume safely.",
         "Emit events on transitions, not on vague method calls."
       ]
-    }
+    },
   ],
 
   glossary: [
@@ -587,6 +587,6 @@ window.BlueprintPractice = {
         { label: "Booking prompt", route: "#/interview/booking-consistency-availability" },
         { label: "Consistency patterns", route: "#/cheatsheets/consistency-cache-queue" }
       ]
-    }
+    },
   ]
 };

@@ -1,10 +1,9 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-  
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="The Atlas Collection — a local launcher for four interactive, fully-offline learning atlases: Blueprint (system & software design), Codex (DSA & coding interviews), Citadel (cybersecurity), and Cascade (data engineering)." />
+  <meta name="description" content="The Atlas Collection — a local launcher for five interactive, fully-offline learning atlases: Blueprint, Codex, Citadel, Cascade, and Techno Managerial." />
   <meta name="theme-color" content="#0a0d12" />
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="apple-touch-icon" href="icon.svg" />
@@ -24,6 +23,7 @@
       --amber: #f5a623;   /* Blueprint */
       --emerald: #34d399; /* Citadel */
       --azure: #38bdf8;   /* Cascade */
+      --gold: #f59e0b;    /* Techno Managerial */
       --radius: 18px;
       --ease: cubic-bezier(0.22, 1, 0.36, 1);
       --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -42,6 +42,7 @@
       --amber: #b9700c;
       --emerald: #0e9f6e;
       --azure: #0a7ea8;
+      --gold: #b9700c;
     }
     * { box-sizing: border-box; margin: 0; }
     html { -webkit-text-size-adjust: 100%; }
@@ -64,7 +65,8 @@
       background:
         radial-gradient(40rem 26rem at 10% -6%, color-mix(in srgb, var(--amber) 14%, transparent), transparent 60%),
         radial-gradient(40rem 26rem at 50% -10%, color-mix(in srgb, var(--emerald) 14%, transparent), transparent 60%),
-        radial-gradient(40rem 26rem at 90% -6%, color-mix(in srgb, var(--azure) 14%, transparent), transparent 60%);
+        radial-gradient(40rem 26rem at 90% -6%, color-mix(in srgb, var(--azure) 14%, transparent), transparent 60%),
+        radial-gradient(34rem 24rem at 70% 8%, color-mix(in srgb, var(--gold) 10%, transparent), transparent 62%);
     }
     .wrap { position: relative; z-index: 1; max-width: 1180px; margin: 0 auto; padding: clamp(24px, 5vw, 56px) clamp(16px, 4vw, 40px) 64px; }
 
@@ -89,7 +91,7 @@
     }
     .eyebrow .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--emerald); box-shadow: 0 0 12px var(--emerald); }
     h1 { font-size: clamp(2.1rem, 6vw, 3.6rem); line-height: 1.05; letter-spacing: -0.03em; font-weight: 800; }
-    h1 .grad { background: linear-gradient(110deg, var(--amber), var(--emerald) 50%, var(--azure)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
+    h1 .grad { background: linear-gradient(110deg, var(--amber), var(--emerald) 45%, var(--azure) 70%, var(--gold)); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
     .lede { color: var(--text-dim); max-width: 60ch; margin: 20px auto 0; font-size: clamp(1rem, 2.2vw, 1.18rem); }
 
     .totals { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 26px; }
@@ -155,10 +157,10 @@
     <header class="masthead">
       <span class="eyebrow reveal"><span class="dot"></span>Local · offline · no account</span>
       <h1 class="reveal d1">The <span class="grad">Atlas</span> Collection</h1>
-      <p class="lede reveal d2">Four interactive, fully-offline learning atlases. Read the concept, then <em>poke</em> it — every idea has something you can drive. Your progress lives in your browser; nothing leaves your machine.</p>
+      <p class="lede reveal d2">Five interactive, fully-offline learning atlases. Read the concept, then <em>poke</em> it — every idea has something you can drive. Your progress lives in your browser; nothing leaves your machine.</p>
       <div class="totals reveal d3" id="totals">
         <span class="pill" id="pillTotal" hidden></span>
-        <span class="pill">4 <b>atlases</b></span>
+        <span class="pill">5 <b>atlases</b></span>
       </div>
     </header>
 
@@ -220,6 +222,13 @@
         desc: "Move and model data that holds up in production — pipelines, batch & streaming, SQL and query engines, Spark, dimensional modeling, and the warehouse patterns behind modern analytics.",
         chips: ["Pipelines", "Spark", "SQL", "Modeling", "Streaming"],
         glyph: '<path d="M26 30 H74 M26 30 C26 38 74 38 74 30 M26 30 V70 C26 78 74 78 74 70 V30 M26 50 C26 58 74 58 74 50"/>'
+      },
+      {
+        name: "TechLead", tag: "techno managerial", color: "var(--gold)",
+        href: "./techno-managerial-academy/index.html", key: "tm_progress_v1",
+        desc: "Prepare for techno managerial interviews across HLD, LLD, and data engineering — project deep dives, stakeholder pressure, delivery risk, incidents, model answers, flashcards, and story banking.",
+        chips: ["HLD", "LLD", "Data Eng", "Leadership", "Mock"],
+        glyph: '<path d="M22 70 L50 22 L78 70 M34 70 L50 44 L66 70"/><path d="M24 80 H76"/><circle cx="50" cy="36" r="5"/>'
       }
     ];
 

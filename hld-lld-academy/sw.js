@@ -4,7 +4,7 @@
    same-origin asset (same-origin assets) on first fetch. The whole app works
    with no network after the first visit.
    ===================================================================== */
-const CACHE = "blueprint-v19";
+const CACHE = "blueprint-v22";
 const CACHE_PREFIX = "blueprint-";
 const CORE = [
   "./",

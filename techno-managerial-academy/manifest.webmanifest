@@ -1,7 +1,7 @@
 {
-  "name": "The Atlas Collection",
-  "short_name": "Atlas",
-  "description": "A local launcher for five interactive, fully-offline learning atlases: Blueprint, Codex, Citadel, Cascade, and TechLead for techno managerial interview prep.",
+  "name": "Techno Managerial Atlas",
+  "short_name": "TechLead",
+  "description": "Offline interview prep for techno managerial rounds across HLD, LLD, data engineering, delivery leadership, stakeholders, quizzes, flashcards, model answers, and story banking.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
