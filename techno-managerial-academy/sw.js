@@ -1,5 +1,5 @@
 /* Techno Managerial Atlas service worker */
-const CACHE = "techno-managerial-v3";
+const CACHE = "techno-managerial-v4";
 const CACHE_PREFIX = "techno-managerial-";
 const CORE = [
   "./",

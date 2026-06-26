@@ -248,43 +248,6 @@
 
   /* ---------------- block renderer ---------------- */
   // returns an HTML string; widget/quiz become placeholders mounted later
-  const DIAGRAMS = {
-    "cdn-tree":
-      '<svg class="diagram-svg" viewBox="0 0 520 220" role="img" aria-label="CDN edge tree: an origin server feeding three edge points of presence that serve nearby users">' +
-        '<rect class="dg-box origin" x="210" y="14" width="100" height="34" rx="8"/><text class="dg-t" x="260" y="35">Origin</text>' +
-        '<path class="dg-edge" d="M260 48 L100 92"/><path class="dg-edge" d="M260 48 L260 92"/><path class="dg-edge" d="M260 48 L420 92"/>' +
-        '<rect class="dg-box pop" x="55" y="92" width="90" height="32" rx="8"/><text class="dg-t" x="100" y="112">PoP · US</text>' +
-        '<rect class="dg-box pop" x="215" y="92" width="90" height="32" rx="8"/><text class="dg-t" x="260" y="112">PoP · EU</text>' +
-        '<rect class="dg-box pop" x="375" y="92" width="90" height="32" rx="8"/><text class="dg-t" x="420" y="112">PoP · APAC</text>' +
-        '<path class="dg-edge dim" d="M100 124 L60 170"/><path class="dg-edge dim" d="M100 124 L140 170"/>' +
-        '<path class="dg-edge dim" d="M260 124 L220 170"/><path class="dg-edge dim" d="M260 124 L300 170"/>' +
-        '<path class="dg-edge dim" d="M420 124 L380 170"/><path class="dg-edge dim" d="M420 124 L460 170"/>' +
-        '<g class="dg-user"><circle cx="60" cy="184" r="11"/><circle cx="140" cy="184" r="11"/><circle cx="220" cy="184" r="11"/><circle cx="300" cy="184" r="11"/><circle cx="380" cy="184" r="11"/><circle cx="460" cy="184" r="11"/></g>' +
-        '<text class="dg-cap" x="260" y="212">Users fetch from the nearest edge cache, not the origin</text>' +
-      "</svg>",
-    "chat-fanout":
-      '<svg class="diagram-svg" viewBox="0 0 540 210" role="img" aria-label="Chat fan-out: sender connects to one connection server, a pub/sub backplane routes the message to the connection server holding the recipient socket">' +
-        '<g class="dg-user"><circle cx="40" cy="60" r="13"/></g><text class="dg-cap" x="40" y="90">A</text>' +
-        '<rect class="dg-box" x="110" y="44" width="120" height="34" rx="8"/><text class="dg-t" x="170" y="65">Conn-Server 3</text>' +
-        '<rect class="dg-box accent2" x="210" y="120" width="120" height="34" rx="8"/><text class="dg-t" x="270" y="141">Pub/Sub bus</text>' +
-        '<rect class="dg-box" x="310" y="44" width="120" height="34" rx="8"/><text class="dg-t" x="370" y="65">Conn-Server 8</text>' +
-        '<g class="dg-user"><circle cx="500" cy="60" r="13"/></g><text class="dg-cap" x="500" y="90">B</text>' +
-        '<path class="dg-edge arr" d="M54 60 L108 61"/>' +
-        '<path class="dg-edge arr" d="M180 78 L255 118"/>' +
-        '<path class="dg-edge arr" d="M285 120 L362 80"/>' +
-        '<path class="dg-edge arr" d="M430 60 L484 60"/>' +
-        '<text class="dg-cap" x="270" y="196">Sender \u2192 its server \u2192 backplane \u2192 recipient\u2019s server \u2192 recipient</text>' +
-      "</svg>",
-    "agent-loop":
-      '<svg class="diagram-svg" viewBox="0 0 460 190" role="img" aria-label="The agent loop: the model reasons and chooses an action, calls a tool, observes the result, and repeats until done">' +
-        '<rect class="dg-box accent2" x="150" y="20" width="160" height="40" rx="10"/><text class="dg-t" x="230" y="44">LLM: think + act</text>' +
-        '<rect class="dg-box" x="150" y="120" width="160" height="40" rx="10"/><text class="dg-t" x="230" y="144">Tool (search/API/code)</text>' +
-        '<path class="dg-edge arr" d="M195 60 L195 118"/><text class="dg-cap" x="150" y="93">call</text>' +
-        '<path class="dg-edge arr" d="M265 118 L265 62"/><text class="dg-cap" x="312" y="93">observe</text>' +
-        '<path class="dg-edge arr" d="M310 40 L390 40 L390 90"/><text class="dg-cap" x="412" y="60">final</text>' +
-        '<text class="dg-cap" x="230" y="182">Loop until the model emits an answer or the step budget runs out</text>' +
-      "</svg>"
-  };
   const NOTE_ICON = {
     tip: '<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.1V18h6v-1.2c0-.8.4-1.6 1-2.1A7 7 0 0 0 12 2z"/>',
     key: '<path d="M12 2v6m0 0 3-2m-3 2-3-2M5 13a7 7 0 1 0 14 0 7 7 0 0 0-14 0z"/>',
@@ -322,8 +285,6 @@
         return '<div class="statrow">' + b.items.map((s) => '<div class="s"><div class="v">' + escapeHtml(s.v) + '</div><div class="k">' + escapeHtml(s.k) + "</div></div>").join("") + "</div>";
       case "cue":
         return '<div class="cue"><svg class="cue-ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="1.5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg><div>' + b.html + "</div></div>";
-      case "diagram":
-        return '<figure class="diagram">' + (DIAGRAMS[b.id] || "") + (b.caption ? '<figcaption>' + escapeHtml(b.caption) + "</figcaption>" : "") + "</figure>";
       case "widget": return '<div class="widget-mount" data-widget="' + escapeHtml(b.id) + '"></div>';
       case "quiz": return '<div class="quiz-mount" data-quiz="' + escapeHtml(b.id) + '"></div>';
       default: return "";
@@ -1055,14 +1016,23 @@
       activeQuiz = { el: opts, count: q.options.length, pick: (oi) => choose(oi, opts, q, explain, nextBtn) };
     }
 
+    // Convey quiz correctness without relying on color alone (WCAG 1.4.1):
+    // a shape glyph (visible to all) plus a screen-reader label on the option.
+    function markChoice(btn, isCorrect, optionText, letter) {
+      btn.classList.add(isCorrect ? "correct" : "wrong");
+      const glyph = el("span", { class: "q-status", "aria-hidden": "true" }, isCorrect ? "\u2713" : "\u2717");
+      btn.insertBefore(glyph, btn.firstChild);
+      btn.setAttribute("aria-label", (isCorrect ? "Correct answer: " : "Incorrect answer: ") + (letter ? letter + ", " : "") + optionText);
+    }
+
     function choose(oi, opts, q, explain, nextBtn) {
       if (answered) return;
       answered = true;
       const btns = $$(".q-opt", opts);
       btns.forEach((b, bi) => {
         b.disabled = true;
-        if (bi === q.answer) b.classList.add("correct");
-        else if (bi === oi) b.classList.add("wrong");
+        if (bi === q.answer) markChoice(b, true, q.options[bi], LETTERS[bi]);
+        else if (bi === oi) markChoice(b, false, q.options[bi], LETTERS[bi]);
       });
       if (oi === q.answer) score++;
       recordAnswer(q._qid, oi === q.answer);

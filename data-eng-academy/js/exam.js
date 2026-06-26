@@ -51,6 +51,16 @@
 
   var LETTERS = ["A", "B", "C", "D", "E", "F"];
 
+  // Convey correctness without relying on color alone (WCAG 1.4.1): a shape
+  // glyph (✓/✗). With a label it is announced to assistive tech via
+  // role="img"; without one it is a purely-visual marker beside existing text.
+  function statusMark(isCorrect, label) {
+    var attrs = { class: "exam-ri-glyph " + (isCorrect ? "ok" : "no") };
+    if (label) { attrs.role = "img"; attrs["aria-label"] = label; }
+    else { attrs["aria-hidden"] = "true"; }
+    return el("span", attrs, isCorrect ? "\u2713" : "\u2717");
+  }
+
   /* ---------------- icons ---------------- */
   function examIco(cls) { return ico("0 0 24 24", [["circle", { cx: 12, cy: 12, r: 10 }], ["path", { d: "M9.1 9a3 3 0 1 1 4 2.8c-.8.4-1.1 1-1.1 1.7v.5M12 17h.01" }]], cls); }
   function flashIco(cls) { return ico("0 0 24 24", [["rect", { x: 3, y: 5, width: 18, height: 14, rx: 2 }], ["path", { d: "M3 10h18" }]], cls); }
@@ -429,8 +439,8 @@
           var yourText = it.picked >= 0 ? it.displayOptions[it.picked] : "No answer";
           rev.appendChild(el("div", { class: "exam-review-item" },
             el("p", { class: "exam-ri-q" }, it.q),
-            el("div", { class: "exam-ri-row your" }, el("span", { class: "exam-ri-tag" }, "Your answer"), el("span", { class: "exam-ri-val" }, yourText)),
-            el("div", { class: "exam-ri-row correct" }, el("span", { class: "exam-ri-tag" }, "Correct"), el("span", { class: "exam-ri-val" }, it.displayOptions[it.correctIdx])),
+            el("div", { class: "exam-ri-row your" }, el("span", { class: "exam-ri-tag" }, statusMark(false, "Incorrect"), "Your answer"), el("span", { class: "exam-ri-val" }, yourText)),
+            el("div", { class: "exam-ri-row correct" }, el("span", { class: "exam-ri-tag" }, statusMark(true), "Correct"), el("span", { class: "exam-ri-val" }, it.displayOptions[it.correctIdx])),
             it.explain ? el("div", { class: "exam-ri-explain" }, el("strong", {}, "Why: "), it.explain) : null
           ));
         });

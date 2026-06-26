@@ -535,9 +535,6 @@
 
   ];
 
-
-  CARDS = CARDS.filter(function (c) { return c.track === "hld" || c.track === "lld"; });
-
   function mountFlashcards(mountEl) {
     if (!mountEl) return;
     clearNode(mountEl);

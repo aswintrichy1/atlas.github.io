@@ -212,8 +212,8 @@
       const picked = Number(btn.dataset.i);
       document.querySelectorAll(".q-opt").forEach((b, i) => {
         b.disabled = true;
-        if (i === item.answer) b.classList.add("good");
-        if (i === picked && i !== item.answer) b.classList.add("bad");
+        if (i === item.answer) { b.classList.add("good"); b.insertAdjacentHTML("beforeend", ' <span class="q-mark" aria-hidden="true">\u2713</span><span class="sr-only"> (correct answer)</span>'); }
+        if (i === picked && i !== item.answer) { b.classList.add("bad"); b.insertAdjacentHTML("beforeend", ' <span class="q-mark" aria-hidden="true">\u2717</span><span class="sr-only"> (your answer, incorrect)</span>'); }
       });
       if (picked === item.answer) state.quiz.score++;
       else {
@@ -421,7 +421,7 @@
   }
   function openPalette() {
     const items = [
-      ["Home", "#/"], ["Practice", "#/practice"], ["Rubrics", "#/rubrics"], ["Simulator", "#/interview"], ["Quiz", "#/quiz"], ["Flashcards", "#/flashcards"], ["Models", "#/models"], ["Story Bank", "#/story-bank"]
+      ["Home", "#/"], ["Practice", "#/practice"], ["Rubrics", "#/rubrics"], ["Simulator", "#/interview"], ["Quiz", "#/quiz"], ["Flashcards", "#/flashcards"], ["Models", "#/models"], ["Story Bank", "#/story-bank"], ["Study List", "#/review"]
     ].concat(allLessons().slice(0, 18).map((l) => [l.title, lessonRoute(l.track.id, l.module.id, l.id)]));
     const div = document.createElement("div");
     div.className = "palette";
@@ -438,7 +438,8 @@
       weak: state.weak,
       flash: state.flash,
       stories: readJson(STORE.story, []),
-      interviewHistory: readJson(STORE.interviewHistory, [])
+      interviewHistory: readJson(STORE.interviewHistory, []),
+      theme: localStorage.getItem(STORE.theme) || null
     });
   }
   function importBackup(e) {
@@ -451,6 +452,7 @@
       if (data.flash && typeof data.flash === "object") { state.flash = data.flash; saveJson(STORE.flash, state.flash); }
       if (Array.isArray(data.stories)) saveJson(STORE.story, data.stories.slice(0, 25));
       if (Array.isArray(data.interviewHistory)) saveJson(STORE.interviewHistory, data.interviewHistory.slice(0, 25));
+      if (typeof data.theme === "string" && (data.theme === "dark" || data.theme === "light")) setTheme(data.theme);
       buildNav();
       updateProgress();
       toast("Backup imported.");

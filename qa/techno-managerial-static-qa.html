@@ -25,12 +25,22 @@
   <script>
     "use strict";
     const log = document.getElementById("log");
+    let failures = 0;
     function row(ok, msg) {
       const el = document.createElement("div");
       el.className = "row " + (ok ? "pass" : "fail");
       el.textContent = (ok ? "PASS: " : "FAIL: ") + msg;
       log.appendChild(el);
-      if (!ok) throw new Error(msg);
+      if (!ok) failures++;
+    }
+    // Allowed http(s) occurrences: the W3C SVG/XML namespace, reserved .example
+    // demo domains, and localhost. Everything else counts as an external URL.
+    function hasExternalUrl(s) {
+      const cleaned = s
+        .replace(/https?:\/\/(www\.)?w3\.org[^\s"')]*/g, "")
+        .replace(/https?:\/\/[a-z0-9.-]*\.example[^\s"')]*/gi, "")
+        .replace(/https?:\/\/(localhost|127\.0\.0\.1)[^\s"')]*/g, "");
+      return /https?:\/\//.test(cleaned);
     }
     async function text(path) {
       const res = await fetch(path, { cache: "no-store" });
@@ -57,13 +67,13 @@
       parseClassicScript(sw, "sw.js");
       row(manifest.name === "Techno Managerial Atlas", "manifest name is correct");
       row(manifest.short_name === "TechLead", "manifest short_name is correct");
-      row(sw.includes("techno-managerial-v3"), "service worker cache is v3");
+      row(/techno-managerial-v\d+/.test(sw), "service worker cache is versioned");
       ["./css/styles.css", "./js/content.js", "./js/app.js"].forEach((asset) => row(sw.includes(asset), "SW precaches " + asset));
       row(hub.includes("techno-managerial-academy/index.html") && hub.includes("tm_progress_v1"), "hub card wired");
       row(hubSw.includes("techno-managerial-academy"), "hub SW excludes TechLead scope");
       ["tm_progress_v1", "tm_weak_v1", "tm_story_bank_v1", "tm_theme", "tm_flash_v1", "tm_interview_history_v1"].forEach((key) => row(app.includes(key), "localStorage key present: " + key));
       row(app.includes("techno-managerial-story-bank.json"), "story bank export filename present");
-      row(!appHtml.match(/https?:\/\//) && !css.match(/https?:\/\//) && !content.match(/https?:\/\//) && !app.match(/https?:\/\//), "no external http URLs");
+      row(!hasExternalUrl(appHtml) && !hasExternalUrl(css) && !hasExternalUrl(content) && !hasExternalUrl(app), "no external http URLs (w3.org / .example / localhost allowed)");
       row(!app.includes("#/hld/techno-managerial"), "no stale Blueprint techno-managerial routes");
 
       const dataWindow = {};
@@ -74,8 +84,11 @@
       row(dataWindow.TM_DATA.rubrics.dimensions.length >= 5, "rubric dimensions present");
       row(dataWindow.TM_DATA.simulatorPrompts.length >= 8, "simulator prompts present");
 
-      await smokeRoutes(["#/", "#/practice", "#/rubrics", "#/interview", "#/quiz", "#/flashcards", "#/models", "#/companies", "#/story-bank"].concat(lessons.slice(0, 6)));
-      row(true, "all QA checks completed");
+      await smokeRoutes(["#/", "#/practice", "#/rubrics", "#/interview", "#/quiz", "#/flashcards", "#/models", "#/companies", "#/story-bank", "#/review"].concat(lessons.slice(0, 6)));
+      const el = document.createElement("div");
+      el.className = "row " + (failures === 0 ? "pass" : "fail");
+      el.textContent = failures === 0 ? "ALL CHECKS PASSED" : ("COMPLETED WITH " + failures + " FAILURE(S)");
+      log.appendChild(el);
     }
     function smokeRoutes(routes) {
       return new Promise((resolve, reject) => {

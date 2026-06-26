@@ -1,7 +1,7 @@
 {
   "name": "Citadel — The Cybersecurity Atlas",
   "short_name": "Citadel",
-  "description": "An interactive, fully-offline atlas for mastering cybersecurity: security foundations, applied cryptography, web & application security, and network defense & operations.",
+  "description": "An interactive, fully-offline atlas for mastering cybersecurity: security foundations, applied cryptography, web & application security, network defense & operations, and a sandbox-only Attack Lab of 20 attack families with safe defensive simulations.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

@@ -18,10 +18,10 @@ A service worker (offline support) needs `http://`, so serve the folder rather t
 
 ```bash
 cd atlas
-python3 -m http.server 8000
+python3 -m http.server 8800
 ```
 
-Then open <http://localhost:8000/>. (Opening `index.html` via `file://` still works, just without offline caching.)
+Then open <http://localhost:8800/>. (Opening `index.html` via `file://` still works, just without offline caching.)
 
 ## QA
 

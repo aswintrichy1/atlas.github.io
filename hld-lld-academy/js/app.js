@@ -155,12 +155,6 @@
     }
   ];
 
-
-  for (let i = LEARNING_PATHS.length - 1; i >= 0; i--) {
-    LEARNING_PATHS[i].routes = LEARNING_PATHS[i].routes.filter((r) => !r.startsWith("#/dsa/") && !r.startsWith("#/patterns/"));
-    if (!LEARNING_PATHS[i].routes.length) LEARNING_PATHS.splice(i, 1);
-  }
-
   /* ---------------- progress (localStorage) ---------------- */
   const PKEY = "bp_progress_v1";
   let done = new Set();
@@ -975,6 +969,16 @@
     return out.trim() + "\n";
   }
 
+  // Convey quiz correctness without relying on colour alone (WCAG 1.4.1 Use of Color):
+  // a glyph marker for sighted / colour-blind users + visually-hidden text for screen readers.
+  function markQuizAnswer(btn, correct) {
+    if (!btn || btn.querySelector(".q-mark")) return;
+    const mark = el("span", { class: "q-mark", "aria-hidden": "true" }, correct ? "\u2713" : "\u2717");
+    const sr = el("span", { class: "sr-only" }, correct ? "Correct answer. " : "Your answer, incorrect. ");
+    btn.insertBefore(sr, btn.firstChild);
+    btn.insertBefore(mark, btn.firstChild);
+  }
+
   function mountQuiz(slot, quiz) {
     let i = 0, score = 0, answered = false;
     const LETTERS = ["A", "B", "C", "D", "E"];
@@ -1021,8 +1025,8 @@
       const btns = $$(".q-opt", opts);
       btns.forEach((b, bi) => {
         b.disabled = true;
-        if (bi === q.answer) b.classList.add("correct");
-        else if (bi === oi) b.classList.add("wrong");
+        if (bi === q.answer) { b.classList.add("correct"); markQuizAnswer(b, true); }
+        else if (bi === oi) { b.classList.add("wrong"); markQuizAnswer(b, false); }
       });
       if (oi === q.answer) score++;
       recordAnswer(q._qid, oi === q.answer);

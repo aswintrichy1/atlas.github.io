@@ -325,6 +325,10 @@ td { color: var(--text-dim); }
 .q-opt:hover, .option:hover { border-color: var(--accent); }
 .q-opt.good { border-color: var(--green); background: color-mix(in srgb, var(--green) 12%, var(--surface-2)); }
 .q-opt.bad { border-color: var(--rose); background: color-mix(in srgb, var(--rose) 12%, var(--surface-2)); }
+.q-opt .q-mark { font-weight: 800; }
+.q-opt.good .q-mark { color: var(--green); }
+.q-opt.bad .q-mark { color: var(--rose); }
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
 .flash-card {
   min-height: 260px; display: grid; place-items: center; text-align: center;
   border: 1px solid var(--glass-border); border-radius: var(--radius-lg);

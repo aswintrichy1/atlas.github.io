@@ -4,9 +4,26 @@
    same-origin asset (same-origin assets) on first fetch. The whole app works
    with no network after the first visit.
    ===================================================================== */
-const CACHE = "blueprint-v22";
+const CACHE = "blueprint-v24";
 const CACHE_PREFIX = "blueprint-";
 const CORE = [
+  "./fonts/8vIH7w4qzmVxm25L9G78HEZnMg.woff2",
+  "./fonts/8vIH7w4qzmVxm2BL9G78HEY.woff2",
+  "./fonts/8vIH7w4qzmVxm2NL9G78HEZnMg.woff2",
+  "./fonts/ieVn2YZDLWuGJpnzaiwFXS9tYtpQ59CxCis4UvI.woff2",
+  "./fonts/ieVn2YZDLWuGJpnzaiwFXS9tYtpS59CxCis4UvI.woff2",
+  "./fonts/ieVn2YZDLWuGJpnzaiwFXS9tYtpT59CxCis4UvI.woff2",
+  "./fonts/ieVn2YZDLWuGJpnzaiwFXS9tYtpd59CxCis4.woff2",
+  "./fonts/ieVo2YZDLWuGJpnzaiwFXS9tYtpY_d6T_POl0fRJeyWyosBA5XxjLdSL17o24Q.woff2",
+  "./fonts/ieVo2YZDLWuGJpnzaiwFXS9tYtpY_d6T_POl0fRJeyWyosBB5XxjLdSL17o24Q.woff2",
+  "./fonts/ieVo2YZDLWuGJpnzaiwFXS9tYtpY_d6T_POl0fRJeyWyosBD5XxjLdSL17o24Q.woff2",
+  "./fonts/ieVo2YZDLWuGJpnzaiwFXS9tYtpY_d6T_POl0fRJeyWyosBO5XxjLdSL17o.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx3cwgknk-6nFg.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx7cwgknk-6nFg.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxDcwgknk-4.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxPcwgknk-6nFg.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPxTcwgknk-6nFg.woff2",
+  "./fonts/tDbv2o-flEEny0FZhsfKu5WU4zr3E_BX0PnT8RD8yKwBNntkaToggR7BYRbKPx_cwgknk-6nFg.woff2",
   "./",
   "./index.html",
   "./css/styles.css",

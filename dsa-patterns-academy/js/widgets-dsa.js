@@ -1,7 +1,8 @@
 /* =====================================================================
    CODEX · Interactive DSA widgets
    Adds graph traversal, sorting, heap, trie, two-pointer, prefix-sum,
-   backtracking and big-O labs onto window.Widgets (set up by widgets.js).
+   backtracking and big-O labs onto window.Widgets (the shared widget
+   registry each widgets-*.js file augments; Codex has no central widgets.js).
    ===================================================================== */
 (function () {
   "use strict";

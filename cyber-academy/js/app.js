@@ -392,6 +392,7 @@
             : '<a class="btn btn-primary" href="#/core/foundations/cia-triad">Start with the basics' + ARR + "</a>" +
               '<a class="btn btn-ghost" href="#/crypto/primitives/encoding-vs-encryption">Jump into crypto' + ARR + "</a>") +
           '<a class="btn btn-ghost" href="#/appsec/web-attacks/owasp-top-10">The OWASP Top 10' + ARR + "</a>" +
+          '<a class="btn btn-ghost" href="#/attack-lab">Attack lab' + ARR + "</a>" +
           '<a class="btn btn-ghost" href="#/paths">Guided paths' + ARR + "</a>" +
         "</div>" +
         '<div class="hero-stats reveal reveal-5">' +
@@ -405,6 +406,11 @@
       '<a class="practice-banner path-banner" href="#/paths">' +
         '<div class="pb-ico"><svg viewBox="0 0 24 24"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg></div>' +
         '<div class="pb-text"><h3>Follow a guided learning path</h3><p>Pick Beginner, AppSec, Blue Team or AI Security and copy the ordered plan as Markdown study notes.</p></div>' +
+        '<span class="pb-go">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>' +
+      "</a>" +
+      '<a class="practice-banner" href="#/attack-lab">' +
+        '<div class="pb-ico"><svg viewBox="0 0 24 24"><path d="M12 2l8 4v6c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-5"/></svg></div>' +
+        '<div class="pb-text"><h3>Enter the attack methods virtual lab</h3><p>Study 20 attack families and 100 sandbox-only methods through safe simulations, signals and mitigations.</p></div>' +
         '<span class="pb-go">Open <svg viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></span>' +
       "</a>" +
       '<div class="track-cards">' + TRACKS.map(trackCard).join("") + "</div>" +
@@ -993,8 +999,15 @@
       const btns = $$(".q-opt", opts);
       btns.forEach((b, bi) => {
         b.disabled = true;
-        if (bi === q.answer) b.classList.add("correct");
-        else if (bi === oi) b.classList.add("wrong");
+        if (bi === q.answer) {
+          b.classList.add("correct");
+          b.appendChild(el("span", { class: "q-mark", "aria-hidden": "true" }, "\u2713"));
+          b.appendChild(el("span", { class: "sr-only" }, " (correct answer)"));
+        } else if (bi === oi) {
+          b.classList.add("wrong");
+          b.appendChild(el("span", { class: "q-mark", "aria-hidden": "true" }, "\u2717"));
+          b.appendChild(el("span", { class: "sr-only" }, " (your answer, incorrect)"));
+        }
       });
       if (oi === q.answer) score++;
       recordAnswer(q._qid, oi === q.answer);
@@ -1018,25 +1031,6 @@
   }
 
   /* ---------------- sidebar nav ---------------- */
-  const TRACK_ICON = {
-    compass: '<circle cx="12" cy="12" r="10"/><polygon points="16 8 14 14 8 16 10 10 16 8"/>',
-    trend: '<path d="M3 17l6-6 4 4 8-8M21 7v6h-6"/>',
-    bolt: '<path d="M13 2 3 14h7l-1 8 10-12h-7l1-8z"/>',
-    database: '<ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14a9 3 0 0 0 18 0V5M3 12a9 3 0 0 0 18 0"/>',
-    share: '<circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5 15.4 17.5M15.4 6.5 8.6 10.5"/>',
-    queue: '<rect x="3" y="5" width="4" height="14"/><rect x="10" y="5" width="4" height="14"/><rect x="17" y="5" width="4" height="14"/>',
-    plug: '<path d="M9 2v6M15 2v6M6 8h12v3a6 6 0 0 1-12 0V8zM12 17v5"/>',
-    globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/>',
-    shield: '<path d="M12 2 4 5v6c0 5 3.4 8.5 8 11 4.6-2.5 8-6 8-11V5l-8-3z"/>',
-    blocks: '<rect x="3" y="3" width="8" height="8"/><rect x="13" y="3" width="8" height="8"/><rect x="3" y="13" width="8" height="8"/><rect x="13" y="13" width="8" height="8"/>',
-    map: '<path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/>',
-    cube: '<path d="M12 2 3 7v10l9 5 9-5V7l-9-5zM3 7l9 5 9-5M12 12v10"/>',
-    diamond: '<path d="M12 2 2 12l10 10 10-10L12 2z"/>',
-    broom: '<path d="M19 5l-7 7M5 19l4-1 7-7-3-3-7 7-1 4zM14 8l2 2"/>',
-    grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
-    wrench: '<path d="M14 7a4 4 0 0 0-5.4 4.6L3 17.2 6.8 21l5.6-5.6A4 4 0 0 0 17 10l-3 3-3-3 3-3z"/>'
-  };
-
   function buildNav() {
     const nav = $("#nav");
     const active = currentKey();
@@ -1075,8 +1069,6 @@
       });
       nav.appendChild(trackWrap);
     });
-    // set module icon accent via summary? handled in CSS by chevron. (icons map kept for future use)
-    void TRACK_ICON;
   }
 
   /* ---------------- search ---------------- */
@@ -1086,7 +1078,7 @@
 
   function doSearch(q) {
     q = q.trim().toLowerCase();
-    if (!q) { searchResults.hidden = true; searchResults.innerHTML = ""; return; }
+    if (!q) { searchResults.hidden = true; searchResults.innerHTML = ""; searchInput.setAttribute("aria-expanded", "false"); searchInput.removeAttribute("aria-activedescendant"); return; }
     const terms = q.split(/\s+/);
     const scored = FLAT.map((f) => {
       const hay = (f.lesson.title + " " + f.lesson.summary + " " + (f.lesson.tags || []).join(" ") + " " + f.mod.name + " " + f.track.name).toLowerCase();
@@ -1099,10 +1091,10 @@
     }).filter((s) => s.score > 0).sort((a, b) => b.score - a.score).slice(0, 8);
 
     searchResults.innerHTML = "";
-    if (!scored.length) { searchResults.innerHTML = '<div class="sr-empty">No matches for \u201c' + escapeHtml(q) + '\u201d</div>'; searchResults.hidden = false; return; }
+    if (!scored.length) { searchResults.innerHTML = '<div class="sr-empty">No matches for \u201c' + escapeHtml(q) + '\u201d</div>'; searchResults.hidden = false; searchInput.setAttribute("aria-expanded", "true"); searchInput.removeAttribute("aria-activedescendant"); return; }
     scored.forEach((s, n) => {
       const f = s.f;
-      const a = el("a", { class: "sr-item" + (n === 0 ? " active" : ""), href: f.route, role: "option" },
+      const a = el("a", { class: "sr-item" + (n === 0 ? " active" : ""), href: f.route, role: "option", id: "sr-opt-" + n, "aria-selected": n === 0 ? "true" : "false" },
         el("div", { class: "sr-title", html: hl(f.lesson.title, terms) }),
         el("div", { class: "sr-crumb" }, f.track.short + " · " + f.mod.name)
       );
@@ -1111,19 +1103,23 @@
     });
     searchIdx = 0;
     searchResults.hidden = false;
+    searchInput.setAttribute("aria-expanded", "true");
+    searchInput.setAttribute("aria-activedescendant", "sr-opt-0");
   }
   function hl(text, terms) {
     let out = escapeHtml(text);
     terms.forEach((t) => { if (!t) return; const re = new RegExp("(" + t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + ")", "ig"); out = out.replace(re, "<mark>$1</mark>"); });
     return out;
   }
-  function closeSearch() { searchResults.hidden = true; searchInput.value = ""; }
+  function closeSearch() { searchResults.hidden = true; searchInput.value = ""; searchInput.setAttribute("aria-expanded", "false"); searchInput.removeAttribute("aria-activedescendant"); }
   function moveSearch(dir) {
     const items = $$(".sr-item", searchResults);
     if (!items.length) return;
-    items[searchIdx] && items[searchIdx].classList.remove("active");
+    if (items[searchIdx]) { items[searchIdx].classList.remove("active"); items[searchIdx].setAttribute("aria-selected", "false"); }
     searchIdx = (searchIdx + dir + items.length) % items.length;
     items[searchIdx].classList.add("active");
+    items[searchIdx].setAttribute("aria-selected", "true");
+    searchInput.setAttribute("aria-activedescendant", items[searchIdx].id || "");
     items[searchIdx].scrollIntoView({ block: "nearest" });
   }
 
@@ -1134,7 +1130,7 @@
     else if (e.key === "Enter") { const items = $$(".sr-item", searchResults); if (items[searchIdx]) { location.hash = items[searchIdx].getAttribute("href"); closeSearch(); searchInput.blur(); } }
     else if (e.key === "Escape") { closeSearch(); searchInput.blur(); }
   });
-  document.addEventListener("click", (e) => { if (!e.target.closest(".search-wrap")) searchResults.hidden = true; });
+  document.addEventListener("click", (e) => { if (!e.target.closest(".search-wrap")) { searchResults.hidden = true; searchInput.setAttribute("aria-expanded", "false"); } });
 
   /* ---------------- router ---------------- */
   function currentKey() {
@@ -1154,6 +1150,12 @@
     document.title = "Flashcards \u00b7 Citadel";
     if (window.CitadelExam && window.CitadelExam.mountFlashcards) window.CitadelExam.mountFlashcards(main);
     else main.innerHTML = '<article class="lesson"><div class="empty-state"><h3>Flashcards unavailable</h3><p>The flashcards module failed to load.</p></div></article>';
+    main.scrollTop = 0; window.scrollTo(0, 0);
+  }
+  function renderAttackLab(attackId) {
+    document.title = "Attack lab \u00b7 Citadel";
+    if (window.CitadelAttackLab && window.CitadelAttackLab.mount) window.CitadelAttackLab.mount(main, { attackId: attackId });
+    else main.innerHTML = '<article class="lesson"><div class="empty-state"><h3>Attack lab unavailable</h3><p>The attack lab module failed to load.</p></div></article>';
     main.scrollTop = 0; window.scrollTo(0, 0);
   }
 
@@ -1217,6 +1219,8 @@
       renderGlossary(parts[1]);
     } else if (parts[0] === "paths") {
       renderPaths();
+    } else if (parts[0] === "attack-lab") {
+      renderAttackLab(parts[1]);
     } else if (parts[0] === "practice") {
       renderPractice({ mode: parts[1] === "weak" ? "weak" : "all" });
     } else if (parts[0] === "review") {
@@ -1263,9 +1267,11 @@
   });
   (function () { const b = $("#cmdkBtn"); if (b) b.addEventListener("click", () => { palette.hidden ? openPalette() : closePalette(); }); })();
   $("#resetProgress").addEventListener("click", () => {
-    if (!done.size) { toast("No progress to reset"); return; }
-    if (confirm("Reset all lesson progress? This can\u2019t be undone.")) {
+    const hasLab = (function () { try { return !!localStorage.getItem("cy_attack_lab_v1"); } catch (e) { return false; } })();
+    if (!done.size && !hasLab) { toast("No progress to reset"); return; }
+    if (confirm("Reset all lesson and Attack Lab progress? This can\u2019t be undone.")) {
       done.clear(); saveProgress(); updateProgressRing(); buildNav();
+      try { localStorage.removeItem("cy_attack_lab_v1"); } catch (e) {}
       // refresh current lesson state
       const k = currentKey(); if (k) renderLesson(byKey[k]);
       toast("Progress reset");
@@ -1312,6 +1318,7 @@
     const cmds = [
       { label: "Practice mode", sub: "Shuffled quiz \u00b7 all tracks", icon: "quiz", run: () => { location.hash = "#/practice"; } },
       { label: "Learning paths", sub: "Beginner, AppSec, Blue Team, AI Security", icon: "path", run: () => { location.hash = "#/paths"; } },
+      { label: "Attack lab", sub: "20 attack families \u00b7 100 sandbox methods", icon: "lesson", run: () => { location.hash = "#/attack-lab"; } },
       { label: "Exam mode", sub: "Timed, scored, per-track breakdown", icon: "quiz", run: () => { location.hash = "#/exam"; } },
       { label: "Flashcards", sub: "Flip through key terms", icon: "lesson", run: () => { location.hash = "#/flashcards"; } },
       { label: "Drill weak spots", sub: weakQuestions().length + " missed question(s)", icon: "warn", run: () => { location.hash = "#/practice/weak"; } },
@@ -1462,7 +1469,7 @@
   });
 
   /* ---------------- backup: export / import progress ---------------- */
-  const BACKUP_KEYS = [PKEY, RKEY, WKEY, LKEY, TKEY];
+  const BACKUP_KEYS = [PKEY, RKEY, WKEY, LKEY, TKEY, "cy_attack_lab_v1", "cy_exam_v1", "cy_flash_v1"];
   function exportData() {
     const data = {};
     BACKUP_KEYS.forEach((k) => { const v = localStorage.getItem(k); if (v != null) data[k] = v; });
@@ -1480,7 +1487,7 @@
       let parsed;
       try { parsed = JSON.parse(reader.result); } catch (e) { toast("Import failed \u2014 invalid file"); return; }
       if (!parsed || parsed.app !== "citadel" || !parsed.data) { toast("Import failed \u2014 not a Citadel backup"); return; }
-      if (!confirm("Import this backup? It replaces your current progress, study list and weak spots.")) return;
+      if (!confirm("Import this backup? It replaces your current progress, study list, weak spots and Attack Lab progress.")) return;
       BACKUP_KEYS.forEach((k) => { if (parsed.data[k] != null) { try { localStorage.setItem(k, parsed.data[k]); } catch (e) {} } });
       toast("Progress imported \u2014 reloading\u2026");
       setTimeout(() => location.reload(), 650);

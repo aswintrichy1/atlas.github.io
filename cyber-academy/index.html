@@ -9,9 +9,21 @@
   <link rel="apple-touch-icon" href="icon.svg" />
   <title>Citadel · The Cybersecurity Atlas</title>
 
+  <script>
+    // Pre-paint theme so first render matches the saved/system preference (no FOUC).
+    (function () {
+      try {
+        var t = localStorage.getItem("cy_theme");
+        if (!t) t = (window.matchMedia && window.matchMedia("(prefers-color-scheme: light)").matches) ? "light" : "dark";
+        document.documentElement.setAttribute("data-theme", t);
+      } catch (e) {}
+    })();
+  </script>
+
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/track-reversing.css" />
   <link rel="stylesheet" href="css/attack-matrix.css" />
+  <link rel="stylesheet" href="css/attack-lab.css" />
   <link rel="stylesheet" href="css/exam.css" />
   <link rel="stylesheet" href="css/pwa.css" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='20' fill='%230a0f0d'/%3E%3Cpath d='M50 16 L80 28 V52 C80 70 67 81 50 87 C33 81 20 70 20 52 V28 Z' fill='none' stroke='%2334d399' stroke-width='6' stroke-linejoin='round'/%3E%3Ccircle cx='50' cy='46' r='7' fill='none' stroke='%23818cf8' stroke-width='5'/%3E%3Cpath d='M50 53 V66' stroke='%23818cf8' stroke-width='5' stroke-linecap='round'/%3E%3C/svg%3E" />
@@ -47,7 +59,7 @@
 
     <div class="search-wrap">
       <svg class="search-ico" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.5" y2="16.5"></line></svg>
-      <input id="search" type="search" placeholder="Search concepts…  (press /)" autocomplete="off" aria-label="Search concepts" />
+      <input id="search" type="search" placeholder="Search concepts…  (press /)" autocomplete="off" aria-label="Search concepts" role="combobox" aria-controls="searchResults" aria-autocomplete="list" aria-expanded="false" />
       <kbd class="search-kbd">/</kbd>
       <div id="searchResults" class="search-results" role="listbox" hidden></div>
     </div>
@@ -86,6 +98,7 @@
       </div>
       <nav class="feature-list">
         <a href="#/paths"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 3 3 6v15l6-3 6 3 6-3V3l-6 3-6-3zM9 3v15M15 6v15"/></svg><span>Learning paths</span></a>
+        <a href="#/attack-lab"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l8 4v6c0 5-3.4 8.5-8 10-4.6-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-5"/></svg><span>Attack lab</span></a>
         <a href="#/scenarios"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 19V5a2 2 0 0 1 2-2h12v18H6a2 2 0 0 1-2-2zM8 7h6M8 11h6M8 15h4"/></svg><span>Practice library</span></a>
         <a href="#/review"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.9 21l1.2-6.8-5-4.9 6.9-1z"/></svg><span>Study list</span></a>
         <a href="#/exam"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3L22 4M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg><span>Exam mode</span></a>
@@ -118,6 +131,7 @@
   <script src="js/quizzes.js" defer></script>
   <script src="js/quizzes-ext.js" defer></script>
   <script src="js/quizzes-rev.js" defer></script>
+  <script src="js/attack-lab.js" defer></script>
   <script src="js/curriculum-core.js" defer></script>
   <script src="js/curriculum-crypto.js" defer></script>
   <script src="js/curriculum-appsec.js" defer></script>
