@@ -1,7 +1,7 @@
 {
   "name": "Techno Managerial Atlas",
   "short_name": "TechLead",
-  "description": "Offline interview prep for techno managerial rounds across HLD, LLD, data engineering, delivery leadership, stakeholders, quizzes, flashcards, model answers, and story banking.",
+  "description": "Offline interview prep for techno managerial rounds: architecture judgment under business constraints, stakeholder and cost trade-offs, decision records, rollout and incident leadership, low-level design credibility, and owning data trust \u2014 with checkpoint quizzes, interactive labs, exam mode and flashcards.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",

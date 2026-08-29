@@ -37,11 +37,12 @@ window.TRACKS.crypto = {
             { t: "note", variant: "trap", html: "\u201cWe obscured the token with Base64\u201d protects nothing — anyone can decode it instantly. Encoding is about <em>format</em>, never secrecy." },
             { t: "h", text: "Kerckhoffs's principle" },
             { t: "p", html: "A cryptosystem should be secure even if everything about it is public <em>except the key</em>. The corollary: never invent your own cipher and never rely on the algorithm being secret. Strength must live entirely in the key." },
-            { t: "note", variant: "key", html: "<strong>Don't roll your own crypto.</strong> Use vetted, standard libraries and algorithms. Cryptography fails in subtle ways that look fine in testing and shatter under an expert's analysis." },
+            { t: "note", variant: "tip", html: "<strong>Don't roll your own crypto.</strong> Use vetted, standard libraries and algorithms. Cryptography fails in subtle ways that look fine in testing and shatter under an expert's analysis." },
             { t: "h", text: "Substitution: where it began" },
             { t: "p", html: "Classical ciphers like Caesar (shift each letter) and Vig\u00e8nere (shift by a repeating keyword) show the <em>idea</em> of encryption — and why simple schemes fall to frequency analysis. Play with one to feel how a key changes the output." },
             { t: "widget", id: "caesar" },
-            { t: "note", variant: "warn", html: "These classical ciphers are <strong>educational only</strong>. A Caesar cipher has 25 keys; a computer breaks it instantly. They illustrate concepts — never protect real data with them." }
+            { t: "note", variant: "warn", html: "These classical ciphers are <strong>educational only</strong>. A Caesar cipher has 25 keys; a computer breaks it instantly. They illustrate concepts — never protect real data with them." },
+            { t: "note", variant: "key", html: "<strong>Name the property you need before you pick a primitive.</strong> Encoding buys safe transport, hashing buys a fingerprint, encryption buys confidentiality — and only the last one depends on a key you must protect for its entire life. Mixing them up is how a token ends up \u201cprotected\u201d by Base64, and it is why the substitution ciphers above are history rather than options." }
           ]
         },
         {
@@ -77,9 +78,10 @@ window.TRACKS.crypto = {
 "ct = aes.encrypt(nonce, b'transfer $100', b'acct-42')  # data + AAD\n" +
 "pt = aes.decrypt(nonce, ct, b'acct-42')        # raises if tampered\n"
             },
-            { t: "note", variant: "key", html: "<strong>Never reuse a nonce/IV with the same key.</strong> In GCM, nonce reuse is catastrophic — it can leak the authentication key. Generate a fresh random nonce (or a counter) for every single message." },
+            { t: "note", variant: "warn", html: "<strong>Never reuse a nonce/IV with the same key.</strong> In GCM, nonce reuse is catastrophic — it can leak the authentication key. Generate a fresh random nonce (or a counter) for every single message." },
             { t: "h", text: "The hard part isn't the cipher" },
-            { t: "p", html: "Symmetric crypto is fast and strong. Its one problem is the <strong>key distribution problem</strong>: how do two parties that have never met agree on a shared secret over a hostile network? That question is what invented public-key cryptography." }
+            { t: "p", html: "Symmetric crypto is fast and strong. Its one problem is the <strong>key distribution problem</strong>: how do two parties that have never met agree on a shared secret over a hostile network? That question is what invented public-key cryptography." },
+            { t: "note", variant: "key", html: "<strong>AES has never been the weak part — the mode and the nonce are.</strong> ECB is not an acceptable choice at all, because identical plaintext blocks yield identical ciphertext and the structure shows straight through; CBC and CTR leave tampering undetectable unless you add integrity yourself. Default to an authenticated mode such as AES-GCM with a fresh nonce per message, and remember the unsolved problem underneath is still delivering the key." }
           ]
         },
         {
@@ -132,7 +134,7 @@ window.TRACKS.crypto = {
                 ["<strong>Authenticity</strong> (signing)", "Sender's private key", "Sender's public key"]
               ]
             },
-            { t: "note", variant: "key", html: "Encrypt <em>to</em> someone with their <strong>public</strong> key (only they can read it). Sign <em>as</em> yourself with your <strong>private</strong> key (anyone can verify it's you). Swapping these is the most common conceptual mistake." },
+            { t: "note", variant: "trap", html: "Encrypt <em>to</em> someone with their <strong>public</strong> key (only they can read it). Sign <em>as</em> yourself with your <strong>private</strong> key (anyone can verify it's you). Swapping these is the most common conceptual mistake." },
             { t: "h", text: "RSA vs elliptic curves" },
             {
               t: "table",
@@ -145,7 +147,8 @@ window.TRACKS.crypto = {
               ]
             },
             { t: "note", variant: "tip", html: "Asymmetric crypto is slow, so we rarely encrypt bulk data with it. Instead we use it to exchange or wrap a <strong>symmetric</strong> key, then switch to fast AES. This hybrid is exactly how TLS works." },
-            { t: "note", variant: "warn", html: "<strong>Post-quantum on the horizon:</strong> a large quantum computer would break RSA and ECC via Shor's algorithm. NIST has standardized post-quantum algorithms (e.g. ML-KEM); long-lived secrets are starting to migrate now." }
+            { t: "note", variant: "warn", html: "<strong>Post-quantum on the horizon:</strong> a large quantum computer would break RSA and ECC via Shor's algorithm. NIST has standardized post-quantum algorithms (e.g. ML-KEM); long-lived secrets are starting to migrate now." },
+            { t: "note", variant: "key", html: "<strong>Public-key crypto does not remove the trust problem, it relocates it.</strong> Anyone can hand you a public key, so the exchange now rests entirely on knowing whose key it is — the gap that certificates and signature chains exist to fill. Size keys for the secret's lifetime as well: RSA below 2048 bits is unusable, modern curves are the better default for new systems, and anything that must stay secret for years should already be planning a hybrid post-quantum exchange." }
           ]
         },
         {
@@ -159,10 +162,11 @@ window.TRACKS.crypto = {
             { t: "h", text: "The paint-mixing analogy" },
             { t: "p", html: "Each side starts with a public colour, mixes in a private colour, and swaps the mixtures. Each then adds their private colour again. Both reach the <em>same</em> final mix; an observer who saw the swapped mixtures can't \u201cun-mix\u201d to find the private colours. Try it with small numbers below." },
             { t: "widget", id: "diffie" },
-            { t: "note", variant: "key", html: "The eavesdropper sees the public base, the modulus, and both public values — yet computing the shared secret requires solving the <strong>discrete logarithm</strong> problem, which is infeasible for large parameters." },
+            { t: "note", variant: "tip", html: "The eavesdropper sees the public base, the modulus, and both public values — yet computing the shared secret requires solving the <strong>discrete logarithm</strong> problem, which is infeasible for large parameters." },
             { t: "h", text: "Ephemeral keys & forward secrecy" },
             { t: "p", html: "Modern TLS uses <strong>ephemeral</strong> DH (ECDHE): a fresh key pair per session. This gives <strong>forward secrecy</strong> — even if the server's long-term private key is stolen later, past recorded sessions stay safe, because their keys existed only in memory and are gone." },
-            { t: "note", variant: "trap", html: "Without forward secrecy, an attacker can record encrypted traffic today and decrypt all of it the day they steal the private key (\u201charvest now, decrypt later\u201d). Ephemeral key exchange is why that doesn't work." }
+            { t: "note", variant: "trap", html: "Without forward secrecy, an attacker can record encrypted traffic today and decrypt all of it the day they steal the private key (\u201charvest now, decrypt later\u201d). Ephemeral key exchange is why that doesn't work." },
+            { t: "note", variant: "key", html: "<strong>Key exchange protects you from a listener, not from an impostor.</strong> Diffie\u2013Hellman gives two parties a shared secret no observer can derive, yet nothing in it establishes who the other party is — run it unauthenticated and you have a flawlessly encrypted channel to an attacker. Bind it to an identity you verified, and keep it ephemeral so a key stolen next year cannot open this year's traffic." }
           ]
         },
         {
@@ -180,7 +184,7 @@ window.TRACKS.crypto = {
                 "If they match, the message is authentic and untampered; if not, reject it."
               ]
             },
-            { t: "note", variant: "key", html: "We sign the <em>hash</em>, not the whole message, for speed — and because the hash's collision resistance is what makes the signature meaningful. A broken hash (MD5/SHA-1) breaks the signature too." },
+            { t: "note", variant: "warn", html: "We sign the <em>hash</em>, not the whole message, for speed — and because the hash's collision resistance is what makes the signature meaningful. A broken hash (MD5/SHA-1) breaks the signature too." },
             { t: "h", text: "MAC vs signature" },
             {
               t: "table",
@@ -193,6 +197,7 @@ window.TRACKS.crypto = {
               ]
             },
             { t: "note", variant: "tip", html: "Need non-repudiation (\u201cthey can't deny signing\u201d)? You need a signature, not a MAC — because with a shared MAC key, either party could have produced the tag." },
+            { t: "note", variant: "key", html: "<strong>A signature is a claim about key custody, and it is only as strong as its hash.</strong> Non-repudiation holds only while exactly one party controls the private key, so a leaked or shared key retroactively voids everything it ever signed. And because a collision breaks the binding between message and signature outright, MD5 and SHA-1 are unacceptable here — SHA-256 or stronger is the floor for any signature you intend to rely on." },
             { t: "quiz", id: "crypto-keys" }
           ]
         }
@@ -223,8 +228,9 @@ window.TRACKS.crypto = {
             },
             { t: "p", html: "Step through the exchange yourself — see which message does what, and where the switch from asymmetric to symmetric happens." },
             { t: "widget", id: "tlsflow" },
-            { t: "note", variant: "key", html: "TLS 1.3 (2018) stripped out legacy, vulnerable options, made forward secrecy mandatory, and cut the handshake to a single round trip. <strong>Disable TLS 1.0/1.1 and SSL entirely.</strong>" },
-            { t: "note", variant: "trap", html: "A valid certificate proves <em>identity</em>, not <em>safety</em>: a phishing site can have a perfectly valid TLS cert. The padlock means \u201cencrypted to whoever this is,\u201d not \u201ctrustworthy.\u201d" }
+            { t: "note", variant: "warn", html: "TLS 1.3 (2018) stripped out legacy, vulnerable options, made forward secrecy mandatory, and cut the handshake to a single round trip. <strong>Disable TLS 1.0/1.1 and SSL entirely.</strong>" },
+            { t: "note", variant: "trap", html: "A valid certificate proves <em>identity</em>, not <em>safety</em>: a phishing site can have a perfectly valid TLS cert. The padlock means \u201cencrypted to whoever this is,\u201d not \u201ctrustworthy.\u201d" },
+            { t: "note", variant: "key", html: "<strong>TLS secures the pipe and says nothing about either end of it.</strong> A clean handshake means the traffic is private to the party named in the certificate; it makes no claim about that party's intentions, the code running on your server, or the plaintext you then write to a log. And the guarantee is only as strong as what you allow to be negotiated — with SSL and TLS 1.0/1.1 switched off and forward secrecy required, the channel stops being the interesting attack surface." }
           ]
         },
         {
@@ -244,7 +250,7 @@ window.TRACKS.crypto = {
                 "Verification walks leaf \u2192 intermediate \u2192 root, checking each signature."
               ]
             },
-            { t: "note", variant: "key", html: "Trust is transitive and anchored: you trust the leaf because you trust the chain up to a root your device already trusts. Break or distrust any link and the whole chain fails — which is exactly how a misbehaving CA gets removed." },
+            { t: "note", variant: "tip", html: "Trust is transitive and anchored: you trust the leaf because you trust the chain up to a root your device already trusts. Break or distrust any link and the whole chain fails — which is exactly how a misbehaving CA gets removed." },
             { t: "h", text: "When certificates go wrong" },
             {
               t: "table",
@@ -256,7 +262,8 @@ window.TRACKS.crypto = {
                 ["Revoked (CRL/OCSP)", "Reject — key was compromised"]
               ]
             },
-            { t: "note", variant: "tip", html: "<strong>Let's Encrypt</strong> made free, automated 90-day certificates the norm. Short lifetimes plus automated renewal (ACME) mean a leaked key is exposed for weeks, not years." }
+            { t: "note", variant: "tip", html: "<strong>Let's Encrypt</strong> made free, automated 90-day certificates the norm. Short lifetimes plus automated renewal (ACME) mean a leaked key is exposed for weeks, not years." },
+            { t: "note", variant: "key", html: "<strong>Your trust store is the real attack surface.</strong> Verification succeeds if <em>any</em> root you trust vouches for the name, so a single compromised or coerced authority can issue a perfectly valid certificate for a domain it has no relationship with. That is why certificate transparency, short lifetimes with automated renewal, and pruning what you trust matter more than the strength of any one signature." }
           ]
         },
         {

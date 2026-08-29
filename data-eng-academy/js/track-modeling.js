@@ -20,7 +20,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
   function smallGrid(title, cols, rows, opt) {
     opt = opt || {};
@@ -311,20 +311,20 @@
       questions: [
         {
           q: "Third normal form (3NF) primarily removes\u2026",
-          options: ["All redundancy of any kind", "Transitive dependencies (non-key attributes depending on other non-key attributes)", "Foreign keys", "Indexes"],
-          answer: 1,
+          options: ["All redundancy of any kind", "Foreign keys", "Transitive dependencies (non-key attributes depending on other non-key attributes)", "Indexes"],
+          answer: 2,
           explain: "3NF says non-key columns must depend on the key, the whole key, and nothing but the key \u2014 it factors out transitive dependencies like city depending on customer rather than on the order."
         },
         {
           q: "A surrogate key is\u2026",
-          options: ["A natural business identifier like an email", "A system-generated key with no business meaning", "Always a composite of several columns", "The same as a foreign key"],
-          answer: 1,
+          options: ["A natural business identifier like an email", "The same as a foreign key", "Always a composite of several columns", "A system-generated key with no business meaning"],
+          answer: 3,
           explain: "A surrogate key (e.g. an auto-increment or hash) is meaningless outside the system, which makes it stable even when business attributes change \u2014 essential for SCD-2 history."
         },
         {
           q: "Why might an analytical model deliberately denormalize?",
-          options: ["To enforce constraints", "To trade some redundancy for far fewer joins on big scans", "To save storage", "To prevent updates"],
-          answer: 1,
+          options: ["To trade some redundancy for far fewer joins on big scans", "To enforce constraints", "To save storage", "To prevent updates"],
+          answer: 0,
           explain: "Columnar engines scan and compress well but pay for joins; pre-joining (denormalizing) into wider tables removes join cost at query time, accepting controlled redundancy."
         }
       ]
@@ -341,20 +341,20 @@
         },
         {
           q: "The first thing you should declare when designing a fact table is its\u2026",
-          options: ["Indexes", "Grain (what one row represents)", "Partition key", "Compression codec"],
-          answer: 1,
+          options: ["Indexes", "Partition key", "Grain (what one row represents)", "Compression codec"],
+          answer: 2,
           explain: "Declaring the grain \u2014 e.g. 'one row per order line' \u2014 fixes what every measure means and prevents the classic bug of mixing grains in one table."
         },
         {
           q: "A measure like 'account balance' that you can add across accounts but not across time is\u2026",
-          options: ["Additive", "Semi-additive", "Non-additive", "A degenerate dimension"],
-          answer: 1,
+          options: ["Additive", "A degenerate dimension", "Non-additive", "Semi-additive"],
+          answer: 3,
           explain: "Semi-additive measures (balances, inventory levels) sum across some dimensions but not time; ratios and percentages are non-additive."
         },
         {
           q: "A periodic snapshot fact table is best for\u2026",
-          options: ["Every individual transaction", "Regular status at fixed intervals (e.g. daily balances)", "A process with a clear start and end", "Storing dimension attributes"],
-          answer: 1,
+          options: ["Regular status at fixed intervals (e.g. daily balances)", "Every individual transaction", "A process with a clear start and end", "Storing dimension attributes"],
+          answer: 0,
           explain: "Periodic snapshots capture state at regular intervals; transaction facts capture each event, and accumulating snapshots track a process with milestones (order \u2192 ship \u2192 deliver)."
         }
       ]
@@ -371,14 +371,14 @@
         },
         {
           q: "SCD Type 1 is appropriate when you\u2026",
-          options: ["Must keep full history", "Only ever care about the latest value (overwrite)", "Need a previous-value column", "Are modeling a fact"],
-          answer: 1,
+          options: ["Must keep full history", "Need a previous-value column", "Only ever care about the latest value (overwrite)", "Are modeling a fact"],
+          answer: 2,
           explain: "Type 1 overwrites in place \u2014 simple and history-free \u2014 which is fine for corrections or attributes whose past values nobody needs."
         },
         {
           q: "A 'late-arriving dimension' problem is when\u2026",
-          options: ["A fact references a dimension member that hasn\u2019t loaded yet", "A dimension is too large", "Two facts share a key", "A column is added"],
-          answer: 0,
+          options: ["A column is added", "A dimension is too large", "Two facts share a key", "A fact references a dimension member that hasn\u2019t loaded yet"],
+          answer: 3,
           explain: "If a fact arrives referencing a customer the dimension hasn\u2019t seen, you insert an inferred (placeholder) member now and enrich it when the real record arrives."
         }
       ]
@@ -389,8 +389,8 @@
       questions: [
         {
           q: "Kimball\u2019s approach is characterized as\u2026",
-          options: ["Top-down, fully normalized enterprise model first", "Bottom-up dimensional marts unified by conformed dimensions", "Hubs, links and satellites", "One big denormalized table"],
-          answer: 1,
+          options: ["Bottom-up dimensional marts unified by conformed dimensions", "Top-down, fully normalized enterprise model first", "Hubs, links and satellites", "One big denormalized table"],
+          answer: 0,
           explain: "Kimball builds business-process star-schema marts that integrate through conformed dimensions; Inmon builds a normalized enterprise warehouse first, then derives marts."
         },
         {
@@ -401,20 +401,20 @@
         },
         {
           q: "A semantic layer exists mainly to\u2026",
-          options: ["Store raw files", "Define metrics once so every tool computes them consistently", "Replace the warehouse", "Encrypt data"],
-          answer: 1,
+          options: ["Store raw files", "Replace the warehouse", "Define metrics once so every tool computes them consistently", "Encrypt data"],
+          answer: 2,
           explain: "A semantic/metrics layer centralizes metric definitions (e.g. 'active user') so dashboards and queries don\u2019t drift into conflicting numbers."
         },
         {
           q: "In a data product, an output port is best described as\u2026",
-          options: ["A stable consumer-facing interface such as a table, stream, API or metric", "A warehouse compute cluster", "A raw staging folder", "A private notebook"],
-          answer: 0,
+          options: ["A private notebook", "A warehouse compute cluster", "A raw staging folder", "A stable consumer-facing interface such as a table, stream, API or metric"],
+          answer: 3,
           explain: "Output ports are the contract-backed interfaces consumers depend on. They expose the product without coupling consumers to every internal table or pipeline detail."
         },
         {
           q: "A metric contract should define the metric\u2019s\u2026",
-          options: ["Color palette", "Formula, grain, allowed dimensions, owner and quality/freshness checks", "File compression codec only", "Dashboard layout"],
-          answer: 1,
+          options: ["Formula, grain, allowed dimensions, owner and quality/freshness checks", "Color palette", "File compression codec only", "Dashboard layout"],
+          answer: 0,
           explain: "A useful metric contract pins down how the number is computed, where it can be grouped, who owns it and which tests prove it is still trustworthy."
         }
       ]
@@ -431,20 +431,20 @@
         },
         {
           q: "The data mesh operating model relies on\u2026",
-          options: ["one central team owning every dataset", "domain ownership, federated governance and self-service platform capabilities", "no standards at all", "every dashboard defining its own metrics"],
-          answer: 1,
+          options: ["one central team owning every dataset", "no standards at all", "domain ownership, federated governance and self-service platform capabilities", "every dashboard defining its own metrics"],
+          answer: 2,
           explain: "Mesh decentralizes ownership to domains while keeping interoperability through federated standards and a platform that makes good behavior easy."
         },
         {
           q: "A source-target reconciliation check commonly compares\u2026",
-          options: ["font sizes", "row counts, key coverage, sums and checksums between source and modeled target", "dashboard colors", "browser cache state"],
-          answer: 1,
+          options: ["font sizes", "browser cache state", "dashboard colors", "row counts, key coverage, sums and checksums between source and modeled target"],
+          answer: 3,
           explain: "Reconciliation proves the pipeline did not lose, duplicate or mutate records unexpectedly. Counts catch bulk issues; EXCEPT/key checks find missing rows; sums and checksums catch value drift."
         },
         {
           q: "For a Type 2 dimension, a point-in-time join should use\u2026",
-          options: ["the latest dimension row for every fact", "fact event time between the dimension version's valid_from and valid_to", "a random surrogate key", "the dashboard refresh time"],
-          answer: 1,
+          options: ["fact event time between the dimension version's valid_from and valid_to", "the latest dimension row for every fact", "a random surrogate key", "the dashboard refresh time"],
+          answer: 0,
           explain: "Historical facts must join to the dimension version that was true when the event happened. Joining everything to the latest row rewrites history."
         },
         {
@@ -483,8 +483,9 @@
                 "<strong>3NF</strong> \u2014 no transitive dependency; non-key columns depend only on the key."
               ] },
               { t: "widget", id: "de-model-normalize" },
-              { t: "note", variant: "key", html: "The mnemonic for 3NF: every non-key column depends on <strong>the key, the whole key, and nothing but the key</strong>. Each normal form removes one way the same fact could be duplicated." },
-              { t: "note", variant: "tip", html: "Normalization is the right default for OLTP, where writes must stay consistent. Analytics later deliberately <em>de</em>normalizes for read speed \u2014 a tension we resolve in the dimensional module." }
+              { t: "note", variant: "tip", html: "The mnemonic for 3NF: every non-key column depends on <strong>the key, the whole key, and nothing but the key</strong>. Each normal form removes one way the same fact could be duplicated." },
+              { t: "note", variant: "tip", html: "Normalization is the right default for OLTP, where writes must stay consistent. Analytics later deliberately <em>de</em>normalizes for read speed \u2014 a tension we resolve in the dimensional module." },
+              { t: "note", variant: "key", html: "<strong>Normalization decides where a fact is allowed to be written, not where it should be read.</strong> Each normal form eliminates one way a value can end up disagreeing with itself, and charges for it in joins at query time. That trade is worth making early, because you can always denormalize a correct model \u2014 you cannot un-corrupt a redundant one." }
             ]
           },
           {
@@ -498,8 +499,9 @@
                 ["1:N", "One parent, many children", "Customer \u2192 Orders"],
                 ["N:M", "Many to many (needs a bridge)", "Students \u2194 Courses"]
               ] },
-              { t: "note", variant: "key", html: "An <strong>ER diagram</strong> is the shared language of modeling: boxes are entities, lines are relationships, and the crow\u2019s-foot notation shows cardinality. Sketch it before you write DDL." },
-              { t: "note", variant: "tip", html: "Analytical warehouses often don\u2019t <em>enforce</em> foreign keys (they slow loads), but you still model and test them \u2014 a broken FK is a data-quality bug whether or not the engine checks it." }
+              { t: "note", variant: "tip", html: "An <strong>ER diagram</strong> is the shared language of modeling: boxes are entities, lines are relationships, and the crow\u2019s-foot notation shows cardinality. Sketch it before you write DDL." },
+              { t: "note", variant: "tip", html: "Analytical warehouses often don\u2019t <em>enforce</em> foreign keys (they slow loads), but you still model and test them \u2014 a broken FK is a data-quality bug whether or not the engine checks it." },
+              { t: "note", variant: "key", html: "<strong>A key is a promise about row count, and every join you write is spending that promise.</strong> Declare the primary key and the cardinality of each relationship before the DDL, because a link you modelled as 1:N that is really N:M raises no error \u2014 it silently multiplies rows and inflates every total built on top of it. Cardinality you did not verify is cardinality you will debug later, in a report." }
             ]
           },
           {
@@ -540,8 +542,9 @@
             blocks: [
               { t: "p", html: "A <strong>snowflake schema</strong> normalizes dimensions into sub-tables (product \u2192 category \u2192 department). It saves a little space and reduces some redundancy, at the cost of more joins. Most teams prefer flat <strong>star</strong> dimensions for simplicity and speed." },
               { t: "p", html: "<strong>Conformed dimensions</strong> are the real prize: a single " + tok("dim_date") + " or " + tok("dim_customer") + " shared by many fact tables, with identical keys and meaning. They let you compare across business processes \u2014 \u201csales vs returns by customer\u201d \u2014 because both facts speak the same dimension." },
-              { t: "note", variant: "key", html: "Kimball\u2019s <strong>bus matrix</strong> maps business processes (rows) to conformed dimensions (columns). It\u2019s how you plan a warehouse that integrates instead of fragmenting into silos." },
-              { t: "note", variant: "tip", html: "Prefer star over snowflake unless a dimension is enormous and genuinely benefits from normalization. Columnar storage already compresses repeated dimension values cheaply." }
+              { t: "note", variant: "tip", html: "Kimball\u2019s <strong>bus matrix</strong> maps business processes (rows) to conformed dimensions (columns). It\u2019s how you plan a warehouse that integrates instead of fragmenting into silos." },
+              { t: "note", variant: "tip", html: "Prefer star over snowflake unless a dimension is enormous and genuinely benefits from normalization. Columnar storage already compresses repeated dimension values cheaply." },
+              { t: "note", variant: "key", html: "<strong>A dimension is conformed only when two teams agree to stop changing it independently.</strong> Identical keys and identical meaning are what let sales and returns appear on the same chart; the price is that every future change to that dimension becomes a negotiation rather than a commit. Snowflaking saves storage you barely pay for \u2014 conforming saves arguments you pay for constantly." }
             ]
           },
           {
@@ -596,8 +599,9 @@
               ] },
               { t: "widget", id: "scd" },
               { t: "widget", id: "de-model-scd2" },
-              { t: "note", variant: "key", html: "<strong>Type 2 is the workhorse.</strong> By versioning rows, a fact joins to the dimension value that was true <em>at the time of the event</em> \u2014 so last year\u2019s sales still roll up to the customer\u2019s segment as it was last year." },
-              { t: "note", variant: "trap", html: "Type 2 only works with <strong>surrogate keys</strong>: the natural key repeats across versions, so facts must reference the surrogate to pin a specific version. That\u2019s the next lesson." }
+              { t: "note", variant: "tip", html: "<strong>Type 2 is the workhorse.</strong> By versioning rows, a fact joins to the dimension value that was true <em>at the time of the event</em> \u2014 so last year\u2019s sales still roll up to the customer\u2019s segment as it was last year." },
+              { t: "note", variant: "trap", html: "Type 2 only works with <strong>surrogate keys</strong>: the natural key repeats across versions, so facts must reference the surrogate to pin a specific version. That\u2019s the next lesson." },
+              { t: "note", variant: "key", html: "<strong>Choosing an SCD type is choosing which questions become permanently unanswerable.</strong> Type 1 overwrites, so the moment a value changes the old truth is gone and no backfill can bring it back; Type 2 keeps it and charges you row growth plus a date-range predicate on every join. Decide by whether anyone will ever ask <em>what was it then?</em> \u2014 because that is the one answer you cannot add later." }
             ]
           },
           {
@@ -607,8 +611,9 @@
             blocks: [
               { t: "p", html: "A <strong>surrogate key</strong> is a system-generated identifier (an integer or hash) with no business meaning. Dimensions use it as the primary key; the <strong>natural key</strong> (e.g. customer id) becomes just an attribute." },
               { t: "p", html: "This is what makes SCD-2 possible: each version of a customer gets its own surrogate key, so a fact row carries the surrogate of the version that was current when the event happened. Change the customer\u2019s city tomorrow and old facts still point at the old version." },
-              { t: "note", variant: "key", html: "Surrogates also insulate the warehouse from source-system churn: if a source re-keys its data, only the natural-key attribute changes, not your fact foreign keys." },
-              { t: "note", variant: "tip", html: "Generate surrogates in the load (sequence, identity, or a deterministic hash of natural-key + version). Hash keys are handy because they\u2019re reproducible across reloads." }
+              { t: "note", variant: "tip", html: "Surrogates also insulate the warehouse from source-system churn: if a source re-keys its data, only the natural-key attribute changes, not your fact foreign keys." },
+              { t: "note", variant: "tip", html: "Generate surrogates in the load (sequence, identity, or a deterministic hash of natural-key + version). Hash keys are handy because they\u2019re reproducible across reloads." },
+              { t: "note", variant: "key", html: "<strong>The surrogate key sets the dimension\u2019s grain: one row per <em>version</em> of an entity, not one row per entity.</strong> Once a fact carries it, that fact\u2019s history is pinned at load time and stays correct no matter how the source behaves afterwards. Join facts back on the natural key instead and you have quietly restated every past report to match today." }
             ]
           },
           {
@@ -621,8 +626,9 @@
                 "<strong>Late fact, missing dim</strong> \u2014 insert an <em>inferred member</em> (placeholder row keyed by the natural key) now, and enrich it when the real dimension record arrives.",
                 "<strong>Late dimension update</strong> \u2014 with SCD-2 you may need to insert a version with a back-dated effective date and re-point affected facts."
               ] },
-              { t: "note", variant: "key", html: "The goal is never to drop or block a fact because its context is late. Park it against a placeholder, and reconcile when the rest catches up." },
+              { t: "note", variant: "tip", html: "The goal is never to drop or block a fact because its context is late. Park it against a placeholder, and reconcile when the rest catches up." },
               { t: "note", variant: "trap", html: "Inferred members are easy to create and easy to forget \u2014 monitor for dimension rows that never got enriched, or your reports will quietly attribute sales to \u201cUnknown.\u201d" },
+              { t: "note", variant: "key", html: "<strong>Lateness is not an exception you handle once; it is a window you commit to.</strong> Every pipeline makes an implicit promise about how far back it will still repair data \u2014 a day, a week, a quarter \u2014 and anything that arrives after that is wrong rather than missing, which is far harder to notice. Write the window down, monitor the placeholders inside it, and treat arrivals beyond it as an incident instead of a rounding error." },
               { t: "quiz", id: "de-modeling-scd" }
             ]
           },
@@ -748,8 +754,9 @@
                 "  change_policy:\n" +
                 "    breaking_changes_require: new_major_version\n" +
                 "    deprecation_notice: 60 days" },
-              { t: "note", variant: "key", html: "A data product is not \u201ca table with a nice name.\u201d It is an owned interface with promises: meaning, freshness, quality, access and change management." },
-              { t: "note", variant: "trap", html: "Output ports are intentionally boring. If every consumer needs special instructions, hidden joins or an owner on chat to interpret the data, the port is not product-ready." }
+              { t: "note", variant: "tip", html: "A data product is not \u201ca table with a nice name.\u201d It is an owned interface with promises: meaning, freshness, quality, access and change management." },
+              { t: "note", variant: "trap", html: "Output ports are intentionally boring. If every consumer needs special instructions, hidden joins or an owner on chat to interpret the data, the port is not product-ready." },
+              { t: "note", variant: "key", html: "<strong>Publishing a port is the moment you give up the freedom to refactor.</strong> Everything behind the contract stays yours to change; everything named in it belongs to your consumers until you version it out and prove nobody is left. So expose the narrowest interface that answers the question \u2014 every column you publish is a column you have promised to keep." }
             ]
           },
           {
@@ -775,8 +782,9 @@
                 "Review standards through federated governance: privacy, naming, metric reuse and lifecycle.",
                 "Operate it like a service: measure SLOs, triage incidents, version breaking changes."
               ] },
-              { t: "note", variant: "key", html: "The balance matters: centralize the platform and standards, decentralize business meaning and ownership. Too much centralization becomes a warehouse bottleneck; too little becomes metric chaos." },
-              { t: "note", variant: "trap", html: "A mesh fails when it is used as permission to avoid integration. Federated governance is the part that keeps domain autonomy from turning into seven incompatible definitions of customer." }
+              { t: "note", variant: "tip", html: "The balance matters: centralize the platform and standards, decentralize business meaning and ownership. Too much centralization becomes a warehouse bottleneck; too little becomes metric chaos." },
+              { t: "note", variant: "trap", html: "A mesh fails when it is used as permission to avoid integration. Federated governance is the part that keeps domain autonomy from turning into seven incompatible definitions of customer." },
+              { t: "note", variant: "key", html: "<strong>A mesh does not remove coordination cost \u2014 it moves it from a central team into a shared standard.</strong> Domains only get to move at their own pace because naming, contracts, privacy and metric grammar were settled once and are enforced by the paved road rather than by review. Where that standard is weak, every domain pays the integration cost again, one reconciliation join at a time." }
             ]
           },
           {

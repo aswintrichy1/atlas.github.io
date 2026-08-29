@@ -171,19 +171,20 @@
       if (impact <= 0) return 0;
       return changed ? roundup(Math.min(1.08 * (impact + expl), 10)) : roundup(Math.min(impact + expl, 10));
     }
+    /* [label, fill, ink] — the pill keeps the fill hue, the numeral reads as text */
     function rate(s) {
-      if (s === 0) return ["None", "var(--text-faint)"];
-      if (s < 4) return ["Low", "var(--lime)"];
-      if (s < 7) return ["Medium", "var(--amber)"];
-      if (s < 9) return ["High", "var(--rose)"];
-      return ["Critical", "var(--rose)"];
+      if (s === 0) return ["None", "var(--text-faint)", "var(--text-faint)"];
+      if (s < 4) return ["Low", "var(--lime)", "var(--lime-ink)"];
+      if (s < 7) return ["Medium", "var(--amber)", "var(--amber-ink)"];
+      if (s < 9) return ["High", "var(--rose)", "var(--rose-ink)"];
+      return ["Critical", "var(--rose)", "var(--rose-ink)"];
     }
     function render() {
       const s = score();
-      const [label, color] = rate(s);
+      const [label, fill, ink] = rate(s);
       scoreEl.innerHTML = "";
-      scoreEl.appendChild(h("span", { class: "cvss-num", style: "color:" + color }, s.toFixed(1)));
-      scoreEl.appendChild(h("span", { class: "cvss-rate", style: "background:" + color }, label));
+      scoreEl.appendChild(h("span", { class: "cvss-num", style: "color:" + ink }, s.toFixed(1)));
+      scoreEl.appendChild(h("span", { class: "cvss-rate", style: "background:" + fill }, label));
       vectorEl.textContent = "CVSS:3.1/AV:" + M.AV + "/AC:" + M.AC + "/PR:" + M.PR + "/UI:" + M.UI + "/S:" + M.S + "/C:" + M.C + "/I:" + M.I + "/A:" + M.A;
     }
     render();

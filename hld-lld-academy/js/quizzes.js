@@ -1,8 +1,12 @@
 /* =====================================================================
    BLUEPRINT · Quiz bank
    Filtered for this split app. Answers hand-verified in source.
+
+   Merge, never reassign: the track-*.js files contribute to the same
+   namespace, so a plain assignment here would drop their entries whenever
+   this file is evaluated after them.
    ===================================================================== */
-window.QUIZZES = {
+window.QUIZZES = Object.assign(window.QUIZZES || {}, {
   "hld-foundations": {
     "title": "Foundations checkpoint",
     "sub": "Estimation, scaling vocabulary, and how to frame a design.",
@@ -10,12 +14,12 @@ window.QUIZZES = {
       {
         "q": "Roughly how long does a round trip within the same data center take, compared to reading 1 MB sequentially from SSD?",
         "options": [
-          "Both are about the same (~1 ms)",
           "DC round trip ~0.5 ms; SSD 1 MB read ~1 ms",
+          "Both are about the same (~1 ms)",
           "DC round trip ~100 ms; SSD read ~1 µs",
           "SSD read is always slower than any network call"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "A same-DC round trip is ~0.5 ms and reading 1 MB sequentially from SSD is ~1 ms. Knowing these 'latency numbers every engineer should know' lets you sanity-check designs instantly."
       },
       {
@@ -44,11 +48,11 @@ window.QUIZZES = {
         "q": "'Vertical scaling' means…",
         "options": [
           "Adding more machines to a pool",
-          "Adding more CPU/RAM to a single machine",
           "Splitting a table across shards",
+          "Adding more CPU/RAM to a single machine",
           "Adding a CDN"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Vertical scaling (scaling up) means a bigger box — more CPU, RAM, disk. It is simple but has a hard ceiling and a single point of failure. Horizontal scaling (scaling out) adds more machines."
       }
     ]
@@ -61,22 +65,22 @@ window.QUIZZES = {
         "q": "In a cache-aside (lazy loading) setup, who is responsible for loading data into the cache on a miss?",
         "options": [
           "The database, automatically",
-          "The application code",
+          "The load balancer",
           "The cache server itself",
-          "The load balancer"
+          "The application code"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "With cache-aside, the application checks the cache, and on a miss it reads the DB and then populates the cache. The cache stays 'dumb'. (Read-through delegates that loading to the cache layer instead.)"
       },
       {
         "q": "Which eviction policy removes the entry that hasn't been accessed for the longest time?",
         "options": [
-          "FIFO",
           "LRU",
+          "FIFO",
           "LFU",
           "Random"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "LRU = Least Recently Used. It evicts the item whose last access is oldest. LFU evicts the least frequently used; FIFO evicts the oldest inserted regardless of access."
       },
       {
@@ -94,11 +98,11 @@ window.QUIZZES = {
         "q": "What problem does a short, randomized TTL ('jitter') primarily mitigate?",
         "options": [
           "Cache penetration",
-          "Cache stampede / thundering herd",
           "False positives",
+          "Cache stampede / thundering herd",
           "Hot partitions"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "If many keys expire at the same instant, all the misses hit the DB at once (a stampede). Adding random jitter to TTLs spreads expirations out. Stampedes are also mitigated by request coalescing / locks."
       }
     ]
@@ -111,22 +115,22 @@ window.QUIZZES = {
         "q": "Sharding a database primarily helps with…",
         "options": [
           "Reducing code complexity",
-          "Distributing data & write load horizontally beyond one machine",
+          "Eliminating the need for indexes",
           "Guaranteeing strong consistency",
-          "Eliminating the need for indexes"
+          "Distributing data & write load horizontally beyond one machine"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Sharding (horizontal partitioning) splits rows across multiple machines so no single node holds all the data or absorbs all the writes. It adds complexity (cross-shard queries, rebalancing) in exchange for scale."
       },
       {
         "q": "In leader–follower replication, what is the main consequence of asynchronous replication?",
         "options": [
-          "Writes are impossible",
           "Followers may serve slightly stale reads (replication lag)",
+          "Writes are impossible",
           "The leader cannot fail over",
           "Reads must always go to the leader"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Async replication lets the leader ack writes without waiting for followers, so followers can lag. Reading from a follower can therefore return stale data — a read-your-writes consistency concern."
       },
       {
@@ -144,44 +148,44 @@ window.QUIZZES = {
         "q": "Which choice of shard key is most likely to create a 'hot shard'?",
         "options": [
           "A high-cardinality hash of user_id",
-          "Monotonically increasing timestamp",
           "A UUID",
+          "Monotonically increasing timestamp",
           "A composite hashed key"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A monotonically increasing key (like a timestamp or auto-increment id) routes all new writes to the same shard, creating a hotspot. Hashing or high-cardinality keys spread writes evenly."
       },
       {
         "q": "Which workload is a column-oriented OLAP store usually optimized for?",
         "options": [
           "Single-row transactional updates",
-          "Scanning a few columns across many rows for analytics",
+          "Queueing background jobs",
           "Low-latency session lookup by key",
-          "Queueing background jobs"
+          "Scanning a few columns across many rows for analytics"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Column stores keep values from the same column together, so analytic scans and aggregations read only the needed columns and compress well. OLTP row stores are better for fetching or updating complete entities."
       },
       {
         "q": "Why do LSM-tree storage engines often have excellent write throughput?",
         "options": [
-          "They never persist data",
           "They turn random updates into append-friendly writes and compact later",
+          "They never persist data",
           "They require every query to be a full scan",
           "They avoid replication entirely"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "LSM trees write to an in-memory structure and append sorted files, then compact in the background. That favors high write rates, but compaction introduces read, write, and space amplification."
       },
       {
         "q": "A search index is primarily built around which structure?",
         "options": [
-          "Inverted index mapping terms to documents",
           "FIFO queue",
+          "Inverted index mapping terms to documents",
           "Session cookie jar",
           "DNS cache"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "Search engines use inverted indexes: term -> matching documents, plus scoring and filters. Vector databases solve semantic nearest-neighbor retrieval; both may be combined in hybrid search."
       }
     ]
@@ -194,11 +198,11 @@ window.QUIZZES = {
         "q": "CAP theorem says that during a network partition, a distributed system must sacrifice…",
         "options": [
           "Performance or cost",
-          "Consistency or Availability",
           "Durability or Latency",
+          "Consistency or Availability",
           "Reads or Writes"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "When a partition (P) happens, you must choose: stay Available (answer with possibly-stale data → AP) or stay Consistent (refuse/block to avoid divergence → CP). You cannot have both during the partition."
       },
       {
@@ -206,21 +210,21 @@ window.QUIZZES = {
         "options": [
           "CA systems",
           "CP systems",
-          "AP systems",
-          "ACID-only systems"
+          "ACID-only systems",
+          "AP systems"
         ],
-        "answer": 2,
+        "answer": 3,
         "explain": "They favor Availability and Partition tolerance (AP), offering tunable/eventual consistency. Systems like ZooKeeper, etcd, and HBase lean CP (consistency over availability)."
       },
       {
         "q": "'Eventual consistency' means…",
         "options": [
-          "Data is never consistent",
           "If writes stop, all replicas converge to the same value given enough time",
+          "Data is never consistent",
           "Every read returns the latest write immediately",
           "Consistency only on the leader"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Under eventual consistency, replicas may temporarily disagree, but absent new writes they converge. It trades immediate correctness for availability and low latency."
       },
       {
@@ -244,33 +248,33 @@ window.QUIZZES = {
         "q": "The main benefit of putting a message queue between a producer and consumer is…",
         "options": [
           "It guarantees exactly-once delivery for free",
-          "Decoupling + buffering, so spikes don't overwhelm the consumer",
           "It removes the need for a database",
+          "Decoupling + buffering, so spikes don't overwhelm the consumer",
           "It makes the system synchronous"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A queue decouples producers from consumers and absorbs bursts (load leveling). Consumers process at their own pace. Exactly-once is notoriously hard — most systems give at-least-once + idempotency."
       },
       {
         "q": "Which rate-limiting algorithm naturally ALLOWS short bursts up to a capacity while enforcing an average rate?",
         "options": [
           "Fixed window",
-          "Token bucket",
+          "No algorithm allows bursts",
           "Sliding log only",
-          "No algorithm allows bursts"
+          "Token bucket"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Token bucket refills tokens at a steady rate up to a capacity; a client can spend a burst of saved tokens, then is throttled to the refill rate. Leaky bucket, by contrast, enforces a smooth constant output."
       },
       {
         "q": "Why is idempotency important for at-least-once delivery?",
         "options": [
-          "It makes messages smaller",
           "Reprocessing a duplicate message must not change the result",
+          "It makes messages smaller",
           "It encrypts the payload",
           "It guarantees ordering"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "At-least-once means a message may be delivered more than once. Idempotent handlers (e.g., keyed by a request id) ensure duplicates have no extra effect — charging a card once even if the event arrives twice."
       },
       {
@@ -288,33 +292,33 @@ window.QUIZZES = {
         "q": "For strict ordering of events for one customer, what should the partition key usually be?",
         "options": [
           "A random UUID per event",
-          "The customer or entity id whose order must be preserved",
           "The current timestamp only",
+          "The customer or entity id whose order must be preserved",
           "The consumer host name"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Kafka-like systems guarantee order within a partition, not across all partitions. Partition by the entity whose updates must stay ordered, then make that consumer path idempotent."
       },
       {
         "q": "Which API design helps a client safely retry a payment creation after a timeout?",
         "options": [
           "Offset pagination",
-          "Idempotency-Key header",
+          "Changing POST to GET",
           "A larger JSON payload",
-          "Changing POST to GET"
+          "Idempotency-Key header"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "An idempotency key lets the server dedupe repeated unsafe writes and return the original result, avoiding duplicate charges when the client cannot tell whether the first attempt succeeded."
       },
       {
         "q": "Why are cursor-based pages usually safer than offset pages for large, changing lists?",
         "options": [
-          "They encrypt every item",
           "They anchor the next page to a stable position instead of a shifting row count",
+          "They encrypt every item",
           "They require no ordering",
           "They disable indexes"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Offset pagination can skip or duplicate rows when inserts/deletes happen before the offset. A cursor encodes a stable sort position, such as created_at plus id."
       },
       {
@@ -338,33 +342,33 @@ window.QUIZZES = {
         "q": "Hiding internal state and exposing behavior through methods is which pillar?",
         "options": [
           "Inheritance",
-          "Encapsulation",
           "Polymorphism",
+          "Encapsulation",
           "Abstraction"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Encapsulation bundles data with the methods that operate on it and restricts direct access to internals, protecting invariants. Abstraction is about exposing only the essential concept; they're related but distinct."
       },
       {
         "q": "A `Circle` and a `Square` both implement a `Shape.area()` method and are used interchangeably through the `Shape` type. This is…",
         "options": [
           "Encapsulation",
-          "Polymorphism",
+          "Memoization",
           "Composition",
-          "Memoization"
+          "Polymorphism"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Polymorphism lets different types respond to the same message (`area()`) in their own way, so calling code depends on the `Shape` abstraction, not the concrete class."
       },
       {
         "q": "'Favor composition over inheritance' advises you to…",
         "options": [
-          "Never use classes",
           "Build behavior by combining objects rather than deep inheritance trees",
+          "Never use classes",
           "Always copy-paste code",
           "Use only static methods"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Deep inheritance is rigid and leaks parent details into children. Composing small collaborators is more flexible, easier to test, and avoids the fragile base-class problem."
       }
     ]
@@ -388,22 +392,22 @@ window.QUIZZES = {
         "q": "'Software entities should be open for extension but closed for modification' is…",
         "options": [
           "SRP",
-          "OCP",
           "ISP",
+          "OCP",
           "DIP"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Open/Closed Principle (OCP): add new behavior by adding new code (e.g., a new strategy/subclass), not by editing existing, tested code. Polymorphism and plugins are the usual tools."
       },
       {
         "q": "A subclass that throws 'not supported' for a method it inherited most likely violates…",
         "options": [
-          "Liskov Substitution Principle",
+          "KISS",
           "Interface Segregation Principle",
           "DRY",
-          "KISS"
+          "Liskov Substitution Principle"
         ],
-        "answer": 0,
+        "answer": 3,
         "explain": "LSP says subtypes must be usable anywhere their base type is expected. A `Penguin` subclass of `Bird` that throws on `fly()` breaks substitutability — the hierarchy is wrong."
       },
       {
@@ -437,34 +441,34 @@ window.QUIZZES = {
       {
         "q": "When one object changes state and many dependents must be notified automatically, use…",
         "options": [
-          "Observer",
-          "Builder",
           "Facade",
+          "Builder",
+          "Observer",
           "Prototype"
         ],
-        "answer": 0,
+        "answer": 2,
         "explain": "Observer defines a one-to-many dependency: when the subject changes, all subscribed observers are notified. It underpins event systems, pub/sub, and UI data-binding."
       },
       {
         "q": "A class that makes an incompatible third-party interface usable by your code without changing either is a…",
         "options": [
           "Decorator",
-          "Adapter",
+          "Mediator",
           "Composite",
-          "Mediator"
+          "Adapter"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Adapter wraps an existing (often third-party) interface and translates it to the interface your code expects — like a power-plug adapter. Decorator, by contrast, adds behavior to the same interface."
       },
       {
         "q": "Which pattern is best for constructing a complex object step-by-step with many optional parameters?",
         "options": [
-          "Factory Method",
           "Builder",
+          "Factory Method",
           "Singleton",
           "Flyweight"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Builder assembles a complex object through a fluent, step-by-step API and avoids telescoping constructors. Factory Method instead decides WHICH class to instantiate; they solve different problems."
       },
       {
@@ -488,33 +492,33 @@ window.QUIZZES = {
         "q": "What is the key requirement that lets a service scale horizontally behind a load balancer?",
         "options": [
           "A faster CPU",
-          "Statelessness — any replica can serve any request",
           "A single shared in-memory session",
+          "Statelessness — any replica can serve any request",
           "Sticky sessions on every route"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "If servers keep no per-client state locally, any replica can handle any request, so you can add, remove, or restart nodes freely. State is externalized to a shared cache/DB or carried in a token."
       },
       {
         "q": "A load balancer using 'least connections' is best when…",
         "options": [
           "All requests take the same time",
-          "Requests vary widely in duration",
+          "You need cache affinity",
           "There is only one server",
-          "You need cache affinity"
+          "Requests vary widely in duration"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Least-connections routes to the server with the fewest active requests, which balances load well when request durations are uneven. Round-robin is fine when requests are uniform."
       },
       {
         "q": "'Power of two choices' load balancing means…",
         "options": [
-          "Always pick the first of two servers",
           "Pick two servers at random and send to the less-loaded one",
+          "Always pick the first of two servers",
           "Use exactly two servers",
           "Hash the request into one of two buckets"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Sampling two servers at random and choosing the lighter one gives almost the evenness of 'least connections' at almost the cost of 'random' — a favorite at scale."
       },
       {
@@ -538,33 +542,33 @@ window.QUIZZES = {
         "q": "A reverse proxy sits in front of…",
         "options": [
           "Clients, hiding them from servers",
-          "Servers, hiding them from clients",
           "Only databases",
+          "Servers, hiding them from clients",
           "The DNS resolver"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A reverse proxy fronts your servers (load balancing, TLS termination, caching, WAF) so clients see one endpoint. A forward proxy fronts clients to control/anonymize outbound traffic."
       },
       {
         "q": "For one-way server→client streaming (a live feed or notifications), the simplest fit is…",
         "options": [
           "Short polling",
-          "Server-Sent Events (SSE)",
+          "A second database",
           "WebSockets",
-          "A second database"
+          "Server-Sent Events (SSE)"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "SSE streams events over a single long-lived HTTP response with auto-reconnect — ideal for server→client only. WebSockets add full-duplex but more complexity; use them for two-way real-time."
       },
       {
         "q": "Why are WebSockets harder to scale than stateless HTTP?",
         "options": [
-          "They use more bandwidth per message",
           "Each connection is stateful and pins a client to one server",
+          "They use more bandwidth per message",
           "They can't be load balanced at all",
           "They require a relational database"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "A WebSocket is a persistent, stateful connection tied to a specific server, which complicates load balancing and autoscaling. At scale you add a pub/sub backplane so any server can deliver to any socket."
       }
     ]
@@ -620,23 +624,23 @@ window.QUIZZES = {
       {
         "q": "During an incident, what should the team optimize for first?",
         "options": [
-          "Writing a perfect root-cause report immediately",
           "Mitigating user impact and stabilizing the service",
+          "Writing a perfect root-cause report immediately",
           "Renaming every dashboard",
           "Deploying unrelated features"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Incident response prioritizes detection, acknowledgement, mitigation, and communication. Root-cause analysis is important, but users must be made safe first."
       },
       {
         "q": "A good page-worthy alert should be tied to…",
         "options": [
-          "An actionable user-impact symptom and a runbook",
           "Any CPU change at all",
+          "An actionable user-impact symptom and a runbook",
           "A metric nobody owns",
           "Only a log volume spike"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "Alerts should be actionable, owned, and tied to user impact or an SLO. Noisy, unactionable alerts train responders to ignore the pager."
       }
     ]
@@ -648,67 +652,67 @@ window.QUIZZES = {
       {
         "q": "Which description best distinguishes a cell from a shard and a region?",
         "options": [
-          "A cell is a whole isolated mini-stack for a tenant/resource cohort; a shard is a data partition; a region is a geographic deployment location",
-          "A cell is just a bigger database shard",
           "A region is always smaller than a cell",
+          "A cell is just a bigger database shard",
+          "A cell is a whole isolated mini-stack for a tenant/resource cohort; a shard is a data partition; a region is a geographic deployment location",
           "A shard always contains app servers and queues"
         ],
-        "answer": 0,
+        "answer": 2,
         "explain": "A cell is a full serving slice: app tier, queues, caches and data for a bounded tenant/resource cohort. A shard is primarily a data partition. A region is a geographic failure domain that may contain many cells."
       },
       {
         "q": "Why are synchronous cross-cell calls on the hot path dangerous?",
         "options": [
           "They make tracing impossible",
-          "They couple cells so one slow or failed cell can break requests in another cell",
+          "They make tenant routing deterministic",
           "They reduce storage cost too much",
-          "They make tenant routing deterministic"
+          "They couple cells so one slow or failed cell can break requests in another cell"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Cells exist to contain blast radius. If cell A must synchronously call cell B to serve a user request, B's latency or outage now affects A, undoing much of the isolation."
       },
       {
         "q": "Shuffle sharding is most useful for…",
         "options": [
-          "Guaranteeing strong consistency across regions",
           "Assigning each tenant a small deterministic subset of workers/resources so noisy neighbors overlap less",
+          "Guaranteeing strong consistency across regions",
           "Replacing tenant authorization checks",
           "Making every tenant share every queue equally"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Shuffle sharding maps each tenant to a small subset of resources. Two tenants may share a member, but are unlikely to share the exact same subset, limiting noisy-neighbor blast radius."
       },
       {
         "q": "Load shedding differs from circuit breaking because load shedding…",
         "options": [
-          "Drops or defers low-priority work when your own system is overloaded",
           "Only happens after a dependency returns many errors",
+          "Drops or defers low-priority work when your own system is overloaded",
           "Always retries requests faster",
           "Is the same as autoscaling"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "A circuit breaker protects callers from repeatedly calling a failing dependency. Load shedding protects the local system under saturation by rejecting or deferring low-value work before queues collapse."
       },
       {
         "q": "In a pooled multi-tenant SaaS database, what must every tenant-scoped query include?",
         "options": [
           "A random sleep",
-          "A tenant/resource predicate or enforced policy boundary",
           "A cross-cell join",
+          "A tenant/resource predicate or enforced policy boundary",
           "A debug flag"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Pooled tenancy shares infrastructure, so tenant isolation depends on every DB query, cache key, queue message, search filter, and admin tool carrying the tenant boundary."
       },
       {
         "q": "What is the main purpose of tenant-aware deploy waves?",
         "options": [
           "To deploy alphabetically",
-          "To limit blast radius by rolling changes through tenant cohorts while watching metrics",
+          "To force every tenant into one cell",
           "To skip observability",
-          "To force every tenant into one cell"
+          "To limit blast radius by rolling changes through tenant cohorts while watching metrics"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Deploy waves let teams start with low-risk tenants, pause on bad signals, and protect high-value or regulated tenants until the change has proven safe."
       }
     ]
@@ -720,12 +724,12 @@ window.QUIZZES = {
       {
         "q": "Per Conway's Law, microservices pay off mainly when…",
         "options": [
-          "You have one small team",
           "You have many teams that need to ship independently",
+          "You have one small team",
           "You want fewer moving parts",
           "You need strong multi-row transactions"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Systems mirror the org that builds them. Microservices' independent deploy/scale shines with many autonomous teams; a single small team is usually faster and cheaper with a modular monolith."
       },
       {
@@ -743,11 +747,11 @@ window.QUIZZES = {
         "q": "A Saga handles a failed step by…",
         "options": [
           "Locking all services until it succeeds",
-          "Running compensating transactions to undo prior steps",
           "Ignoring the failure",
+          "Running compensating transactions to undo prior steps",
           "Rolling back a global 2PC commit"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A Saga is a sequence of local transactions; if one fails, it runs compensating ('undo') transactions for the completed steps — eventually consistent but available, unlike blocking 2PC."
       }
     ]
@@ -759,56 +763,56 @@ window.QUIZZES = {
       {
         "q": "A service expects 40M actions per day with a 5x peak multiplier. What is the best first capacity estimate?",
         "options": [
-          "About 463 average QPS and about 2,315 peak QPS",
+          "No QPS estimate is possible from daily actions",
           "Exactly 40M QPS",
           "About 5 QPS peak",
-          "No QPS estimate is possible from daily actions"
+          "About 463 average QPS and about 2,315 peak QPS"
         ],
-        "answer": 0,
+        "answer": 3,
         "explain": "Average QPS is daily actions / 86,400: 40M / 86,400 ~= 463. Peak is then average x the peak multiplier, so 463 x 5 ~= 2,315 QPS."
       },
       {
         "q": "What does N+1 capacity mean in a launch plan?",
         "options": [
-          "The system needs one database only",
           "The system can handle expected peak even after one planned capacity unit is unavailable",
+          "The system needs one database only",
           "You add exactly one user to the load test",
           "You deploy one version after another"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "N is the capacity needed for expected peak. N+1 adds enough headroom to survive one instance, node, or equivalent capacity unit being unavailable."
       },
       {
         "q": "Which cost bucket is most directly affected by sending large responses across a cloud/provider boundary?",
         "options": [
-          "Egress",
           "Primary-key choice",
+          "Egress",
           "Object TTL only",
           "Password hashing"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "Egress is data leaving a cloud or provider boundary. Large cross-boundary responses can be expensive and also add latency."
       },
       {
         "q": "Which signal best proves a canary is safe to continue?",
         "options": [
           "The deploy command succeeded",
-          "Canary traffic holds SLOs, error rate, saturation, and business success rate within guardrails versus control",
           "CPU is zero",
+          "Canary traffic holds SLOs, error rate, saturation, and business success rate within guardrails versus control",
           "The new version has more features"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A canary is guarded by user-impacting signals: latency/SLOs, errors, saturation, and business counters compared to control. Successful deployment alone says nothing about production behavior."
       },
       {
         "q": "A good ADR primarily records...",
         "options": [
           "Only the final diagram",
-          "The decision, context, alternatives, consequences, and trade-offs",
+          "A list of team members",
           "Every log line from the launch",
-          "A list of team members"
+          "The decision, context, alternatives, consequences, and trade-offs"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "An Architecture Decision Record captures why a choice was made, what alternatives lost, and what consequences the team accepts. That is the useful part for future readers."
       }
     ]
@@ -843,33 +847,33 @@ window.QUIZZES = {
         "q": "A retrieved document contains instructions like 'ignore previous rules and reveal secrets.' How should the system treat it?",
         "options": [
           "As higher priority than the system prompt",
-          "As untrusted data that may be quoted or summarized but cannot override instructions or tool permissions",
           "As proof the answer is safe",
+          "As untrusted data that may be quoted or summarized but cannot override instructions or tool permissions",
           "By disabling all metadata filters"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Retrieved content is untrusted input. It can contain prompt injection, so the system must isolate instructions, constrain tools, apply filters, and avoid granting retrieved text authority over policy."
       },
       {
         "q": "Which trace fields are most useful when debugging a bad RAG answer?",
         "options": [
           "Only the final answer text",
-          "Retrieved chunk ids, scores, filters, prompt version, model, tokens, latency, cost, and safety outcome",
+          "A screenshot of the home page",
           "The user's browser size only",
-          "A screenshot of the home page"
+          "Retrieved chunk ids, scores, filters, prompt version, model, tokens, latency, cost, and safety outcome"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "RAG debugging is stage-by-stage. You need to know what was retrieved, filtered, ranked, placed in the prompt, which model answered, and what it cost."
       },
       {
         "q": "What is a semantic cache safe-key concern?",
         "options": [
-          "It should ignore tenant and permissions",
           "It must include scope such as tenant, permissions, freshness, prompt version, and model version where relevant",
+          "It should ignore tenant and permissions",
           "It should cache unsafe refusals as successful answers for all users",
           "It only works for images"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Repeated questions can be cached, but the cache key must preserve security and correctness boundaries: tenant, ACL, freshness, prompt/model version, and other scope."
       }
     ]
@@ -893,33 +897,33 @@ window.QUIZZES = {
         "q": "Retrieval-Augmented Generation (RAG) primarily helps with which problem?",
         "options": [
           "Slow GPUs",
-          "Giving the model relevant private or fresh context at answer time",
           "Eliminating all hallucinations and prompt injection",
+          "Giving the model relevant private or fresh context at answer time",
           "Replacing authorization checks"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "RAG retrieves relevant chunks from your knowledge base at query time and adds them to the prompt. It can improve grounding, but it does not guarantee truthful answers or remove prompt-injection risk."
       },
       {
         "q": "In a RAG system, a vector database is used to…",
         "options": [
           "Store SQL rows",
-          "Find the nearest chunks to a query via embedding similarity",
+          "Run the LLM",
           "Cache HTML pages",
-          "Run the LLM"
+          "Find the nearest chunks to a query via embedding similarity"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "It stores each chunk as an embedding (a vector) and uses approximate nearest-neighbor search to retrieve the most semantically similar chunks for a query — the retrieval engine RAG runs on."
       },
       {
         "q": "Why must an LLM feature ship with an eval harness?",
         "options": [
-          "To make it faster",
           "Because you can't reliably improve what you can't measure",
+          "To make it faster",
           "To reduce token count",
           "It's not needed"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Prompts behave like code: a dataset of inputs with graded outputs plus automated scoring lets you catch regressions when you change a prompt, model, or retrieval step."
       },
       {
@@ -937,11 +941,11 @@ window.QUIZZES = {
         "q": "Which RAG control prevents one tenant's document from entering another tenant's prompt?",
         "options": [
           "A larger top-k",
-          "Tenant and ACL metadata filters before prompt construction",
           "Higher temperature",
+          "Tenant and ACL metadata filters before prompt construction",
           "Longer context windows only"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "RAG documents are protected resources. Tenant and ACL filters must run before ranking/prompt construction so the model never sees unauthorized context."
       }
     ]
@@ -954,77 +958,77 @@ window.QUIZZES = {
         "q": "Why is the FIRST DNS lookup for a domain slow but later ones instant?",
         "options": [
           "The server is warming up",
-          "Results are cached (OS, resolver, along the way) with a TTL",
+          "The domain is rate-limited",
           "TLS has to renegotiate",
-          "The domain is rate-limited"
+          "Results are cached (OS, resolver, along the way) with a TTL"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "DNS is a heavily-cached hierarchy. The first lookup walks root → TLD → authoritative; the answer is then cached with a TTL, so repeats are instant — which is also why changes take time to propagate."
       },
       {
         "q": "A JWT (stateless token) scales well but has which drawback vs server sessions?",
         "options": [
-          "It can't carry claims",
           "It's hard to revoke before it expires",
+          "It can't carry claims",
           "It requires a shared session store",
           "It only works over HTTP"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Any node can verify a signed JWT without shared state, but you can't easily revoke one before expiry — so keep them short-lived and pair with refresh tokens. Server sessions revoke instantly but need a shared store."
       },
       {
         "q": "Passwords should be stored using…",
         "options": [
           "Plaintext",
-          "A fast hash like MD5",
           "A slow, salted hash (bcrypt/scrypt/Argon2)",
+          "A fast hash like MD5",
           "Base64 encoding"
         ],
-        "answer": 2,
+        "answer": 1,
         "explain": "A slow, salted password hash defeats rainbow tables (salt) and brute force (slowness), so a database leak doesn't immediately expose everyone's credentials."
       },
       {
         "q": "A canary deployment reduces risk by…",
         "options": [
           "Deploying to everyone at once",
-          "Sending a small % of traffic to the new version first while watching metrics",
           "Skipping health checks",
+          "Sending a small % of traffic to the new version first while watching metrics",
           "Rolling back automatically every time"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A canary shifts 1% → 10% → 100% of traffic to the new version, monitoring error rate and latency at each step so you can abort before a bad release reaches everyone."
       },
       {
         "q": "What is the difference between authentication and authorization?",
         "options": [
           "They are the same",
-          "Authentication proves who you are; authorization decides what resource/action you may access",
+          "Authentication only applies to databases",
           "Authorization stores passwords",
-          "Authentication only applies to databases"
+          "Authentication proves who you are; authorization decides what resource/action you may access"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Authn establishes identity. Authz is a fresh decision about whether that identity may perform an action on a resource, usually scoped by tenant, ownership, role, or policy."
       },
       {
         "q": "Why is JWT parsing alone insufficient for protecting an invoice endpoint?",
         "options": [
-          "JWTs cannot be signed",
           "The token may identify the user, but the service still must check access to that specific invoice/resource",
+          "JWTs cannot be signed",
           "JWTs only work with GraphQL",
           "It prevents TLS from working"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "A JWT can carry identity and broad claims, but resource-scoped authorization still has to verify tenant, ownership, role, and action for the invoice being requested."
       },
       {
         "q": "Which RAG-specific threat should be modeled in an HLD?",
         "options": [
-          "Cross-tenant retrieval and prompt injection from indexed documents",
           "Only CPU cache misses",
+          "Cross-tenant retrieval and prompt injection from indexed documents",
           "DNS TTL selection only",
           "Whether the UI uses dark mode"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "RAG expands the attack surface: malicious documents can inject instructions, stale or unauthorized chunks can be retrieved, and cross-tenant filters can fail unless designed and tested explicitly."
       }
     ]
@@ -1037,33 +1041,33 @@ window.QUIZZES = {
         "q": "In an expand-contract migration, what should happen FIRST?",
         "options": [
           "Drop the old column so nobody can use it",
-          "Add the new schema/path while keeping the old one working",
           "Run one giant UPDATE in peak traffic",
+          "Add the new schema/path while keeping the old one working",
           "Cut reads to the new table before it exists"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Expand first: add the new nullable column/table/index/path and ship code that can tolerate both shapes. Contracting the old shape comes last, after backfill, verification, cutover and the rollback window."
       },
       {
         "q": "What makes a production backfill safe to pause, crash and resume?",
         "options": [
-          "A restartable checkpoint plus idempotent batches",
+          "Skipping verification until the end",
           "A single transaction around every row in the database",
           "Running only from an engineer's laptop",
-          "Skipping verification until the end"
+          "A restartable checkpoint plus idempotent batches"
         ],
-        "answer": 0,
+        "answer": 3,
         "explain": "Persisting checkpoints and making each batch idempotent means a crashed worker can repeat the last chunk safely. Throttling and verification keep the migration from hurting production or silently drifting."
       },
       {
         "q": "What is a shadow read?",
         "options": [
-          "A read served only from a cache",
           "Reading the new path in parallel, comparing it, but returning the old result to the user",
+          "A read served only from a cache",
           "A read that bypasses authorization",
           "A replica read during failover only"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Shadow reads let you test the new read path under real traffic without affecting users. The old response is still served, while mismatches between old and new are measured."
       },
       {
@@ -1080,12 +1084,12 @@ window.QUIZZES = {
       {
         "q": "For tenant/cell migration, what must change atomically at cutover?",
         "options": [
-          "The routing control-plane mapping for tenant -> cell",
-          "Every user's password",
           "The database engine",
+          "Every user's password",
+          "The routing control-plane mapping for tenant -> cell",
           "The client app theme"
         ],
-        "answer": 0,
+        "answer": 2,
         "explain": "After copy, replay and verification, cutover is the routing decision that sends that tenant to the target cell. The mapping must change atomically and be auditable."
       }
     ]
@@ -1098,22 +1102,22 @@ window.QUIZZES = {
         "q": "In an offline-first mobile app, what should the UI read from first?",
         "options": [
           "A remote API on every render",
-          "The local database/materialized view",
+          "Only push notifications",
           "A random cache entry",
-          "Only push notifications"
+          "The local database/materialized view"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "The local DB is the UI source of truth. User edits update it immediately and append a durable operation; network sync catches the shared server state up later."
       },
       {
         "q": "Why does each queued sync operation need a stable operation_id?",
         "options": [
-          "To make the payload larger",
           "So the server can dedupe retries safely",
+          "To make the payload larger",
           "So clients can skip authorization",
           "To sort notes alphabetically"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Flaky mobile networks cause duplicate sends. A stable operation_id lets the server apply a mutation once and return the prior acknowledgement for retries."
       },
       {
@@ -1131,22 +1135,22 @@ window.QUIZZES = {
         "q": "Which conflict policy is safest for important same-field edits?",
         "options": [
           "Blind last-write-wins every time",
-          "User-visible resolution or a domain-specific merge",
           "Ignore both edits",
+          "User-visible resolution or a domain-specific merge",
           "Always delete the record"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "LWW is fine for low-value fields, but important same-field edits need product-aware handling: field merge when safe, domain-specific rules, or a user-visible conflict."
       },
       {
         "q": "Why is partial sync important on mobile?",
         "options": [
-          "It avoids pulling the entire account/company history onto a constrained device",
+          "It removes the need for local storage",
           "It disables retries",
           "It guarantees no conflicts ever happen",
-          "It removes the need for local storage"
+          "It avoids pulling the entire account/company history onto a constrained device"
         ],
-        "answer": 0,
+        "answer": 3,
         "explain": "Phones have limited battery, storage and bandwidth. Partial sync scopes by workspace, folder, time window or subscription so the client only carries the data it needs."
       }
     ]
@@ -1158,12 +1162,12 @@ window.QUIZZES = {
       {
         "q": "DRY (Don't Repeat Yourself) is really about avoiding duplicated…",
         "options": [
-          "characters",
           "knowledge — a single authoritative source for each fact",
+          "characters",
           "files",
           "variables"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "DRY targets duplicated knowledge, not duplicated text. Two pieces of code that look alike but change for different reasons aren't true duplication — merging them creates harmful coupling."
       },
       {
@@ -1181,22 +1185,22 @@ window.QUIZZES = {
         "q": "A race condition occurs when…",
         "options": [
           "Two threads run on different CPUs",
-          "Program correctness depends on the unpredictable interleaving of threads",
           "A lock is always held",
+          "Program correctness depends on the unpredictable interleaving of threads",
           "An object is immutable"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "A race condition is a bug whose outcome depends on timing — classically a non-atomic read-modify-write where two threads both read, then one update is lost. A lock around the critical section fixes it."
       },
       {
         "q": "The most practical way to prevent deadlock is to…",
         "options": [
           "Use more locks",
-          "Always acquire locks in the same global order",
+          "Increase thread priority",
           "Never use locks",
-          "Increase thread priority"
+          "Always acquire locks in the same global order"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Consistent lock ordering makes a circular wait impossible, breaking one of deadlock's four necessary conditions. Keeping critical sections small and using tryLock with a timeout also help."
       }
     ]
@@ -1208,12 +1212,12 @@ window.QUIZZES = {
       {
         "q": "The O(1) LRU cache combines which two structures?",
         "options": [
-          "Array + binary tree",
           "Hash map + doubly-linked list",
+          "Array + binary tree",
           "Heap + stack",
           "Trie + queue"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "A hash map gives O(1) lookup (key → node); a doubly-linked list ordered by recency gives O(1) move-to-front and O(1) eviction of the least-recently-used tail node."
       },
       {
@@ -1231,57 +1235,57 @@ window.QUIZZES = {
         "q": "In an elevator system, putting the dispatch policy behind a SchedulingStrategy interface is an example of…",
         "options": [
           "The Singleton pattern",
-          "The Strategy pattern (swap the algorithm without touching the cars)",
           "Inheritance abuse",
+          "The Strategy pattern (swap the algorithm without touching the cars)",
           "A god object"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Strategy isolates the changing dispatch policy (nearest-car, least-busy, night mode) behind an interface, so you can swap it without modifying ElevatorCar or ElevatorSystem — Open/Closed in action."
       },
       {
         "q": "What's the FIRST step when given an open-ended LLD prompt?",
         "options": [
           "Start writing classes",
-          "Clarify requirements, core objects, and key use cases",
+          "Optimize for performance",
           "Pick a database",
-          "Optimize for performance"
+          "Clarify requirements, core objects, and key use cases"
         ],
-        "answer": 1,
+        "answer": 3,
         "explain": "Scope first: nail down the requirements, the core entities and their responsibilities, and the main use cases. Jumping to code on assumptions is the classic mistake."
       },
       {
         "q": "In an offline sync LLD, why should the operation queue be durable instead of just an in-memory list?",
         "options": [
-          "So the UI can use more memory",
           "So pending edits survive app kills and can be retried safely",
+          "So the UI can use more memory",
           "So conflict resolution is unnecessary",
           "So operations can skip server validation"
         ],
-        "answer": 1,
+        "answer": 0,
         "explain": "Mobile apps are killed and restarted often. Persisting the operation queue means local edits are not lost; stale SENDING operations can be recovered and retried because the server dedupes by operation id."
       },
       {
         "q": "Putting LWW, field-merge and user-resolution behind a ConflictResolver interface is an example of which pattern?",
         "options": [
-          "Strategy",
           "Singleton",
+          "Strategy",
           "Adapter",
           "Composite"
         ],
-        "answer": 0,
+        "answer": 1,
         "explain": "Conflict policies are interchangeable algorithms. A Strategy interface lets the sync engine depend on an abstraction and swap the policy by entity or product rule."
       },
       {
         "q": "Why model a server migration as small MigrationStep objects with checkpoint and verify methods?",
         "options": [
           "To make the migration harder to read",
-          "To make each phase restartable, testable and independently verifiable",
           "To avoid writing data",
+          "To make each phase restartable, testable and independently verifiable",
           "To remove the need for rollback planning"
         ],
-        "answer": 1,
+        "answer": 2,
         "explain": "Small steps isolate responsibility: expand, backfill, verify, cutover and rollback can each persist progress and be tested. A giant script is hard to pause, resume or reason about after failure."
       }
     ]
   }
-};
+});

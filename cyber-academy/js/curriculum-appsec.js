@@ -42,10 +42,11 @@ window.TRACKS.appsec = {
                 ["A10", "Mishandling of Exceptional Conditions", "Unexpected states, errors and edge cases become exploitable"]
               ]
             },
-            { t: "note", variant: "key", html: "Notice the 2025 shift: <strong>Broken Access Control</strong> remains #1, <strong>Security Misconfiguration</strong> moved up, and <strong>Software Supply Chain Failures</strong> became a top category. SSRF is no longer a standalone web Top 10 category; it is treated as part of broader access-control and design failures." },
+            { t: "note", variant: "tip", html: "Notice the 2025 shift: <strong>Broken Access Control</strong> remains #1, <strong>Security Misconfiguration</strong> moved up, and <strong>Software Supply Chain Failures</strong> became a top category. SSRF is no longer a standalone web Top 10 category; it is treated as part of broader access-control and design failures." },
             { t: "h", text: "One root cause behind many" },
             { t: "p", html: "A huge share of these reduce to two habits: <strong>trusting data that crossed a trust boundary</strong> and <strong>letting design or operational assumptions go untested</strong>. Injection, XSS, SSRF, broken authorization, unsafe dependencies and error-state bugs all become easier to reason about through that lens." },
-            { t: "note", variant: "tip", html: "OWASP also publishes focused lists \u2014 the API Security Top 10, the Mobile Top 10, and the ASVS verification standard. When you build something specific, there's usually a tailored checklist." }
+            { t: "note", variant: "tip", html: "OWASP also publishes focused lists \u2014 the API Security Top 10, the Mobile Top 10, and the ASVS verification standard. When you build something specific, there's usually a tailored checklist." },
+            { t: "note", variant: "key", html: "<strong>The Top 10 ranks what goes wrong most often; it does not define secure.</strong> It is assembled from what was observed across many applications, so it tells you where to spend first and says nothing about the risk unique to your domain \u2014 the authorization rule only your business has, the workflow only your customers use. Treat it as the seed of a threat model rather than the whole of one, because an application can be clean against all ten categories and still hand an ordinary user something that was never theirs." }
           ]
         },
         {
@@ -67,7 +68,7 @@ window.TRACKS.appsec = {
 "# the query becomes:  ... WHERE name = 'alice' --'\n" +
 "# and the password check is commented out.\n"
             },
-            { t: "note", variant: "key", html: "The flaw isn't the quote character \u2014 it's that <strong>data and code share a channel</strong>. The robust fix separates them so input can never change the query's structure." },
+            { t: "note", variant: "tip", html: "The flaw isn't the quote character \u2014 it's that <strong>data and code share a channel</strong>. The robust fix separates them so input can never change the query's structure." },
             { t: "h", text: "The fix: parameterized queries" },
             {
               t: "code", lang: "python", code:
@@ -80,7 +81,8 @@ window.TRACKS.appsec = {
               bad: { title: "Doesn't actually fix it", items: ["Blocklisting words like <code>DROP</code>", "Escaping quotes by hand", "Hiding SQL errors from users", "Trusting client-side validation"] },
               good: { title: "Defense in depth", items: ["<strong>Parameterized queries</strong> / prepared statements", "ORMs used safely (no raw string building)", "Least-privilege DB accounts", "Allow-list input validation as a second layer"] }
             },
-            { t: "note", variant: "trap", html: "The same disease appears as OS command injection, LDAP injection, NoSQL injection and template injection. The cure is always the same shape: <strong>never mix untrusted input into a command string</strong> \u2014 use the API that keeps data as data." }
+            { t: "note", variant: "trap", html: "The same disease appears as OS command injection, LDAP injection, NoSQL injection and template injection. The cure is always the same shape: <strong>never mix untrusted input into a command string</strong> \u2014 use the API that keeps data as data." },
+            { t: "note", variant: "key", html: "<strong>Parameterization wins because it removes the decision, not because it filters more carefully.</strong> Escaping asks you to correctly anticipate every character an interpreter treats as syntax, in every context, forever \u2014 a bound parameter makes that question unaskable, because the structure of the statement is fixed before your data arrives. The places you cannot bind are therefore the places to watch: a table name, a sort column, a shell argument. There you are back to enumerating what is legal, so match against a list of known-good values instead of trying to filter an unknown one." }
           ]
         },
         {
@@ -115,6 +117,7 @@ window.TRACKS.appsec = {
               ]
             },
             { t: "note", variant: "trap", html: "Blocklist filters (\u201cstrip <code>&lt;script&gt;</code>\u201d) always lose \u2014 there are countless ways to introduce script (event handlers, <code>javascript:</code> URLs, SVG). Rely on <strong>encoding + CSP</strong>, not on spotting bad strings." },
+            { t: "note", variant: "key", html: "<strong>Encoding is a per-context decision, which is exactly why XSS keeps surviving.</strong> A string that is inert in an HTML body comes alive inside an attribute, a URL, or a script block, so one escape helper applied everywhere is guaranteed to be wrong somewhere \u2014 and much of a modern page is assembled in the browser, one convenience call away from stepping around the framework's auto-escaping. Encode for the sink you are writing into, then add a Content-Security-Policy so that the day you miss a sink, the payload lands somewhere it cannot run." },
             { t: "quiz", id: "appsec-web-attacks" }
           ]
         }
@@ -145,13 +148,14 @@ window.TRACKS.appsec = {
                 ["<code>__Host-</code> prefix", "Locks the cookie to the exact host, no subdomain games"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Regenerate the session ID on login.</strong> If you keep the pre-login identifier, you're open to <em>session fixation</em>, where an attacker plants a known ID and rides the session once you authenticate." },
+            { t: "note", variant: "tip", html: "<strong>Regenerate the session ID on login.</strong> If you keep the pre-login identifier, you're open to <em>session fixation</em>, where an attacker plants a known ID and rides the session once you authenticate." },
             { t: "h", text: "Sessions vs JWTs" },
             { t: "compare",
               bad: { title: "JWT misconceptions", items: ["\u201cJWTs can't be revoked, so don't bother\u201d", "Storing sensitive data in the (readable) payload", "Accepting <code>alg: none</code> or trusting the header's alg", "Long-lived access tokens with no rotation"] },
               good: { title: "Token hygiene", items: ["Short-lived access + refresh tokens", "Server-side allow/deny list for revocation", "Pin the verification algorithm explicitly", "Store tokens where XSS can't reach them"] }
             },
-            { t: "note", variant: "trap", html: "A JWT is <strong>signed, not encrypted</strong> \u2014 anyone can read its payload (it's just Base64). Never put secrets in it, and always verify the signature with a fixed algorithm before trusting a single claim." }
+            { t: "note", variant: "trap", html: "A JWT is <strong>signed, not encrypted</strong> \u2014 anyone can read its payload (it's just Base64). Never put secrets in it, and always verify the signature with a fixed algorithm before trusting a single claim." },
+            { t: "note", variant: "key", html: "<strong>Whoever holds the value is the user, and every session design is a bet on how long that stays true.</strong> Cookie flags and signature checks govern who can obtain the credential; only short lifetimes, rotation and server-side revocation govern how long a stolen one keeps working. So the question that actually separates two designs is not how the token is validated but what you can do at 3am once you know one has leaked \u2014 if nothing you control makes an outstanding token stop working, you did not issue a session, you issued permanent access." }
           ]
         },
         {
@@ -171,8 +175,8 @@ window.TRACKS.appsec = {
                 "Require re-authentication or a second factor for the riskiest actions."
               ]
             },
-            { t: "note", variant: "key", html: "CSRF only needs the attacker to make <em>your</em> browser send a request; they never see the response. That's why <strong>read-only</strong> endpoints are low-risk and <strong>state-changing</strong> ones (POST/PUT/DELETE) need protection." },
-            { t: "note", variant: "trap", html: "XSS beats CSRF defenses entirely \u2014 script running on your page can simply read the CSRF token. Fixing XSS isn't optional; CSRF tokens assume the page itself isn't compromised." }
+            { t: "note", variant: "trap", html: "XSS beats CSRF defenses entirely \u2014 script running on your page can simply read the CSRF token. Fixing XSS isn't optional; CSRF tokens assume the page itself isn't compromised." },
+            { t: "note", variant: "key", html: "<strong>CSRF exists because the browser authenticates the request without asking who wanted it.</strong> An ambient credential like a cookie is attached to any request aimed at your origin, so the defense has to establish <em>intent</em> \u2014 an unguessable token, or a SameSite rule the browser enforces \u2014 since identity was never the missing piece. Note where that reasoning stops: the attacker only makes your browser send the request and never reads the reply, which is why state-changing endpoints carry the risk, and every one of these controls assumes your own page is not already running the attacker's script." }
           ]
         },
         {
@@ -234,7 +238,8 @@ window.TRACKS.appsec = {
                 "Don't return raw fetch responses to the user."
               ]
             },
-            { t: "note", variant: "trap", html: "Naive filters fail to DNS rebinding and redirects: a host resolves to a public IP at check time, then to <code>127.0.0.1</code> at fetch time. Validate the <em>actual</em> connected IP, and re-validate on every redirect hop." }
+            { t: "note", variant: "trap", html: "Naive filters fail to DNS rebinding and redirects: a host resolves to a public IP at check time, then to <code>127.0.0.1</code> at fetch time. Validate the <em>actual</em> connected IP, and re-validate on every redirect hop." },
+            { t: "note", variant: "key", html: "<strong>SSRF is an authorization failure wearing a networking costume.</strong> The server is never tricked into exceeding its permissions \u2014 it is asked to spend the reachability and identity it legitimately holds on a destination someone else chose, which is why internal services that decide trust by network position give up so much so quickly. Allow-list the destination and validate the address you actually connected to, but treat the durable fix as deleting the assumption that a request arriving from your own network has been authorized by anyone." }
           ]
         },
         {
@@ -255,7 +260,7 @@ window.TRACKS.appsec = {
                 ["<strong>gRPC</strong>", "Strong schemas can create false confidence; service methods still perform sensitive actions.", "Validate messages semantically, authenticate callers with service identity, and authorize every method."]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>A schema proves shape, not permission.</strong> A request can be valid JSON, a valid GraphQL query, or a valid protobuf message and still ask for data or actions the caller must not reach." },
+            { t: "note", variant: "trap", html: "<strong>A schema proves shape, not permission.</strong> A request can be valid JSON, a valid GraphQL query, or a valid protobuf message and still ask for data or actions the caller must not reach." },
             { t: "h", text: "The API authorization trio" },
             {
               t: "table",
@@ -344,7 +349,7 @@ window.TRACKS.appsec = {
                 ["<strong>Tool permission drift</strong>", "Are plugins/tools scoped to the task, logged, and denied by default?"]
               ]
             },
-            { t: "note", variant: "key", html: "Model instructions are not a security boundary. A prompt can guide behavior, but authorization, data filtering, tool allow-lists, and transaction approval must live in normal application code." },
+            { t: "note", variant: "trap", html: "Model instructions are not a security boundary. A prompt can guide behavior, but authorization, data filtering, tool allow-lists, and transaction approval must live in normal application code." },
             { t: "h", text: "RAG: retrieval before reasoning" },
             {
               t: "ul", items: [
@@ -378,6 +383,7 @@ window.TRACKS.appsec = {
             ] },
             { t: "p", html: "Use the drill below to balance usefulness against least privilege. The safest bot that still solves the task is the design goal." },
             { t: "widget", id: "aiagent" },
+            { t: "note", variant: "key", html: "<strong>Anything you enforce inside the prompt can be argued with; only the code around the model cannot.</strong> Retrieval filtered by the caller's permissions, tools scoped to one account and one action, and an approval gate on anything irreversible all keep holding even when the model has been fully talked around \u2014 which is the assumption worth designing from, because text that reaches the context window is attacker-influenced more often than teams expect. Judge an AI feature by what it is still able to do wrong on the day the model cooperates completely." },
             { t: "quiz", id: "appsec-ai" }
           ]
         },
@@ -445,6 +451,7 @@ window.TRACKS.appsec = {
             { t: "p", html: "Use this lab to match safe abuse cases to controls. The goal is a repeatable defender test plan, not harmful content." },
             { t: "widget", id: "airedblue" },
             { t: "note", variant: "warn", html: "AI red teaming must be scoped like any security test: written authorization, test accounts, synthetic data where possible, no real customer harm, and a clear stop condition." },
+            { t: "note", variant: "key", html: "<strong>The deliverable of an AI red-team exercise is a control, not a transcript.</strong> A clever piece of input that produced bad output proves very little by itself; what is worth recording is which boundary gave way \u2014 retrieval scope, tool permission, output filtering \u2014 and the deterministic check that would have held regardless of how the request was worded. Findings written as prompts expire with the next model update, while findings written as missing authorization survive it." },
             { t: "quiz", id: "appsec-ai" }
           ]
         },
@@ -487,7 +494,8 @@ window.TRACKS.appsec = {
               ["Release", "Generate rollback notes, security checklist deltas and residual-risk summaries."]
             ] },
             { t: "note", variant: "trap", html: "Generated code and generated security advice can both be wrong. Require tests, human review, source citations where possible, and a clear owner for accepting residual risk." },
-            { t: "note", variant: "tip", html: "The highest-value pattern is <strong>AI-assisted checklists from your own standards</strong>: feed it the change description and ask what local security requirements need review, then verify manually." }
+            { t: "note", variant: "tip", html: "The highest-value pattern is <strong>AI-assisted checklists from your own standards</strong>: feed it the change description and ask what local security requirements need review, then verify manually." },
+            { t: "note", variant: "key", html: "<strong>AI pulls security review earlier by making it cheap, and cheap is also how it fails.</strong> Low-cost output invites volume, volume invites acceptance without evidence, and a threat model nobody argued with protects roughly as much as no threat model at all. Keep the gate exactly where it was \u2014 a named person accepts residual risk, and every generated claim earns its place through a test, a citation, or a reviewer who disagreed with part of it." }
           ]
         },
         {
@@ -537,7 +545,7 @@ window.TRACKS.appsec = {
                 ["<strong>Referrer-Policy</strong>", "Limits referrer leakage to other sites"]
               ]
             },
-            { t: "note", variant: "key", html: "A good <strong>Content-Security-Policy</strong> is the single most effective header \u2014 it can neutralize whole classes of XSS by refusing to run inline or third-party script. It takes effort to roll out, and it's worth it." },
+            { t: "note", variant: "tip", html: "A good <strong>Content-Security-Policy</strong> is the single most effective header \u2014 it can neutralize whole classes of XSS by refusing to run inline or third-party script. It takes effort to roll out, and it's worth it." },
             { t: "h", text: "The misconfiguration checklist" },
             {
               t: "ul", items: [
@@ -548,7 +556,8 @@ window.TRACKS.appsec = {
                 "Keep the stack patched \u2014 misconfig and outdated components travel together."
               ]
             },
-            { t: "note", variant: "tip", html: "Don't hand-maintain headers per app. Set a secure baseline at the gateway/CDN and verify it in CI \u2014 a single misconfigured environment is how the secure default quietly disappears." }
+            { t: "note", variant: "tip", html: "Don't hand-maintain headers per app. Set a secure baseline at the gateway/CDN and verify it in CI \u2014 a single misconfigured environment is how the secure default quietly disappears." },
+            { t: "note", variant: "key", html: "<strong>Headers are instructions to a browser, so they defend your users and nobody else.</strong> A flawless Content-Security-Policy does nothing about an attacker calling your API directly from a script, and none of these headers repair the server-side flaw underneath \u2014 what they buy is a smaller blast radius when something does get through, and a session that is harder to carry away. That is worth real effort, provided you set the baseline in one place and assert it in CI, because the environment that quietly ships without it is the one that gets found." }
           ]
         },
         {

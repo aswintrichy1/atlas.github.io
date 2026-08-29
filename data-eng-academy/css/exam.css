@@ -31,7 +31,7 @@
 .exam-head .exam-ico,
 .fc-head .fc-ico {
   width: 30px; height: 30px; flex-shrink: 0;
-  fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  fill: none; stroke: var(--accent-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
 }
 .exam-title,
 .fc-title {
@@ -50,7 +50,7 @@
 }
 .exam-best {
   align-self: flex-start; font-family: var(--font-mono); font-size: 0.74rem; font-weight: 700;
-  color: var(--accent); background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--on-accent); background: color-mix(in srgb, var(--accent) 16%, transparent);
   border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent); border-radius: 20px; padding: 5px 13px;
 }
 .exam-config-row { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
@@ -72,9 +72,9 @@
 .exam-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; flex-wrap: wrap; }
 .exam-badge {
   display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-mono);
-  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent);
+  font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent-ink);
 }
-.exam-badge svg { width: 18px; height: 18px; fill: none; stroke: var(--accent); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.exam-badge svg { width: 18px; height: 18px; fill: none; stroke: var(--accent-ink); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .exam-progress { font-family: var(--font-mono); font-size: 0.74rem; color: var(--text-faint); }
 .exam-timer {
   margin-left: auto; font-family: var(--font-mono); font-size: 0.95rem; font-weight: 700; color: var(--text);
@@ -102,9 +102,9 @@
 }
 .exam-opt-text { flex: 1; min-width: 0; }
 .exam-opt:hover { border-color: var(--accent); transform: translateX(3px); }
-.exam-opt:hover .exam-key { border-color: var(--accent); color: var(--accent); }
+.exam-opt:hover .exam-key { border-color: var(--accent); color: var(--accent-ink); }
 .exam-opt.selected { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 13%, transparent); }
-.exam-opt.selected .exam-key { background: var(--accent); border-color: var(--accent); color: var(--ink-900); }
+.exam-opt.selected .exam-key { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
 
 .exam-palette { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 18px; }
 .exam-dot {
@@ -113,7 +113,7 @@
   color: var(--text-faint); transition: 0.16s;
 }
 .exam-dot:hover { border-color: var(--accent); color: var(--text); }
-.exam-dot.answered { border-color: var(--accent); color: var(--accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
+.exam-dot.answered { border-color: var(--accent); color: var(--on-accent); background: color-mix(in srgb, var(--accent) 12%, transparent); }
 .exam-dot.current { box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); color: var(--text); }
 
 .exam-foot { display: flex; align-items: center; gap: 10px; margin-top: 22px; flex-wrap: wrap; }
@@ -125,19 +125,19 @@
    ===================================================================== */
 .exam-result-head { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 .exam-score { font-family: var(--font-display); font-weight: 800; font-size: clamp(2.2rem, 6vw, 3rem); line-height: 1; }
-.exam-score.pass { color: var(--cyan); }
-.exam-score.fail { color: var(--amber); }
+.exam-score.pass { color: var(--cyan-ink); }
+.exam-score.fail { color: var(--amber-ink); }
 .exam-verdict {
   font-family: var(--font-mono); font-weight: 700; letter-spacing: 0.14em; font-size: 0.78rem;
   padding: 6px 14px; border-radius: 20px;
 }
-.exam-verdict.pass { color: var(--cyan); background: color-mix(in srgb, var(--cyan) 14%, transparent); border: 1px solid color-mix(in srgb, var(--cyan) 45%, transparent); }
-.exam-verdict.fail { color: var(--amber); background: color-mix(in srgb, var(--amber) 14%, transparent); border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent); }
+.exam-verdict.pass { color: var(--on-accent); background: color-mix(in srgb, var(--cyan) 14%, transparent); border: 1px solid color-mix(in srgb, var(--cyan) 45%, transparent); }
+.exam-verdict.fail { color: var(--on-accent); background: color-mix(in srgb, var(--amber) 14%, transparent); border: 1px solid color-mix(in srgb, var(--amber) 45%, transparent); }
 .exam-result-sub { color: var(--text-dim); margin: 14px 0 20px; }
 
 .exam-meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 12px; margin-bottom: 28px; }
 .exam-meta-item { border: 1px solid var(--glass-border); border-radius: var(--radius-sm); padding: 14px 16px; background: var(--surface-solid); }
-.exam-meta-v { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--accent); }
+.exam-meta-v { font-family: var(--font-display); font-weight: 800; font-size: 1.5rem; color: var(--accent-ink); }
 .exam-meta-k { font-family: var(--font-mono); font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-faint); margin-top: 4px; }
 
 .exam-sec-title { font-family: var(--font-display); font-weight: 700; font-size: 1.15rem; margin: 0 0 14px; }
@@ -158,14 +158,14 @@
   flex: 0 0 auto; min-width: 92px; text-align: center; font-family: var(--font-mono);
   font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.08em; padding: 3px 8px; border-radius: 6px;
 }
-.exam-ri-row.your .exam-ri-tag { color: var(--rose); background: color-mix(in srgb, var(--rose) 14%, transparent); }
-.exam-ri-row.correct .exam-ri-tag { color: var(--cyan); background: color-mix(in srgb, var(--cyan) 14%, transparent); }
+.exam-ri-row.your .exam-ri-tag { color: var(--on-accent); background: color-mix(in srgb, var(--rose) 14%, transparent); }
+.exam-ri-row.correct .exam-ri-tag { color: var(--on-accent); background: color-mix(in srgb, var(--cyan) 14%, transparent); }
 .exam-ri-val { color: var(--text); }
 .exam-ri-explain {
   margin-top: 10px; padding: 12px 14px; border-radius: 10px; background: var(--surface-2);
   border-left: 3px solid var(--cyan); font-size: 0.88rem; color: var(--text-dim);
 }
-.exam-ri-explain strong { color: var(--cyan); }
+.exam-ri-explain strong { color: var(--cyan-ink); }
 
 /* =====================================================================
    FLASHCARDS
@@ -207,14 +207,14 @@
   font-family: var(--font-mono); font-size: 0.68rem; font-weight: 700; padding: 3px 10px; border-radius: 20px;
   border: 1px solid var(--line); color: var(--text-faint);
 }
-.fc-status.known { color: var(--cyan); border-color: color-mix(in srgb, var(--cyan) 45%, transparent); background: color-mix(in srgb, var(--cyan) 14%, transparent); }
-.fc-status.review { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); background: color-mix(in srgb, var(--amber) 14%, transparent); }
+.fc-status.known { color: var(--on-accent); border-color: color-mix(in srgb, var(--cyan) 45%, transparent); background: color-mix(in srgb, var(--cyan) 14%, transparent); }
+.fc-status.review { color: var(--on-accent); border-color: color-mix(in srgb, var(--amber) 45%, transparent); background: color-mix(in srgb, var(--amber) 14%, transparent); }
 
 .fc-actions, .fc-grades { justify-content: center; }
 .fc-flip { min-width: 120px; justify-content: center; }
-.fc-grade.good { border-color: color-mix(in srgb, var(--cyan) 45%, transparent); color: var(--cyan); }
+.fc-grade.good { border-color: color-mix(in srgb, var(--cyan) 45%, transparent); color: var(--cyan-ink); }
 .fc-grade.good:hover { background: color-mix(in srgb, var(--cyan) 16%, transparent); border-color: var(--cyan); transform: translateY(-1px); }
-.fc-grade.bad { border-color: color-mix(in srgb, var(--amber) 45%, transparent); color: var(--amber); }
+.fc-grade.bad { border-color: color-mix(in srgb, var(--amber) 45%, transparent); color: var(--amber-ink); }
 .fc-grade.bad:hover { background: color-mix(in srgb, var(--amber) 16%, transparent); border-color: var(--amber); transform: translateY(-1px); }
 
 /* =====================================================================

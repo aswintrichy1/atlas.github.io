@@ -48,7 +48,7 @@ window.TRACKS.hld = {
                 ["Question it answers", "Will it handle 1M users?", "Is this code clean & flexible?"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>The core skill of HLD is trade-off reasoning.</strong> There is rarely one right answer — only choices that buy you one property (say, low latency) at the cost of another (say, strong consistency). Naming the trade-off out loud is what separates a senior answer from a junior one." },
+            { t: "note", variant: "tip", html: "<strong>The core skill of HLD is trade-off reasoning.</strong> There is rarely one right answer — only choices that buy you one property (say, low latency) at the cost of another (say, strong consistency). Naming the trade-off out loud is what separates a senior answer from a junior one." },
             { t: "h", text: "The properties you are always trading" },
             {
               t: "ul", items: [
@@ -60,7 +60,8 @@ window.TRACKS.hld = {
                 "<strong>Cost & complexity</strong> — every nine of availability and every ms of latency has a price."
               ]
             },
-            { t: "p", html: "Every lesson in this track is really about one of these properties and the price you pay to improve it. Keep this list in your head — it is the lens through which all the patterns make sense." }
+            { t: "p", html: "Every lesson in this track is really about one of these properties and the price you pay to improve it. Keep this list in your head — it is the lens through which all the patterns make sense." },
+            { t: "note", variant: "key", html: "<strong>Every architectural decision spends one property to buy another.</strong> Scalability, availability, latency, consistency, durability and cost cannot all be maximised at once, so a design only becomes defensible at the moment you can say which of them you deliberately gave up, and what the business gets in return." }
           ]
         },
         {
@@ -109,7 +110,7 @@ window.TRACKS.hld = {
                 "With 3x replication                      ~= 82 PB\n" +
                 "Write bandwidth = 15 TB / 86,400 s       ~= 178 MB/s sustained"
             },
-            { t: "note", variant: "key", html: "Now you know this is an <strong>object-storage problem</strong> (S3-class), not a 'fits in Postgres' problem — and you reached that conclusion in 90 seconds of arithmetic. <em>That</em> is the value of estimation." },
+            { t: "note", variant: "tip", html: "Now you know this is an <strong>object-storage problem</strong> (S3-class), not a 'fits in Postgres' problem — and you reached that conclusion in 90 seconds of arithmetic. <em>That</em> is the value of estimation." },
             { t: "h", text: "Units worth memorizing" },
             {
               t: "ul", items: [
@@ -118,7 +119,8 @@ window.TRACKS.hld = {
                 "A UUID ≈ 16 bytes · a timestamp ≈ 8 bytes · a typical row ≈ hundreds of bytes",
                 "1 server ≈ tens of thousands of simple QPS; a DB ≈ thousands of writes/sec before tuning"
               ]
-            }
+            },
+            { t: "note", variant: "key", html: "<strong>Estimate to eliminate, not to be precise.</strong> The arithmetic exists to rule out whole categories of design in about ninety seconds: being wrong by a factor of two changes nothing, while being wrong by a factor of a thousand puts you on the wrong storage tier for the rest of the conversation. Get the exponent right and move on." }
           ]
         },
         {
@@ -148,6 +150,7 @@ window.TRACKS.hld = {
               good: { title: "Write-heavy systems", items: ["Metrics, logging, IoT, chat", "Shard by key; buffer with queues", "LSM-tree stores (Cassandra)", "Batch & compact; async pipelines"] }
             },
             { t: "p", html: "You now have the scaffolding. The rest of this track fills in each box — load balancers, caches, databases, queues — with the trade-offs that make one choice better than another <em>for your numbers</em>." },
+            { t: "note", variant: "key", html: "<strong>Scope before boxes.</strong> The seven steps exist to stop you architecting a system nobody asked for: requirements and numbers first, then a contract and a data model, and only then a diagram. Skipping ahead feels faster and reliably costs more, because a read:write ratio discovered late invalidates most of what you already drew." },
             { t: "quiz", id: "hld-foundations" }
           ]
         }
@@ -173,9 +176,9 @@ window.TRACKS.hld = {
               bad: { title: "Vertical (scale up)", items: ["Add CPU / RAM / faster disk to one machine", "Dead simple — no code changes", "No distributed-systems complexity", "✗ Hard ceiling (biggest box money can buy)", "✗ Single point of failure", "✗ Expensive at the top end"] },
               good: { title: "Horizontal (scale out)", items: ["Add more machines behind a load balancer", "Near-limitless growth", "Redundancy → fault tolerance", "✗ Requires statelessness / coordination", "✗ Network, consistency, ops complexity", "Cheaper per unit using commodity nodes"] }
             },
-            { t: "note", variant: "key", html: "Modern internet-scale systems are <strong>horizontally scaled</strong>, but they often scale individual nodes vertically too. Start vertical (it's free engineering-wise); go horizontal when you hit the ceiling or need redundancy." },
             { t: "h", text: "Why horizontal needs statelessness" },
-            { t: "p", html: "If request #1 from a user lands on server A and request #2 lands on server B, server B must be able to serve it. That only works if servers hold <em>no</em> per-user state locally — the subject of the next lesson." }
+            { t: "p", html: "If request #1 from a user lands on server A and request #2 lands on server B, server B must be able to serve it. That only works if servers hold <em>no</em> per-user state locally — the subject of the next lesson." },
+            { t: "note", variant: "key", html: "<strong>Scale up until the box or the blast radius stops you, then scale out.</strong> Vertical growth costs no engineering and buys real headroom, but it leaves the whole system standing on one machine. Horizontal growth buys redundancy and near-unlimited capacity, and charges for it in coordination — every server has to become disposable and stateless first." }
           ]
         },
         {
@@ -199,7 +202,8 @@ window.TRACKS.hld = {
               "                                          Redis / DB (shared)\n"
             },
             { t: "note", variant: "trap", html: "<strong>Sticky sessions</strong> (the LB routes a user to the same server) are a band-aid that reintroduces statefulness. They make autoscaling and failover painful. Prefer externalizing state; reserve stickiness for special cases like in-progress uploads." },
-            { t: "p", html: "Rule of thumb: keep app servers <strong>disposable</strong>. If killing a random server would log anyone out or lose data, you still have hidden state to evict." }
+            { t: "p", html: "Rule of thumb: keep app servers <strong>disposable</strong>. If killing a random server would log anyone out or lose data, you still have hidden state to evict." },
+            { t: "note", variant: "key", html: "<strong>State belongs anywhere except the app server.</strong> Move sessions into a shared store or a signed token and every replica becomes interchangeable, which is what makes autoscaling, rolling deploys and sudden node loss uneventful. Anything you keep locally is a sticky session in disguise, and you pay for it during the next failover." }
           ]
         },
         {
@@ -264,11 +268,12 @@ window.TRACKS.hld = {
                 "<strong>Database cache</strong> — query/result cache and the DB's own buffer pool."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Cache hit ratio</strong> is the metric that matters: hits ÷ total lookups. A 95% hit ratio means the DB sees only 5% of read traffic. Small improvements here translate to large capacity gains." },
+            { t: "note", variant: "tip", html: "<strong>Cache hit ratio</strong> is the metric that matters: hits ÷ total lookups. A 95% hit ratio means the DB sees only 5% of read traffic. Small improvements here translate to large capacity gains." },
             { t: "h", text: "Write strategies" },
             { t: "p", html: "The hard part of caching isn't reading — it's keeping the cache consistent with the source of truth when data <em>changes</em>. Explore the three write strategies below." },
             { t: "widget", id: "cachewrite" },
-            { t: "p", html: "Pair a write strategy with a <em>read</em> strategy (next lesson). The classic combo is <strong>cache-aside reads + write-through (or invalidate-on-write)</strong>." }
+            { t: "p", html: "Pair a write strategy with a <em>read</em> strategy (next lesson). The classic combo is <strong>cache-aside reads + write-through (or invalidate-on-write)</strong>." },
+            { t: "note", variant: "key", html: "<strong>A cache is a bet that slightly stale data is cheaper than a slow answer.</strong> Where you place it and what hit ratio it sustains decide how much latency and database load you win; the write strategy decides how wrong the data is allowed to be while you are winning. Choose both, or the second one gets chosen for you by whatever TTL somebody guessed." }
           ]
         },
         {
@@ -304,7 +309,8 @@ window.TRACKS.hld = {
               ]
             },
             { t: "note", variant: "warn", html: "<strong>Cache stampede / thundering herd:</strong> a hot key expires and thousands of concurrent misses hit the DB at once. Defenses: add <em>jitter</em> to TTLs, use a <em>mutex/lease</em> so only one request recomputes, or serve slightly-stale data while one worker refreshes in the background." },
-            { t: "note", variant: "trap", html: "Also watch for <strong>cache penetration</strong> (queries for keys that don't exist bypass the cache every time — cache the 'not found' too, or use a bloom filter) and <strong>hot keys</strong> (one key so popular it overloads a single cache node — replicate or shard it)." }
+            { t: "note", variant: "trap", html: "Also watch for <strong>cache penetration</strong> (queries for keys that don't exist bypass the cache every time — cache the 'not found' too, or use a bloom filter) and <strong>hot keys</strong> (one key so popular it overloads a single cache node — replicate or shard it)." },
+            { t: "note", variant: "key", html: "<strong>Invalidation is the design; the read pattern is a detail.</strong> Cache-aside and read-through barely change your architecture, but how you expire, delete or version a key on write decides how stale a user can get — and whether one popular key expiring takes the database down with it. Every failure mode in this lesson is a consequence of that one choice." }
           ]
         },
         {
@@ -327,8 +333,9 @@ window.TRACKS.hld = {
                 ["TTL", "Anything expired", "Time-bounded freshness", "Stampede on synchronized expiry"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>LRU</strong> is the default workhorse — it assumes recently used ⇒ soon used (temporal locality). Production caches like Redis offer LRU, LFU, and approximations that sample a few keys instead of maintaining perfect order (cheaper, nearly as good)." },
-            { t: "p", html: "Implementation note: a classic exact-LRU is a <em>hash map + doubly-linked list</em> giving O(1) get and put — a favorite LLD interview question that bridges both tracks." }
+            { t: "note", variant: "tip", html: "<strong>LRU</strong> is the default workhorse — it assumes recently used ⇒ soon used (temporal locality). Production caches like Redis offer LRU, LFU, and approximations that sample a few keys instead of maintaining perfect order (cheaper, nearly as good)." },
+            { t: "p", html: "Implementation note: a classic exact-LRU is a <em>hash map + doubly-linked list</em> giving O(1) get and put — a favorite LLD interview question that bridges both tracks." },
+            { t: "note", variant: "key", html: "<strong>An eviction policy is a guess about the future, so buy the cheapest guess that holds.</strong> LRU bets on temporal locality and is right often enough to be the default, and production caches deliberately approximate it by sampling a handful of keys — because near-perfect ordering at a fraction of the bookkeeping is the better trade at cache speeds." }
           ]
         },
         {
@@ -354,6 +361,7 @@ window.TRACKS.hld = {
               ]
             },
             { t: "note", variant: "tip", html: "Best practice: <strong>immutable, hashed asset URLs + long TTLs</strong>. You get edge-fast delivery and instant deploys (new hash = new URL) without ever fighting stale caches." },
+            { t: "note", variant: "key", html: "<strong>The cheapest request is the one that never reaches your origin.</strong> A CDN converts geographic distance into a local cache hit, and the freshness problem that creates disappears entirely once content is addressed by its hash — immutable URLs let you cache indefinitely and still deploy instantly, which is why push versus pull matters far less than naming things well." },
             { t: "quiz", id: "hld-caching" }
           ]
         }
@@ -389,7 +397,7 @@ window.TRACKS.hld = {
                 ["Graph", "nodes + edges", "Social graphs, recommendations", "Neo4j, Neptune"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>ACID vs BASE.</strong> ACID (Atomic, Consistent, Isolated, Durable) = correctness guarantees, classic SQL. BASE (Basically Available, Soft-state, Eventually consistent) = availability & scale, classic NoSQL. Pick the guarantee your domain truly needs — money wants ACID; a 'like' counter is happy with BASE." },
+            { t: "note", variant: "tip", html: "<strong>ACID vs BASE.</strong> ACID (Atomic, Consistent, Isolated, Durable) = correctness guarantees, classic SQL. BASE (Basically Available, Soft-state, Eventually consistent) = availability & scale, classic NoSQL. Pick the guarantee your domain truly needs — money wants ACID; a 'like' counter is happy with BASE." },
             { t: "h", text: "How to choose" },
             {
               t: "ul", items: [
@@ -400,7 +408,8 @@ window.TRACKS.hld = {
                 "Unsure / typical CRUD app at moderate scale? → <strong>start with Postgres.</strong> It scales further than people think."
               ]
             },
-            { t: "note", variant: "trap", html: "Don't pick NoSQL 'for scale' on a system that will never need it. You'll trade away JOINs and transactions for a horizontal scalability you don't use. Match the tool to the access pattern." }
+            { t: "note", variant: "trap", html: "Don't pick NoSQL 'for scale' on a system that will never need it. You'll trade away JOINs and transactions for a horizontal scalability you don't use. Match the tool to the access pattern." },
+            { t: "note", variant: "key", html: "<strong>Access patterns choose the database; scale only shortens the list.</strong> Decide which queries must be fast, which writes must be transactional, and how the data is actually shaped — then pick the engine that answers those natively. A mismatched data model taxes you on every feature, while unused horizontal headroom costs you nothing at all." }
           ]
         },
         {
@@ -450,7 +459,7 @@ window.TRACKS.hld = {
               "-- customer_id, or (customer_id AND status) -- the leftmost prefix.\n" +
               "CREATE INDEX idx_orders_cust_status ON orders (customer_id, status);"
             },
-            { t: "note", variant: "key", html: "<strong>Indexes trade write speed & storage for read speed.</strong> Every insert/update must also update each index. Index the columns you filter/join/sort on — not every column." },
+            { t: "note", variant: "tip", html: "<strong>Indexes trade write speed & storage for read speed.</strong> Every insert/update must also update each index. Index the columns you filter/join/sort on — not every column." },
             {
               t: "ul", items: [
                 "<strong>Primary index</strong> — on the primary key; often the physical row order (clustered).",
@@ -460,7 +469,8 @@ window.TRACKS.hld = {
                 "<strong>Hash index</strong> — O(1) equality lookups, but no range queries."
               ]
             },
-            { t: "note", variant: "tip", html: "Read the query planner (<code class='tok'>EXPLAIN ANALYZE</code>). 'Seq Scan' on a big table in a hot query is a red flag; 'Index Scan' is what you want. Profile before adding indexes — guessing wastes write performance." }
+            { t: "note", variant: "tip", html: "Read the query planner (<code class='tok'>EXPLAIN ANALYZE</code>). 'Seq Scan' on a big table in a hot query is a red flag; 'Index Scan' is what you want. Profile before adding indexes — guessing wastes write performance." },
+            { t: "note", variant: "key", html: "<strong>An index is a write tax paid to make one query shape fast.</strong> That makes indexing a decision about a specific access pattern rather than a table-wide habit: the column order in a composite index is part of the contract, the planner is the only honest referee, and an index nothing queries is pure overhead on every insert." }
           ]
         },
         {
@@ -524,7 +534,8 @@ window.TRACKS.hld = {
                 "<strong>Operational complexity</strong> multiplies — backups, migrations, and monitoring per shard."
               ]
             },
-            { t: "note", variant: "tip", html: "Don't shard until you must. Squeeze vertical scaling, read replicas, and caching first — sharding is a one-way door that complicates everything downstream." }
+            { t: "note", variant: "tip", html: "Don't shard until you must. Squeeze vertical scaling, read replicas, and caching first — sharding is a one-way door that complicates everything downstream." },
+            { t: "note", variant: "key", html: "<strong>Sharding buys write and storage capacity by surrendering the single-machine conveniences nobody priced.</strong> Joins, transactions and rebalancing all turn into project work, and the shard key freezes the distribution you will live with — which is exactly why replicas, caching and a bigger box come first." }
           ]
         },
         {
@@ -555,11 +566,12 @@ window.TRACKS.hld = {
                 ["Serializable", "Prevented", "Prevented", "Prevented"]
               ]
             },
-            { t: "note", variant: "key", html: "Higher isolation = fewer anomalies but more locking/aborts and lower throughput. <strong>Read Committed</strong> is the common default (Postgres, Oracle, SQL Server). <strong>Serializable</strong> is the gold standard — the result is <em>as if</em> transactions ran one at a time — but it's the slowest. (*MySQL's InnoDB blocks phantoms at Repeatable Read via next-key locks.)" },
+            { t: "note", variant: "tip", html: "Higher isolation = fewer anomalies but more locking/aborts and lower throughput. <strong>Read Committed</strong> is the common default (Postgres, Oracle, SQL Server). <strong>Serializable</strong> is the gold standard — the result is <em>as if</em> transactions ran one at a time — but it's the slowest. (*MySQL's InnoDB blocks phantoms at Repeatable Read via next-key locks.)" },
             { t: "h", text: "How databases actually do it: MVCC" },
             { t: "p", html: "Rather than locking readers behind writers, most modern databases use <strong>Multi-Version Concurrency Control (MVCC)</strong>: every write creates a new <em>version</em> of a row stamped with a transaction id, and each transaction reads a consistent <em>snapshot</em> as of when it began. Readers never block writers and writers never block readers — only write-write conflicts need resolving." },
             { t: "note", variant: "trap", html: "Don't default to Serializable 'to be safe' — it can tank throughput and cause serialization failures your app must retry. Pick the weakest level that's correct for the operation: a money transfer wants Serializable (or careful row locks); a dashboard read is fine at Read Committed." },
-            { t: "note", variant: "tip", html: "In a system-design interview, naming the isolation level you'd use — and <em>why</em> — signals real database depth. Tie it back to the CAP/PACELC trade-off: stronger isolation usually means more coordination and higher latency." }
+            { t: "note", variant: "tip", html: "In a system-design interview, naming the isolation level you'd use — and <em>why</em> — signals real database depth. Tie it back to the CAP/PACELC trade-off: stronger isolation usually means more coordination and higher latency." },
+            { t: "note", variant: "key", html: "<strong>Choose the weakest isolation level that still makes the operation correct.</strong> Each step up the ladder removes one anomaly and adds coordination, so a money transfer earns Serializable and a dashboard query does not. MVCC is what makes the middle of that ladder affordable, and naming the specific anomaly you are buying protection from is the part that reads as depth." }
           ]
         },
         {
@@ -603,7 +615,7 @@ window.TRACKS.hld = {
               "<strong>Shadow-read</strong> is safer before cutover: serve the old result to the user, read the new store in parallel, compare, and emit a mismatch metric.",
               "<strong>CDC validation</strong> tails the change stream from the source and confirms every committed mutation reaches the target in order for each key."
             ] },
-            { t: "note", variant: "key", html: "The migration dashboard should show progress, lag, mismatch rate, write failure rate, batch retries and rollback readiness. A green deploy is not enough; the data must be green too." },
+            { t: "note", variant: "tip", html: "The migration dashboard should show progress, lag, mismatch rate, write failure rate, batch retries and rollback readiness. A green deploy is not enough; the data must be green too." },
             { t: "h", text: "Cutover and rollback" },
             { t: "p", html: "Cutover is a routing decision. Keep the old path warm for a defined window, keep dual-write until confidence is high, and make rollback mechanical: flip reads back, pause the backfill, preserve mismatch evidence, and replay missing writes from the durable log." },
             { t: "compare",
@@ -613,6 +625,7 @@ window.TRACKS.hld = {
             { t: "h", text: "Tenant and cell migrations" },
             { t: "p", html: "Tenant or cell moves are the same pattern at a larger boundary: sequence writes, copy tenant-scoped data, replay changes, verify checksums, then atomically update the routing control plane. Keep the source read-capable until support, analytics and jobs agree on the new location." },
             { t: "note", variant: "trap", html: "Never hardcode tenant ids, program ids, account names or dates into a migration plan. They belong in a runtime manifest or control-plane row so the same machinery works in every environment and for every tenant." },
+            { t: "note", variant: "key", html: "<strong>A safe migration is one you can stop at any phase.</strong> Expand-contract keeps both shapes alive so backfill, shadow read and cutover each stay reversible, and the old path stays warm until the mismatch evidence — not the schedule — says the rollback window has closed. Everything else here is machinery for making that pause cheap." },
             { t: "quiz", id: "hld-data-migrations" }
           ]
         },
@@ -649,7 +662,7 @@ window.TRACKS.hld = {
           tags: ["distributed", "consistency", "theory"],
           blocks: [
             { t: "p", html: "The <strong>CAP theorem</strong> states that a distributed data store can provide at most <em>two</em> of: <strong>Consistency</strong> (every read sees the latest write), <strong>Availability</strong> (every request gets a non-error response), and <strong>Partition tolerance</strong> (it keeps working despite dropped messages between nodes)." },
-            { t: "note", variant: "key", html: "In any real distributed system, network partitions <em>will</em> happen — so <strong>P is non-negotiable</strong>. The real choice is: during a partition, do you stay <strong>Consistent</strong> (CP, refuse/block) or <strong>Available</strong> (AP, answer with maybe-stale data)? 'CA' only exists on a single node." },
+            { t: "note", variant: "tip", html: "In any real distributed system, network partitions <em>will</em> happen — so <strong>P is non-negotiable</strong>. The real choice is: during a partition, do you stay <strong>Consistent</strong> (CP, refuse/block) or <strong>Available</strong> (AP, answer with maybe-stale data)? 'CA' only exists on a single node." },
             { t: "widget", id: "cap" },
             { t: "h", text: "PACELC — the part CAP forgets" },
             { t: "p", html: "CAP only describes behavior <em>during</em> a partition. <strong>PACELC</strong> adds: <em>else</em> (when the system is healthy), you still trade <strong>Latency</strong> vs <strong>Consistency</strong>. Even with no partition, a quorum read that guarantees freshness is slower than reading one nearby replica." },
@@ -660,7 +673,8 @@ window.TRACKS.hld = {
               "  HBase / etcd / ZK    : PC/EC  -> consistent, always\n" +
               "  Spanner              : PC/EC  -> consistency via synced clocks"
             },
-            { t: "note", variant: "trap", html: "Don't memorize labels — reason from the use case. A bank ledger wants CP (never show a wrong balance). A social feed wants AP (always load, even if a like count is briefly off). The 'right' answer is domain-specific." }
+            { t: "note", variant: "trap", html: "Don't memorize labels — reason from the use case. A bank ledger wants CP (never show a wrong balance). A social feed wants AP (always load, even if a like count is briefly off). The 'right' answer is domain-specific." },
+            { t: "note", variant: "key", html: "<strong>The partition choice is rare; the latency choice is constant.</strong> CAP forces a one-off decision between refusing a request and answering with possibly-stale data, but PACELC's <em>else</em> branch is what you actually pay on every healthy request — freshness bought with a quorum round trip, or speed bought by trusting a nearby replica." }
           ]
         },
         {
@@ -683,7 +697,7 @@ window.TRACKS.hld = {
                 ["Eventual", "Replicas converge if writes stop", "Fastest, most available"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Eventual consistency is not 'no consistency'.</strong> It guarantees convergence — given no new writes, all replicas end up identical. The window of disagreement is usually milliseconds. For likes, view counts, and feeds, that's invisible to users and well worth the availability." },
+            { t: "note", variant: "tip", html: "<strong>Eventual consistency is not 'no consistency'.</strong> It guarantees convergence — given no new writes, all replicas end up identical. The window of disagreement is usually milliseconds. For likes, view counts, and feeds, that's invisible to users and well worth the availability." },
             { t: "h", text: "Picking a model" },
             {
               t: "ul", items: [
@@ -693,6 +707,7 @@ window.TRACKS.hld = {
                 "Default mindset: use the <em>weakest</em> model your correctness allows — it's cheaper and more available."
               ]
             },
+            { t: "note", variant: "key", html: "<strong>Consistency is a per-operation choice, not a system-wide setting.</strong> The same product can hold balances linearizably, order replies causally and let like counts converge eventually, because each guarantee is bought with coordination and coordination is paid in latency and availability. Naming the model per operation is what keeps that bill proportional to the risk." },
             { t: "quiz", id: "hld-cap" }
           ]
         },
@@ -787,8 +802,9 @@ window.TRACKS.hld = {
                 "<strong>Decoupled architecture</strong> — services emit events without knowing who listens (pub/sub)."
               ]
             },
-            { t: "note", variant: "key", html: "Kafka scales by splitting a topic into <strong>partitions</strong>; order is guaranteed <em>within</em> a partition, and the partition key (e.g. user_id) decides placement. More partitions = more parallelism, at the cost of cross-partition ordering." },
+            { t: "note", variant: "tip", html: "Kafka scales by splitting a topic into <strong>partitions</strong>; order is guaranteed <em>within</em> a partition, and the partition key (e.g. user_id) decides placement. More partitions = more parallelism, at the cost of cross-partition ordering." },
             { t: "note", variant: "tip", html: "Rule of thumb: need to <em>distribute tasks</em> to workers? Use a queue. Need to <em>broadcast events</em> to many systems and keep history? Use a log/stream." },
+            { t: "note", variant: "key", html: "<strong>Retention is the real difference, not delivery.</strong> A queue hands each message to one worker and forgets it; a log keeps the events so a new consumer, a bug fix or a reprocessing run is possible months later. You are deciding whether history is an asset you can query or a liability you have to store and secure." },
           ]
         },
         {
@@ -806,8 +822,8 @@ window.TRACKS.hld = {
               ["Out-of-order updates", "Partition by entity id and apply version checks"],
               ["Downstream cannot keep up", "Backpressure: pause consumption, reject writes, shed low-priority work or buffer with limits"]
             ] },
-            { t: "note", variant: "key", html: "Replay safety is a design requirement, not an ops trick. If a consumer sends emails, charges cards or mutates state, it must dedupe before side effects." },
-            { t: "note", variant: "trap", html: "An unbounded queue hides overload until it becomes data loss or an outage. Bounded queues and explicit backpressure fail earlier, but they fail honestly." }
+            { t: "note", variant: "trap", html: "An unbounded queue hides overload until it becomes data loss or an outage. Bounded queues and explicit backpressure fail earlier, but they fail honestly." },
+            { t: "note", variant: "key", html: "<strong>Replay and overload are the same requirement seen twice: bound what a consumer can be asked to absorb.</strong> Dedupe before any irreversible side effect so history can be re-run on purpose, and keep queues bounded so a bad day surfaces as an honest rejection rather than a backlog that quietly ages into data loss." }
           ]
         },
         {
@@ -839,6 +855,7 @@ window.TRACKS.hld = {
             },
             { t: "note", variant: "warn", html: "<strong>Effectively-once</strong> is a better phrase than exactly-once for most architectures. Brokers can help with transactions and dedupe, but the business effect is correct only when the database write, external side effect and consumer dedupe are designed together." },
             { t: "note", variant: "tip", html: "Replay from a stream is powerful only if handlers are version-aware, idempotent and bounded. Before replaying a month of events, run a small window, watch lag, and disable side effects that should not repeat, such as emails." },
+            { t: "note", variant: "key", html: "<strong>Reliability lives in the gaps between components, not inside the broker.</strong> A durable event system is a business write and an outbox row in one transaction, a relay that is safe to repeat, and a consumer that dedupes before doing anything irreversible. Remove any one of the three and at-least-once quietly becomes sometimes-twice, sometimes-never." },
             { t: "quiz", id: "hld-messaging" }
           ]
         },
@@ -854,8 +871,8 @@ window.TRACKS.hld = {
               bad: { title: "Synchronous (request/response)", items: ["Simple to reason about; immediate result", "Caller learns of failures instantly", "✗ Caller blocked; latency adds up across hops", "✗ Tight coupling; a slow callee slows you"] },
               good: { title: "Asynchronous (event/queue)", items: ["Non-blocking; absorbs spikes; loosely coupled", "Independent scaling & failure isolation", "✗ Harder to trace & debug (eventual results)", "✗ Need to handle out-of-order / retries"] }
             },
-            { t: "note", variant: "key", html: "Heuristic: if the user is <em>waiting on the result to continue</em>, go sync (login, checkout validation). If it's <em>fire-and-forget</em> background work (send email, generate thumbnail, update analytics), go async." },
-            { t: "p", html: "Most real systems blend both: a synchronous API at the edge that quickly enqueues asynchronous work behind it — fast response now, heavy lifting later." }
+            { t: "p", html: "Most real systems blend both: a synchronous API at the edge that quickly enqueues asynchronous work behind it — fast response now, heavy lifting later." },
+            { t: "note", variant: "key", html: "<strong>Ask who is waiting.</strong> Work the user needs before they can continue stays synchronous; everything else moves behind a queue, which is why most systems end up as a fast synchronous edge in front of an asynchronous interior. The bill for that split is paid later, in retries, out-of-order arrival and results that are harder to trace." }
           ]
         }
       ]
@@ -887,7 +904,7 @@ window.TRACKS.hld = {
                 ["Great for", "Public CRUD APIs", "Rich client UIs (mobile/web)", "Internal microservice calls"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Over-fetching</strong> (REST returns more than you need) and <strong>under-fetching</strong> (you must call 3 endpoints to build one screen) are exactly what GraphQL fixes by letting the client request a precise shape. gRPC instead optimizes the <em>wire</em>: binary Protobuf over HTTP/2 with streaming — ideal between services in a mesh." },
+            { t: "note", variant: "tip", html: "<strong>Over-fetching</strong> (REST returns more than you need) and <strong>under-fetching</strong> (you must call 3 endpoints to build one screen) are exactly what GraphQL fixes by letting the client request a precise shape. gRPC instead optimizes the <em>wire</em>: binary Protobuf over HTTP/2 with streaming — ideal between services in a mesh." },
             {
               t: "ul", items: [
                 "Public API for third parties? → <strong>REST</strong> (familiar, cacheable, tooling everywhere).",
@@ -904,7 +921,8 @@ window.TRACKS.hld = {
                 "<strong>Idempotency keys</strong> on writes so retries don't double-charge.",
                 "Consistent <strong>errors</strong>, sensible <strong>status codes</strong>, and <strong>rate limits</strong> (two lessons away)."
               ]
-            }
+            },
+            { t: "note", variant: "key", html: "<strong>Pick the style by who the caller is.</strong> Public and cacheable points at REST, a screen assembling many resources points at GraphQL, and a hot internal hop points at gRPC — and each choice hands you a different hard problem: endpoint sprawl, query cost control, or a binary contract browsers cannot speak. Versioning, cursors, idempotency keys and stable errors are owed to callers either way." }
           ]
         },
         {
@@ -935,7 +953,8 @@ window.TRACKS.hld = {
               ]
             },
             { t: "note", variant: "tip", html: "A <strong>Backend-for-Frontend (BFF)</strong> is a gateway tailored to one client type — e.g., a mobile BFF returns lean payloads for slow networks, a web BFF returns richer ones. It keeps client-specific shaping out of your core services." },
-            { t: "note", variant: "trap", html: "Keep the gateway <em>thin</em>. It's for cross-cutting concerns, not business logic. A gateway stuffed with domain rules becomes a new monolith — and a new single point of failure, so run it redundantly." }
+            { t: "note", variant: "trap", html: "Keep the gateway <em>thin</em>. It's for cross-cutting concerns, not business logic. A gateway stuffed with domain rules becomes a new monolith — and a new single point of failure, so run it redundantly." },
+            { t: "note", variant: "key", html: "<strong>A gateway is where cross-cutting concerns go to be written once.</strong> Auth, routing, rate limits, aggregation and tracing genuinely belong at the front door; domain rules do not, because every request in the system passes through this box and whatever you put in it becomes both a shared bottleneck and a shared failure." }
           ]
         },
         {
@@ -962,6 +981,7 @@ window.TRACKS.hld = {
             { t: "note", variant: "warn", html: "<strong>Fixed-window edge burst:</strong> a client can send the full quota at 11:59:59 and again at 12:00:00 — effectively 2× the limit across the boundary. Sliding-window variants fix this." },
             { t: "h", text: "Where to enforce it" },
             { t: "p", html: "In a distributed fleet, a per-server limiter is too loose (N servers ⇒ N× the limit). Centralize counters in a shared store like <strong>Redis</strong> (atomic increments / Lua scripts), usually at the <strong>API gateway</strong>. Identify clients by API key, user id, or IP — and return <code class='tok'>Retry-After</code> so good clients back off politely." },
+            { t: "note", variant: "key", html: "<strong>A rate limiter is only as strong as the place its counter lives.</strong> Choosing between token bucket and a sliding window is really choosing how much burst you will tolerate; keeping the count per instance quietly multiplies every published limit by the size of your fleet. Shared state at the edge, and an honest <code class='tok'>Retry-After</code>, are what make the limit real." },
             { t: "quiz", id: "hld-messaging" }
           ]
         },
@@ -994,8 +1014,9 @@ window.TRACKS.hld = {
               "RateLimit-Reset: 60\n" +
               "Retry-After: 60"
             },
-            { t: "note", variant: "key", html: "Deprecation is an observability problem. Keep telemetry by client id, SDK version and endpoint/field usage so you know who still depends on old behavior before you remove it." },
+            { t: "note", variant: "tip", html: "Deprecation is an observability problem. Keep telemetry by client id, SDK version and endpoint/field usage so you know who still depends on old behavior before you remove it." },
             { t: "note", variant: "trap", html: "Do not make clients parse English error messages. Messages are for humans; machines need stable error codes, retryability, field pointers and request ids." },
+            { t: "note", variant: "key", html: "<strong>Design the contract for the client you cannot upgrade.</strong> Old app versions, retrying partners and overnight batch jobs will keep calling every endpoint you ever shipped, so cursors, idempotency keys, machine-readable errors and per-item batch results are not polish — they are what buys you the right to change the API at all." },
             { t: "quiz", id: "hld-messaging" }
           ]
         }
@@ -1045,9 +1066,10 @@ window.TRACKS.hld = {
                 ["WebSockets", "Persistent, full-duplex TCP connection", "Real-time both ways", "Stateful conns; scaling needs care"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Pick by directionality.</strong> Server→client only (notifications, live feed, stock ticker)? → <strong>SSE</strong> (simpler, auto-reconnect, works over plain HTTP). Two-way, low-latency (chat, multiplayer, collaborative editing)? → <strong>WebSockets</strong>." },
+            { t: "note", variant: "tip", html: "<strong>Pick by directionality.</strong> Server→client only (notifications, live feed, stock ticker)? → <strong>SSE</strong> (simpler, auto-reconnect, works over plain HTTP). Two-way, low-latency (chat, multiplayer, collaborative editing)? → <strong>WebSockets</strong>." },
             { t: "note", variant: "trap", html: "WebSockets are <em>stateful</em> — each connection pins a client to a server, which complicates load balancing and autoscaling. At scale you add a pub/sub backplane (e.g., Redis) so any server can deliver a message to any connected client, regardless of which node holds the socket." },
             { t: "p", html: "Don't forget humble <strong>long polling</strong> — it's a robust fallback that works through restrictive proxies and older clients where WebSockets fail." },
+            { t: "note", variant: "key", html: "<strong>Choose the weakest push mechanism the feature actually needs.</strong> One-way updates are perfectly served by SSE and cost you nothing operationally, while full-duplex sockets buy two-way latency and charge for it in statefulness — every connection pins a user to one server, which is what drags a pub/sub backplane and a polling fallback into the design." },
             { t: "quiz", id: "hld-networking" },
           ]
         }
@@ -1078,7 +1100,7 @@ window.TRACKS.hld = {
                 ["99.999%", "five nines", "~5.26 min", "~0.86 s"]
               ]
             },
-            { t: "note", variant: "key", html: "Availability multiplies across <em>dependencies in series</em>: if a request needs services each at 99.9%, three of them give 0.999³ ≈ 99.7%. Reduce the number of things on the critical path, and add redundancy so a component's failure isn't the request's failure." },
+            { t: "note", variant: "tip", html: "Availability multiplies across <em>dependencies in series</em>: if a request needs services each at 99.9%, three of them give 0.999³ ≈ 99.7%. Reduce the number of things on the critical path, and add redundancy so a component's failure isn't the request's failure." },
             { t: "h", text: "Patterns that protect the user path" },
             {
               t: "ul", items: [
@@ -1091,7 +1113,8 @@ window.TRACKS.hld = {
                 "<strong>Retries with backoff and jitter</strong> — recover from blips without synchronized retry storms."
               ]
             },
-            { t: "note", variant: "trap", html: "Naive retries are dangerous: when a service wobbles, every client retrying at once creates a <strong>retry storm</strong> that finishes it off. Always use <em>exponential backoff with jitter</em>, cap attempts, and pair retries with a circuit breaker." }
+            { t: "note", variant: "trap", html: "Naive retries are dangerous: when a service wobbles, every client retrying at once creates a <strong>retry storm</strong> that finishes it off. Always use <em>exponential backoff with jitter</em>, cap attempts, and pair retries with a circuit breaker." },
+            { t: "note", variant: "key", html: "<strong>Availability is set by the length of the critical path, not the quality of any one component.</strong> Each dependency in series multiplies its failure rate into the request, so the durable wins are removing hops and adding redundancy — and then making sure the recovery behaviour itself, retries most of all, cannot become the outage." }
           ]
         },
         {
@@ -1108,8 +1131,8 @@ window.TRACKS.hld = {
               ["SLA", "Customer contract, usually looser than the internal SLO"],
               ["Error budget", "If the SLO is 99.95%, the system may fail 0.05% of valid requests"]
             ] },
-            { t: "note", variant: "key", html: "A budget creates a release policy. If the service is healthy, spend budget on launches. If the budget is burning too fast, freeze risky changes and fix reliability first." },
-            { t: "note", variant: "trap", html: "Do not set SLOs at 100%. Perfect targets make every tiny blip a policy violation and leave no room for deploys, maintenance or honest trade-offs." }
+            { t: "note", variant: "trap", html: "Do not set SLOs at 100%. Perfect targets make every tiny blip a policy violation and leave no room for deploys, maintenance or honest trade-offs." },
+            { t: "note", variant: "key", html: "<strong>An SLO is a spending limit, not a scoreboard.</strong> Naming the user-visible behaviour and its target turns reliability arguments into arithmetic: budget remaining means you may ship risk, budget burning means reliability work comes first. A target of 100% does not remove failure, it removes your ability to decide." }
           ]
         },
         {
@@ -1191,8 +1214,8 @@ window.TRACKS.hld = {
               "<strong>Tenant-aware deploy waves</strong> roll out by low-risk tenants, then normal tenants, then high-value or regulated tenants after metrics stay clean.",
               "<strong>Cross-cell analytics</strong> should read replicated/exported data, not synchronously query every serving cell on a user request."
             ] },
-            { t: "note", variant: "key", html: "Tenant isolation must appear in every substrate: DB row filters or schemas, cache key prefixes, queue partitions, search/vector metadata filters, object storage paths, logs, metrics and traces." },
             { t: "note", variant: "trap", html: "A tenant_id column is not isolation by itself. Every query builder, cache key, queue consumer, log sink and admin tool must carry the tenant boundary, or the weakest path leaks data." },
+            { t: "note", variant: "key", html: "<strong>Tenancy is an operational property, not a storage layout.</strong> Pooled, bridge and silo only set the starting cost; what tenants actually experience is whether quotas, cache keys, queue partitions, deploy waves and cost attribution all carry the same boundary. Whichever substrate forgets it defines your real isolation, and it is usually the one nobody reviewed." },
             { t: "quiz", id: "hld-fault-isolation" }
           ]
         },
@@ -1218,7 +1241,8 @@ window.TRACKS.hld = {
               "-> caller thread pools fill\n" +
               "-> unrelated requests fail too\n\n" +
               "Fix: timeout + bounded retries + jitter + circuit breaker + bulkhead" },
-            { t: "note", variant: "tip", html: "Backpressure is a kindness. Returning 429 or queue-full early is better than accepting work you cannot finish and timing out every user later." }
+            { t: "note", variant: "tip", html: "Backpressure is a kindness. Returning 429 or queue-full early is better than accepting work you cannot finish and timing out every user later." },
+            { t: "note", variant: "key", html: "<strong>Cascading failure is resource exhaustion, so every pattern here is a way of giving resources back.</strong> Timeouts return threads, breakers stop feeding a sick dependency, bulkheads stop one feature spending the whole pool, and backpressure refuses work that was never going to finish. What they cost is a system that says no more often, and on purpose." }
           ]
         },
         {
@@ -1240,8 +1264,9 @@ window.TRACKS.hld = {
               bad: { title: "Circuit breaker", items: ["Triggered by a failing dependency", "Stops calls to that dependency for a cooldown", "Goal: fail fast and let the dependency recover"] },
               good: { title: "Load shedding", items: ["Triggered by local overload or saturation", "Drops low-priority requests before accepting them", "Goal: preserve capacity for the core path"] }
             },
-            { t: "note", variant: "key", html: "Make shedding explicit and observable: return <code class='tok'>429</code> or <code class='tok'>503</code> with retry hints for clients, tag degraded responses, and alert on sustained shedding because it means demand exceeds safe capacity." },
-            { t: "note", variant: "trap", html: "Do not shed blindly. Randomly dropping payment confirmations while keeping homepage experiments alive is backwards. Reserve bulkheads and budgets for the paths the business cannot afford to corrupt." }
+            { t: "note", variant: "tip", html: "Make shedding explicit and observable: return <code class='tok'>429</code> or <code class='tok'>503</code> with retry hints for clients, tag degraded responses, and alert on sustained shedding because it means demand exceeds safe capacity." },
+            { t: "note", variant: "trap", html: "Do not shed blindly. Randomly dropping payment confirmations while keeping homepage experiments alive is backwards. Reserve bulkheads and budgets for the paths the business cannot afford to corrupt." },
+            { t: "note", variant: "key", html: "<strong>Overload is a decision you either make in advance or have made for you.</strong> Ranking traffic into tiers before the incident lets the system refuse optional work quickly and serve a deliberately simpler answer on the paths that matter. A system with no ladder still sheds — it just sheds whatever happens to time out first." }
           ]
         },
         {
@@ -1318,8 +1343,9 @@ window.TRACKS.hld = {
               "  4. Communicate current impact and next update time\n" +
               "  5. Preserve timeline, then fix root causes after service is stable"
             },
-            { t: "note", variant: "key", html: "A good incident process optimizes for <strong>MTTD</strong> (detect), <strong>MTTA</strong> (acknowledge) and <strong>MTTR</strong> (recover). Root-cause perfection can wait until users are safe." },
+            { t: "note", variant: "tip", html: "A good incident process optimizes for <strong>MTTD</strong> (detect), <strong>MTTA</strong> (acknowledge) and <strong>MTTR</strong> (recover). Root-cause perfection can wait until users are safe." },
             { t: "note", variant: "trap", html: "Do not page on unactionable symptoms or vanity metrics. Alerts should have an owner, a runbook, a severity rule and a clear user-impact reason." },
+            { t: "note", variant: "key", html: "<strong>Readiness is measured by how quickly you can stop the bleeding without understanding it.</strong> Severity language, a named commander, tested rollbacks and kill switches all exist so mitigation can happen before diagnosis. The root cause is a follow-up ticket written after the service is stable, not an activity performed while users are down." },
             { t: "quiz", id: "hld-reliability" }
           ]
         },
@@ -1341,7 +1367,7 @@ window.TRACKS.hld = {
                 ["Traces", "A request's path across services with timing", "Where did the latency go?", "Jaeger, Zipkin, OTel"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>The four golden signals</strong> (Google SRE) are the metrics to watch first: <strong>Latency</strong> (how long), <strong>Traffic</strong> (how much demand), <strong>Errors</strong> (failure rate), and <strong>Saturation</strong> (how full your resources are). Cover these and you catch most problems." },
+            { t: "note", variant: "tip", html: "<strong>The four golden signals</strong> (Google SRE) are the metrics to watch first: <strong>Latency</strong> (how long), <strong>Traffic</strong> (how much demand), <strong>Errors</strong> (failure rate), and <strong>Saturation</strong> (how full your resources are). Cover these and you catch most problems." },
             { t: "h", text: "Why distributed tracing is essential" },
             { t: "p", html: "When one user request fans out across 20 microservices, a single log line is useless. <strong>Distributed tracing</strong> attaches a <em>trace id</em> to the request at the edge and propagates it through every hop, so you can reconstruct the whole call tree and see exactly which service added the 800 ms." },
             { t: "code", lang: "text", code:
@@ -1361,6 +1387,7 @@ window.TRACKS.hld = {
             },
             { t: "note", variant: "trap", html: "<strong>Alert on symptoms, not causes.</strong> Page a human when users are affected (error rate up, latency past the SLO), not on every CPU blip — noisy alerts train people to ignore the pager. Good alerts are actionable, rare, and tied to an SLO." },
             { t: "note", variant: "tip", html: "Emit <strong>structured logs</strong> (JSON, not free text) with the trace id, and prefer <strong>histograms over averages</strong> for latency — an average hides the p99 tail where your unhappiest users live." },
+            { t: "note", variant: "key", html: "<strong>Instrument for the question you have not thought of yet.</strong> Metrics say something is wrong, traces say where, logs say what — and the leverage comes from one trace id tying all three to a single request. Coverage is cheap; attention is not, so page only on the handful of signals a user would actually notice." },
             { t: "quiz", id: "hld-reliability" }
           ]
         }
@@ -1409,8 +1436,9 @@ window.TRACKS.hld = {
               ["Cache", "Is hot working set smaller than memory with room for churn?", "Hit ratio collapses after deploys or traffic spikes."],
               ["Third party", "Do provider quotas cover peak and retries?", "Your fallback path fails because the dependency rate-limits first."]
             ] },
-            { t: "note", variant: "key", html: "Capacity is not one number. Track at least <strong>traffic</strong>, <strong>latency</strong>, <strong>errors</strong> and <strong>saturation</strong> for every critical layer, then decide what runs out first." },
-            { t: "note", variant: "trap", html: "Do not size only for the happy path. Retries, cache misses, replays, migrations and failover all add load exactly when the system is already stressed." }
+            { t: "note", variant: "tip", html: "Capacity is not one number. Track at least <strong>traffic</strong>, <strong>latency</strong>, <strong>errors</strong> and <strong>saturation</strong> for every critical layer, then decide what runs out first." },
+            { t: "note", variant: "trap", html: "Do not size only for the happy path. Retries, cache misses, replays, migrations and failover all add load exactly when the system is already stressed." },
+            { t: "note", variant: "key", html: "<strong>Capacity planning is about finding which layer runs out first, not how big the fleet is.</strong> The chain from users to instances is easy arithmetic; the honest part is sizing for the load that only exists when things go wrong, because retries, cold caches, replays and failover all arrive together, and they arrive at peak." }
           ]
         },
         {
@@ -1449,7 +1477,8 @@ window.TRACKS.hld = {
               "<strong>LLM token budgets</strong> are product requirements. Decide maximum context, answer length, model class and retry policy deliberately.",
               "<strong>Retries</strong> are hidden spend. Exponential backoff and idempotency prevent retry storms from multiplying cost and load."
             ] },
-            { t: "note", variant: "tip", html: "Add a <strong>cost per successful request</strong> dashboard next to latency and errors. It catches regressions like a prompt change that doubles tokens or a cache bug that shifts traffic to a paid API." }
+            { t: "note", variant: "tip", html: "Add a <strong>cost per successful request</strong> dashboard next to latency and errors. It catches regressions like a prompt change that doubles tokens or a cache bug that shifts traffic to a paid API." },
+            { t: "note", variant: "key", html: "<strong>Cost per successful event is an architectural metric, not a finance one.</strong> Retention policy, cache hit ratio, cross-region hops and token budgets move unit economics further than any instance-type decision — and all four are nearly free to change while the design is still a diagram, and expensive to change once traffic depends on them." }
           ]
         },
         {
@@ -1483,8 +1512,9 @@ window.TRACKS.hld = {
               ["Error-budget freeze", "If the service is already burning budget, freeze risky launches until reliability recovers."],
               ["Runbook", "Known failure modes have owners, links to dashboards and first mitigation steps."]
             ] },
-            { t: "note", variant: "key", html: "A canary is only as good as the signals that guard it. Measure p95/p99 latency, errors, saturation and business success rate for both canary and control." },
+            { t: "note", variant: "tip", html: "A canary is only as good as the signals that guard it. Measure p95/p99 latency, errors, saturation and business success rate for both canary and control." },
             { t: "note", variant: "trap", html: "Rollback is a product feature. If schema changes, caches, clients or background jobs make rollback impossible, call that out before launch day and use expand/contract migrations." },
+            { t: "note", variant: "key", html: "<strong>Launch readiness is the ability to undo, proven before you need it.</strong> Headroom, load tests and canaries only tell you what breaks first; the gate that decides your worst day is whether one command restores the previous version with the data still compatible. That is a constraint on migrations, caches and clients, not a deploy-day checklist item." },
             { t: "quiz", id: "hld-production-readiness" }
           ]
         },
@@ -1533,7 +1563,8 @@ window.TRACKS.hld = {
               "<strong>Risk handling:</strong> failure modes, security/privacy concerns, migration hazards and open questions have owners or experiments.",
               "<strong>Launch readiness:</strong> canary, rollback, dashboards, success criteria and follow-up ADRs are named."
             ] },
-            { t: "note", variant: "tip", html: "In interviews, a concise decision log beats a perfect-looking diagram. The interviewer wants to see how you choose, not just what boxes you remember." }
+            { t: "note", variant: "tip", html: "In interviews, a concise decision log beats a perfect-looking diagram. The interviewer wants to see how you choose, not just what boxes you remember." },
+            { t: "note", variant: "key", html: "<strong>A design doc is judged on the option you rejected.</strong> Anyone can present an architecture that would work; judgment shows in naming two credible approaches, saying which constraint decided between them, and owning the consequences you accepted. That is also the calibration bar in a design interview — the recommendation earns far less credit than the reasoning that narrowed it." }
           ]
         }
       ]
@@ -1555,7 +1586,7 @@ window.TRACKS.hld = {
               bad: { title: "Monolith", items: ["✓ Simple to build, test, deploy, debug", "✓ Fast local calls; easy transactions", "✓ One codebase, one pipeline", "✗ Scales as one blob; small change → full redeploy", "✗ One bug can take down everything", "✗ Tech stack is locked in"] },
               good: { title: "Microservices", items: ["✓ Independent deploy & scale per service", "✓ Team & tech autonomy; fault isolation", "✓ Scale only the hot path", "✗ Distributed-systems tax: network, tracing, consistency", "✗ Ops complexity (CI/CD, observability) explodes", "✗ Cross-service transactions need sagas"] }
             },
-            { t: "note", variant: "key", html: "<strong>Conway's Law:</strong> systems mirror the communication structure of the org that builds them. Microservices pay off when you have <em>many teams</em> that need to ship independently. With one small team, a monolith is almost always faster and cheaper." },
+            { t: "note", variant: "tip", html: "<strong>Conway's Law:</strong> systems mirror the communication structure of the org that builds them. Microservices pay off when you have <em>many teams</em> that need to ship independently. With one small team, a monolith is almost always faster and cheaper." },
             { t: "note", variant: "tip", html: "<strong>Start with a (well-modularized) monolith.</strong> Extract services later along seams that hurt — the parts that need independent scaling or ownership. Premature microservices give you all the distributed complexity with none of the team-scaling benefit." },
             { t: "h", text: "If you do go distributed" },
             {
@@ -1567,6 +1598,7 @@ window.TRACKS.hld = {
                 "<strong>API gateway + service discovery</strong> to manage the sprawl."
               ]
             },
+            { t: "note", variant: "key", html: "<strong>Split along team boundaries, not along nouns.</strong> Microservices exchange local function calls for network calls, shared transactions for sagas, and one pipeline for many — a fair price when independent teams need to ship without coordinating, and pure overhead when one team is paying it. The seams worth extracting are the ones that already hurt." }
           ]
         },
         {
@@ -1596,8 +1628,9 @@ window.TRACKS.hld = {
               bad: { title: "Choreography", items: ["Each service reacts to events, no central brain", "Loosely coupled, no coordinator SPOF", "✗ Hard to follow the flow; cyclic event risk", "Good for simple, few-step sagas"] },
               good: { title: "Orchestration", items: ["A central orchestrator tells each service what to do next", "Flow is explicit and easy to monitor", "✗ The orchestrator is a component to run & scale", "Good for complex, many-step sagas"] }
             },
-            { t: "note", variant: "key", html: "Sagas demand <strong>idempotent</strong> steps and <strong>compensations</strong> (retries are inevitable — the Reliability module's idempotency keys apply here) and they expose intermediate states, so design for them: an order can be 'pending' before it's 'confirmed'. Halo famously scaled to 11.6M users on exactly this pattern." },
+            { t: "note", variant: "tip", html: "Sagas demand <strong>idempotent</strong> steps and <strong>compensations</strong> (retries are inevitable — the Reliability module's idempotency keys apply here) and they expose intermediate states, so design for them: an order can be 'pending' before it's 'confirmed'. Halo famously scaled to 11.6M users on exactly this pattern." },
             { t: "note", variant: "tip", html: "Prefer a saga for cross-service business transactions; reserve 2PC for the rare case where you truly cannot tolerate any intermediate inconsistency and the participants are few and fast. Often the best fix is to <em>redraw service boundaries</em> so the transaction lives inside one service." },
+            { t: "note", variant: "key", html: "<strong>Once every service owns its own database, atomicity stops being a database feature and becomes a business decision.</strong> A saga replaces rollback with compensation and promotes intermediate states — pending, reserved, refunded — into the domain model. If the product cannot tolerate those states, the honest fix is moving the boundary, not adding a coordinator." },
             { t: "quiz", id: "hld-architecture" }
           ]
         },
@@ -1624,8 +1657,9 @@ window.TRACKS.hld = {
               "<strong>Contract-test</strong>: producer changes must pass consumer expectations in CI.",
               "<strong>Contract</strong>: remove the old shape only after usage is gone."
             ] },
-            { t: "note", variant: "key", html: "For events, prefer versioned schemas with backward/forward compatibility checks. A broken event schema can take down many consumers that the producer team never talks to." },
-            { t: "note", variant: "trap", html: "Versioning is not a license to abandon old clients forever. Every version needs ownership, telemetry and an end-of-life path, or support cost grows without bound." }
+            { t: "note", variant: "tip", html: "For events, prefer versioned schemas with backward/forward compatibility checks. A broken event schema can take down many consumers that the producer team never talks to." },
+            { t: "note", variant: "trap", html: "Versioning is not a license to abandon old clients forever. Every version needs ownership, telemetry and an end-of-life path, or support cost grows without bound." },
+            { t: "note", variant: "key", html: "<strong>Compatibility is a rollout plan, not a version number.</strong> Add before you remove, run both shapes while you measure who still uses the old one, and give every version an owner and an end date. Event consumers need this most, because the producing team usually cannot name everyone who is listening." }
           ]
         }
       ]
@@ -1643,6 +1677,7 @@ window.TRACKS.hld = {
           tags: ["case-study", "read-heavy"],
           blocks: [
             { t: "p", html: "Classic warm-up. The whole framework in miniature: take a long URL, return a short code, and redirect on lookup — at scale, very read-heavy." },
+            { t: "note", variant: "tip", html: "This is the compact pass, sized to show you the shape of the framework. The Problem Breakdowns track designs the same system again at full interview depth — capacity numbers, entity model, the one genuinely hard decision, and the level bar — in <a href='#/breakdowns/foundations/bitly'>Design a URL shortener</a>. Read this one first for the shape, that one when you want the depth." },
             { t: "h", text: "1 · Requirements" },
             {
               t: "ul", items: [
@@ -1671,14 +1706,15 @@ window.TRACKS.hld = {
                 "Avoid sequential, guessable codes if privacy matters — add randomness."
               ]
             },
-            { t: "note", variant: "key", html: "The counter approach is usually cleanest: <em>unique by construction, no collision checks</em>. Distribute id generation (range allocation or a service like a Snowflake id) so the counter isn't a single write hotspot." },
+            { t: "note", variant: "tip", html: "The counter approach is usually cleanest: <em>unique by construction, no collision checks</em>. Distribute id generation (range allocation or a service like a Snowflake id) so the counter isn't a single write hotspot." },
             { t: "h", text: "5 · Architecture" },
             { t: "code", lang: "text", code:
               "  Client ─► CDN/LB ─► App servers ─► Cache (Redis) ─► DB (KV store)\n" +
               "                                       │ 95%+ hit ratio on hot codes\n" +
               "  Redirects: look up code -> cache hit -> 302. Miss -> DB -> cache."
             },
-            { t: "note", variant: "tip", html: "Because it's read-heavy with a small, hot key space (popular links), <strong>caching is the hero</strong>. A KV store (DynamoDB/Cassandra) + Redis cache + CDN gets you to millions of redirects/sec. Code→URL never changes, so cache aggressively with long TTLs." }
+            { t: "note", variant: "tip", html: "Because it's read-heavy with a small, hot key space (popular links), <strong>caching is the hero</strong>. A KV store (DynamoDB/Cassandra) + Redis cache + CDN gets you to millions of redirects/sec. Code→URL never changes, so cache aggressively with long TTLs." },
+            { t: "note", variant: "key", html: "<strong>The shortener is a caching problem wearing a hashing problem's clothes.</strong> Generating codes that are unique by construction removes collision handling from the write path, and because a code's mapping never changes afterwards, a cache in front of a key-value store absorbs almost all of the hundred-to-one read traffic. The design work is deciding that early, not later." }
           ]
         },
         {
@@ -1689,12 +1725,13 @@ window.TRACKS.hld = {
           tags: ["case-study", "fan-out"],
           blocks: [
             { t: "p", html: "Build the home timeline: each user sees a feed of recent posts from people they follow, newest first. The crux is <strong>fan-out</strong> — how a new post reaches all the right feeds." },
+            { t: "note", variant: "tip", html: "This pass stays on the fan-out decision, because that is the idea worth carrying. <a href='#/breakdowns/foundations/news-feed'>Design a ranked social feed</a> in the Problem Breakdowns track takes the same system the whole way — ranking, capacity numbers and the level bar included." },
             { t: "h", text: "Two strategies for building a feed" },
             { t: "compare",
               bad: { title: "Fan-out on write (push)", items: ["On post, push it into every follower's precomputed feed", "✓ Reads are instant (feed is ready)", "✗ A celebrity post = millions of writes", "✗ Wasted work for inactive followers", "Great for users with few followers"] },
               good: { title: "Fan-out on read (pull)", items: ["On read, gather recent posts from everyone you follow & merge", "✓ Cheap writes; no wasted fan-out", "✗ Reads are heavy (merge many sources)", "✗ Slow for users following thousands", "Great for celebrities / inactive users"] }
             },
-            { t: "note", variant: "key", html: "<strong>The hybrid is the real answer.</strong> Use push for normal users (precompute feeds for fast reads), but for <em>celebrities</em> with millions of followers, switch to pull — fetch their recent posts at read time and merge in. This avoids the 'fan-out storm' of one post triggering tens of millions of writes." },
+            { t: "note", variant: "tip", html: "<strong>The hybrid is the real answer.</strong> Use push for normal users (precompute feeds for fast reads), but for <em>celebrities</em> with millions of followers, switch to pull — fetch their recent posts at read time and merge in. This avoids the 'fan-out storm' of one post triggering tens of millions of writes." },
             { t: "h", text: "Architecture sketch" },
             { t: "code", lang: "text", code:
               "Post ─► write to DB ─► enqueue fan-out job\n" +
@@ -1711,7 +1748,8 @@ window.TRACKS.hld = {
                 "<strong>Rank</strong> by recency or an ML score; paginate with a cursor.",
                 "Eventual consistency is fine — a post appearing a second late is invisible to users."
               ]
-            }
+            },
+            { t: "note", variant: "key", html: "<strong>Fan-out cost scales with the follower graph, so the strategy has to vary with it.</strong> Precompute feeds for ordinary accounts and assemble at read time for the handful with millions of followers. Storing post ids rather than content, and accepting a second of staleness, are what keep both halves affordable — and both concessions are invisible to users." }
           ]
         },
         {
@@ -1722,6 +1760,7 @@ window.TRACKS.hld = {
           tags: ["case-study", "real-time"],
           blocks: [
             { t: "p", html: "1:1 and group messaging with real-time delivery, online presence, and message history. This one leans on everything from the real-time and messaging modules." },
+            { t: "note", variant: "tip", html: "Here the focus is connection routing — the part that makes chat different from a request/response service. <a href='#/breakdowns/foundations/whatsapp'>Design chat and messaging</a> in the Problem Breakdowns track runs the full interview treatment, including delivery receipts, multi-device sync and how this scores at each level." },
             { t: "h", text: "The connection problem" },
             { t: "p", html: "Clients hold persistent <strong>WebSocket</strong> connections to a fleet of stateful <em>connection servers</em>. But user A's socket is on server 3 while user B's is on server 8 — how does A's message reach B?" },
             { t: "diagram", id: "chat-fanout", caption: "A presence registry maps user → connection server; a pub/sub backplane (Kafka/Redis) routes the message between servers." },
@@ -1788,7 +1827,7 @@ window.TRACKS.hld = {
               ["User resolution", "Two edits changed the same important text or amount", "Slower, but preserves trust for high-value data."],
               ["CRDT-style data type", "Collaborative counters, sets or text-like structures with well-defined merge rules", "Powerful for the right shape, but not magic; product rules and storage cost still matter."]
             ] },
-            { t: "note", variant: "key", html: "Phrase conflict policy in product language: 'a deleted task stays deleted unless the user explicitly restores it' is clearer than 'delete wins'. The implementation follows the policy." },
+            { t: "note", variant: "tip", html: "Phrase conflict policy in product language: 'a deleted task stays deleted unless the user explicitly restores it' is clearer than 'delete wins'. The implementation follows the policy." },
             { t: "h", text: "Battery, bandwidth and scheduling" },
             { t: "ul", items: [
               "Run a short foreground sync after user edits or app resume, then batch background work.",
@@ -1807,6 +1846,7 @@ window.TRACKS.hld = {
               "<strong>Trust boundary:</strong> the server validates versions, invariants and permissions before advancing shared state."
             ] },
             { t: "note", variant: "trap", html: "Do not make the server accept arbitrary client state as truth. Clients send operations; the server validates authorization, versions and invariants before advancing the shared record." },
+            { t: "note", variant: "key", html: "<strong>Offline-first means the local database is the product and the server is the referee.</strong> Every edit lands durably on the device before any network call, and the client ships intent as an idempotent operation log rather than whole records — which is precisely what lets the server keep enforcing versions and permissions. Tombstones, conflict policy and battery-aware scheduling all follow from that split." },
             { t: "quiz", id: "hld-offline-sync" }
           ]
         },
@@ -1872,7 +1912,8 @@ window.TRACKS.hld = {
                 ["Stripe / PayPal", "Idempotency keys make money operations retry-safe"]
               ]
             },
-            { t: "note", variant: "tip", html: "Read real architectures actively. For each, ask: <em>what was the bottleneck, what did they trade away, and would I have reached for the same tool?</em> That's exactly the muscle a system-design interview tests — and you'll notice the same dozen patterns from this track recurring everywhere." }
+            { t: "note", variant: "tip", html: "Read real architectures actively. For each, ask: <em>what was the bottleneck, what did they trade away, and would I have reached for the same tool?</em> That's exactly the muscle a system-design interview tests — and you'll notice the same dozen patterns from this track recurring everywhere." },
+            { t: "note", variant: "key", html: "<strong>The same handful of primitives keeps reappearing because the constraints do.</strong> Read-heavy pushes every one of these companies toward caching and precomputation, spiky pushes them toward queues and admission control, and money pushes them toward idempotency and a ledger. What differs between them is which constraint dominated, not which exotic technology they found." }
           ]
         },
         {
@@ -1919,8 +1960,8 @@ window.TRACKS.hld = {
                 "<strong>Behavioral rounds</strong> reward concrete STAR stories (Situation, Task, Action, Result) — prepare 4\u20135 that show ownership, conflict resolution, and measurable impact."
               ]
             },
-            { t: "note", variant: "key", html: "Every one of these designs is assembled from the primitives in this track — load balancers, caches, sharded databases, queues, CDNs, idempotency, and the CAP trade-off. Master the building blocks and the 'design X' prompts become exercises in <em>composition</em>, not recall." },
-            { t: "note", variant: "tip", html: "For timed drills with compact outlines, use the new <a class='inline' href='#/interview'>Interview prompts</a> page. Treat each outline as a calibration aid, not a script to memorize." }
+            { t: "note", variant: "tip", html: "For timed drills with compact outlines, use the new <a class='inline' href='#/interview'>Interview prompts</a> page. Treat each outline as a calibration aid, not a script to memorize." },
+            { t: "note", variant: "key", html: "<strong>'Design X' is a composition exercise, and the bar is how you sequence it.</strong> Every prompt here reduces to the same primitives — load balancer, cache, sharded store, queue, CDN, idempotency key, a CAP choice. What gets graded is whether you scoped before drawing, said the trade-off out loud, and spent your depth on the one part that was genuinely hard." }
           ]
         },
         {
@@ -1969,9 +2010,9 @@ window.TRACKS.hld = {
               "<strong>Operations:</strong> launch has capacity math, canary signals, dashboards, runbooks and rollback steps.",
               "<strong>LLD handoff:</strong> entities, commands, state machines and invariants are clear enough for implementation."
             ] },
-            { t: "note", variant: "key", html: "The senior answer separates <strong>browsing</strong> from <strong>booking</strong>. Browsing can be cached and eventually consistent; booking needs strong consistency, idempotency and auditability." },
             { t: "note", variant: "tip", html: "Use this capstone as a template: every serious design needs a source of truth, hot-path scaling plan, failure-mode story, observability plan and clear LLD invariants." },
-            { t: "note", variant: "key", html: "After you work it once, compare against the compact <a class='inline' href='#/scenarios/ticket-marketplace-flash-sale'>ticket marketplace scenario outline</a> and grade yourself with the <a class='inline' href='#/rubrics'>rubric bands</a>." }
+            { t: "note", variant: "tip", html: "After you work it once, compare against the compact <a class='inline' href='#/scenarios/ticket-marketplace-flash-sale'>ticket marketplace scenario outline</a> and grade yourself with the <a class='inline' href='#/rubrics'>rubric bands</a>." },
+            { t: "note", variant: "key", html: "<strong>The marketplace splits into a path that may be stale and a path that must be exact.</strong> Browsing is cacheable, eventually consistent and safe to degrade under load; reserving a seat and taking money needs a conditional write, an idempotency key and an auditable ledger. Naming that boundary in the first two minutes is what makes every later decision — waiting room, saga, search index — fall out on its own." }
           ]
         },
         {
@@ -2021,9 +2062,10 @@ window.TRACKS.hld = {
               "<strong>Rollout control:</strong> deploy waves start with low-risk cohorts and stop on SLO/error-budget burn.",
               "<strong>Analytics plan:</strong> cross-cell reporting uses an exported data plane, not synchronous production-cell queries."
             ] },
-            { t: "note", variant: "key", html: "The cell target is not 'microservices everywhere'. It is <strong>bounded blast radius</strong>: a bad deploy, hot tenant or sick dependency should affect a known slice of tenants, with routing and migration tools mature enough to operate calmly." },
+            { t: "note", variant: "tip", html: "The cell target is not 'microservices everywhere'. It is <strong>bounded blast radius</strong>: a bad deploy, hot tenant or sick dependency should affect a known slice of tenants, with routing and migration tools mature enough to operate calmly." },
             { t: "note", variant: "trap", html: "Analytics gets harder after cells. Cross-cell joins, global dashboards and support tools need a separate data plane; do not solve that by letting analysts query every production cell directly." },
-            { t: "note", variant: "tip", html: "Use the <a class='inline' href='#/scenarios/multi-tenant-saas-isolation'>multi-tenant SaaS isolation outline</a> as a self-review checklist for tenant boundaries, blast radius, migration safety and analytics." }
+            { t: "note", variant: "tip", html: "Use the <a class='inline' href='#/scenarios/multi-tenant-saas-isolation'>multi-tenant SaaS isolation outline</a> as a self-review checklist for tenant boundaries, blast radius, migration safety and analytics." },
+            { t: "note", variant: "key", html: "<strong>Isolation is earned tenant by tenant, in whatever order keeps rollback possible.</strong> Making the tenant boundary explicit in data, cache, queues and logs comes first and is worth doing even if cells never arrive; cells and deploy waves only pay for themselves once routing, migration and cross-cell analytics are boring enough to run on an ordinary Tuesday." }
           ]
         }
       ]
@@ -2044,8 +2086,9 @@ window.TRACKS.hld = {
           blocks: [
             { t: "p", html: "An <strong>AI agent</strong> wraps a large language model in a loop that lets it <em>act</em>, not just answer. The model decides what to do, calls a <em>tool</em> (search, code execution, an API), observes the result, and repeats until the task is done. Four ingredients recur: a <strong>model</strong> (the reasoner), <strong>tools</strong> (its hands), <strong>memory</strong> (state across steps), and a <strong>planning loop</strong> (the control flow)." },
             { t: "diagram", id: "agent-loop", caption: "The ReAct-style loop: think \u2192 act \u2192 observe, repeating until an answer or the step budget is reached." },
-            { t: "note", variant: "key", html: "The system-design challenges are familiar ones in new clothes: <strong>state &amp; memory</strong> (short-term context vs long-term vector store), <strong>reliability</strong> (tools fail; loops must time out and retry), <strong>cost/latency</strong> (every step is an LLM call), and <strong>safety</strong> (sandbox tool execution, bound the agent's authority)." },
+            { t: "note", variant: "tip", html: "The system-design challenges are familiar ones in new clothes: <strong>state &amp; memory</strong> (short-term context vs long-term vector store), <strong>reliability</strong> (tools fail; loops must time out and retry), <strong>cost/latency</strong> (every step is an LLM call), and <strong>safety</strong> (sandbox tool execution, bound the agent's authority)." },
             { t: "note", variant: "trap", html: "Give an agent a step budget and idempotent tools. Without a loop cap it can spin forever or thrash; without idempotency a retried tool call can double-charge or double-send — the same idempotency lesson from Reliability, now at the agent layer." },
+            { t: "note", variant: "key", html: "<strong>An agent is a distributed system whose scheduler happens to be a language model.</strong> Memory, retries, timeouts, cost ceilings and sandboxing are the same concerns as any other service; what changes is that the component choosing the next action is non-deterministic, so the loop needs a hard step budget and every tool must be safe to call twice." }
           ]
         },
         {
@@ -2176,8 +2219,8 @@ window.TRACKS.hld = {
               ["Metrics", "Offline relevance labels, click-through, conversion, dwell time, diversity, latency"],
               ["Safety", "Tenant/ACL filters before ranking, bias checks, spam controls, explainable fallbacks"]
             ] },
-            { t: "note", variant: "key", html: "Ranking is product logic. The highest cosine similarity is not always the best result; freshness, authority, diversity, business rules and user intent all shape the final order." },
             { t: "note", variant: "trap", html: "Do not let personalization bypass access control. Authorization and tenant filters must happen before candidates enter the prompt, ranking model or recommendation feed." },
+            { t: "note", variant: "key", html: "<strong>Retrieval decides what is possible; ranking decides what the product means.</strong> Cheap recall gathers a wide candidate set, but the order you return encodes freshness, authority, diversity and business rules — which makes ranking a product decision wearing a similarity score. Every one of those signals is applied after the tenant and permission filters, never before." },
             { t: "quiz", id: "hld-ai" }
           ]
         },
@@ -2210,6 +2253,7 @@ window.TRACKS.hld = {
             { t: "p", html: "Designing a GenAI feature reuses everything from this track — gateways, caches, queues, rate limits, idempotency — plus a few AI-specific boxes: a <strong>model gateway</strong> (route/fallback across providers), a <strong>vector store</strong> for retrieval, a <strong>prompt/version registry</strong>, a <strong>guardrail</strong> layer (moderation, PII filtering), and an <strong>eval + feedback</strong> loop." },
             { t: "p", html: "Classic <strong>ML systems</strong> follow a pipeline: collect &amp; label data → train → evaluate offline → serve (batch or real-time) → monitor for drift → retrain. The hard parts are rarely the model — they're the <em>data</em>, the feature pipeline, and keeping training and serving consistent." },
             { t: "note", variant: "tip", html: "Cache aggressively and degrade gracefully. LLM calls are slow and pricey, so cache responses for repeated prompts, stream tokens for perceived speed, and fall back to a smaller model or a canned answer when the provider is rate-limiting you." },
+            { t: "note", variant: "key", html: "<strong>A GenAI system is an ordinary system with two unusual dependencies: one probabilistic, one metered.</strong> Gateways, caches, queues and idempotency carry over unchanged; what you add is a prompt and model registry, a guardrail layer and an evaluation loop — because without the last one there is no way to tell an improvement from a regression." },
             { t: "quiz", id: "hld-ai" },
           ]
         }
@@ -2256,6 +2300,7 @@ window.TRACKS.hld = {
               good: { title: "JWT (stateless tokens)", items: ["Signed token carries the claims; server stores nothing", "Scales effortlessly — any node can verify", "✗ Hard to revoke before expiry; keep them short-lived + refresh"] }
             },
             { t: "note", variant: "warn", html: "<strong>Never store passwords in plaintext or with fast hashes.</strong> Use a slow, salted password hash (bcrypt, scrypt, Argon2) so a database leak doesn't hand attackers everyone's credentials. The salt defeats rainbow tables; the slowness defeats brute force." },
+            { t: "note", variant: "key", html: "<strong>TLS proves which server you reached; it says nothing about who the user is.</strong> Sessions and tokens trade revocation against statelessness — server-side sessions let you log someone out this second, signed tokens let any node verify without a lookup — and short lifetimes with refresh are how you buy back some of what tokens give away. Slow salted password hashing is the control that still protects users after the database leaks." }
           ]
         },
         {
@@ -2284,8 +2329,9 @@ window.TRACKS.hld = {
               "<strong>Vector/search</strong>: apply tenant and ACL filters before ranking or prompt construction.",
               "<strong>Logs</strong>: keep correlation ids, redact secrets/PII, and avoid raw prompts or tokens unless explicitly approved."
             ] },
-            { t: "note", variant: "key", html: "For RAG, the most dangerous bug is retrieval crossing a permission boundary. Treat documents as protected resources: index ACL metadata, filter before top-k reaches the model, and test with swapped-tenant prompts." },
+            { t: "note", variant: "warn", html: "For RAG, the most dangerous bug is retrieval crossing a permission boundary. Treat documents as protected resources: index ACL metadata, filter before top-k reaches the model, and test with swapped-tenant prompts." },
             { t: "note", variant: "trap", html: "A signed JWT proves claims were issued; it does not prove the user may access a specific invoice, document or tenant. Authorization is a fresh resource decision, not a token-parsing exercise." },
+            { t: "note", variant: "key", html: "<strong>Authorization is a decision about a resource, taken again at every layer that can return data.</strong> Threat modelling in HLD means drawing the trust boundaries and then checking that the database predicate, the cache key, the queue message and the retrieval filter all carry the same tenant and permission scope. Whichever one of them forgets is your actual security posture." },
             { t: "quiz", id: "hld-protocols" }
           ]
         },
@@ -2307,6 +2353,7 @@ window.TRACKS.hld = {
               ]
             },
             { t: "note", variant: "tip", html: "Pair deployment strategy with health checks and automated rollback. A canary is only safe if you're watching error rate and latency and can abort the moment they spike." },
+            { t: "note", variant: "key", html: "<strong>Containers make the artifact identical everywhere, which is what lets the rollout itself become the safety mechanism.</strong> Rolling, blue-green and canary differ mainly in how much spare capacity you hold and how quickly you can get back to the previous version; feature flags go one step further by separating the deploy from the release entirely." }
           ]
         },
         {

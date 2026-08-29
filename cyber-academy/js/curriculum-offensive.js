@@ -49,8 +49,9 @@ window.TRACKS.offensive = {
                 "<strong>Data handling</strong> \u2014 what you may access, how you store findings, and how you destroy them after."
               ]
             },
-            { t: "note", variant: "key", html: "A professional's first deliverable is not a finding \u2014 it's a clear scope and signed authorization. If you can't point to written permission for a target, you do not have permission." },
-            { t: "note", variant: "tip", html: "Build your skills in places designed for it: your own home lab, intentionally vulnerable practice apps you run locally, and capture-the-flag events. You never need someone else's production system to learn." }
+            { t: "note", variant: "warn", html: "A professional's first deliverable is not a finding \u2014 it's a clear scope and signed authorization. If you can't point to written permission for a target, you do not have permission." },
+            { t: "note", variant: "tip", html: "Build your skills in places designed for it: your own home lab, intentionally vulnerable practice apps you run locally, and capture-the-flag events. You never need someone else's production system to learn." },
+            { t: "note", variant: "key", html: "<strong>Intent is not a defense; a documented boundary is.</strong> Every technique here is judged by what you were authorized to do rather than by what you meant, so a written scope is the only thing separating research from an offense. That boundary costs nothing to obtain honestly \u2014 a lab you own grants it for free, and a bug-bounty policy grants it in writing." }
           ]
         },
         {
@@ -73,7 +74,7 @@ window.TRACKS.offensive = {
                 ["<strong>White box</strong>", "Full source & architecture", "A thorough, efficient audit"]
               ]
             },
-            { t: "note", variant: "key", html: "Grey box is often the best value: giving the tester a normal user account skips weeks of brute-forcing the front door and spends the budget on the deeper flaws an insider or a phished employee could reach." },
+            { t: "note", variant: "tip", html: "Grey box is often the best value: giving the tester a normal user account skips weeks of brute-forcing the front door and spends the budget on the deeper flaws an insider or a phished employee could reach." },
             { t: "h", text: "Pentest vs the neighbors" },
             {
               t: "ul", items: [
@@ -83,7 +84,8 @@ window.TRACKS.offensive = {
                 "<strong>Purple team</strong> \u2014 red and blue working together live to improve detection."
               ]
             },
-            { t: "note", variant: "trap", html: "A clean pentest report doesn't mean \u201cunhackable.\u201d It means \u201cno one found these things in this scope, in this timebox.\u201d Security is a continuous practice, not a certificate." }
+            { t: "note", variant: "trap", html: "A clean pentest report doesn't mean \u201cunhackable.\u201d It means \u201cno one found these things in this scope, in this timebox.\u201d Security is a continuous practice, not a certificate." },
+            { t: "note", variant: "key", html: "<strong>An engagement can only answer the question you scoped it to ask.</strong> Choosing between a vulnerability scan, a penetration test and a red-team exercise decides whether you learn what is broken, what is genuinely reachable, or whether anyone would notice \u2014 and no amount of skill in the later phases rescues a question chosen badly in the first one." }
           ]
         },
         {
@@ -111,8 +113,9 @@ window.TRACKS.offensive = {
                 ["File metadata", "Usernames, software versions, paths"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Defense is reducing your own footprint.</strong> Scrub metadata from published files, keep internal hostnames out of public DNS, monitor certificate-transparency logs for surprise subdomains, and assume anything an employee posts is recon fuel." },
+            { t: "note", variant: "tip", html: "<strong>Defense is reducing your own footprint.</strong> Scrub metadata from published files, keep internal hostnames out of public DNS, monitor certificate-transparency logs for surprise subdomains, and assume anything an employee posts is recon fuel." },
             { t: "note", variant: "trap", html: "OSINT is also the engine of social engineering. The org chart someone posts on LinkedIn becomes the \u201cHi, it's your CFO\u201d pretext. Security awareness is part of your recon defense." },
+            { t: "note", variant: "key", html: "<strong>You cannot detect the phase of an attack that never touches you.</strong> Passive reconnaissance leaves no entry in your logs, so the footprint you publish \u2014 in DNS, in certificate logs, in job ads, in document metadata \u2014 is the only part of it you can influence. Inventory your own exposure on a schedule, because no alert is going to do it for you." },
             { t: "quiz", id: "offensive-methodology" }
           ]
         }
@@ -154,12 +157,13 @@ window.TRACKS.offensive = {
                 ["3306 / 5432", "MySQL / Postgres", "Databases that should never face the internet"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>The defender's mirror image:</strong> every scan leaves traces. A burst of connections across many ports is exactly what your IDS and firewall logs should flag. Reducing attack surface (close unused ports, segment, rate-limit) is how you make enumeration expensive." },
+            { t: "note", variant: "tip", html: "<strong>The defender's mirror image:</strong> every scan leaves traces. A burst of connections across many ports is exactly what your IDS and firewall logs should flag. Reducing attack surface (close unused ports, segment, rate-limit) is how you make enumeration expensive." },
             { t: "compare",
               bad: { title: "Wide-open host", items: ["Dozens of ports listening", "Verbose version banners", "Default credentials on services", "Databases exposed to the internet"] },
               good: { title: "Hardened host", items: ["Only required ports open", "Banners minimized", "Strong, unique credentials + MFA", "Data tier reachable only from app tier"] }
             },
-            { t: "note", variant: "trap", html: "Aggressive scans can crash fragile services (old printers, industrial gear, IoT). On a real engagement, the rules of engagement dictate scan intensity \u2014 \u201cwe took down the warehouse\u201d is a career-limiting move." }
+            { t: "note", variant: "trap", html: "Aggressive scans can crash fragile services (old printers, industrial gear, IoT). On a real engagement, the rules of engagement dictate scan intensity \u2014 \u201cwe took down the warehouse\u201d is a career-limiting move." },
+            { t: "note", variant: "key", html: "<strong>Your asset inventory is a security control.</strong> A scan tells an attacker what actually answers on the network, which is frequently more current than the list the defenders trust \u2014 and any host neither side remembered is unpatched by definition. Enumerate yourself on the same schedule you assume an adversary does." }
           ]
         },
         {
@@ -182,7 +186,7 @@ window.TRACKS.offensive = {
                 "<strong>Context</strong> \u2014 is the asset internet-facing? Does it hold crown-jewel data? A 9.8 on an isolated box may matter less than a 6 on your login."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Risk = severity \u00d7 exposure \u00d7 asset value.</strong> Patch by real-world risk, not by CVSS alone. A scanner that sorts only by CVSS will have you fixing unreachable criticals while an exploited medium burns." },
+            { t: "note", variant: "trap", html: "<strong>Risk = severity \u00d7 exposure \u00d7 asset value.</strong> Patch by real-world risk, not by CVSS alone. A scanner that sorts only by CVSS will have you fixing unreachable criticals while an exploited medium burns." },
             { t: "h", text: "The vulnerability-management loop" },
             {
               t: "ol", items: [
@@ -192,7 +196,8 @@ window.TRACKS.offensive = {
                 "<strong>Verify</strong> \u2014 rescan to confirm the fix actually closed it."
               ]
             },
-            { t: "note", variant: "tip", html: "Log4Shell (<code>CVE-2021-44228</code>) was a CVSS 10.0 in a logging library buried inside thousands of apps. It's the textbook case for why a software inventory (SBOM) turns \u201care we affected?\u201d from days of panic into a single query." }
+            { t: "note", variant: "tip", html: "Log4Shell (<code>CVE-2021-44228</code>) was a CVSS 10.0 in a logging library buried inside thousands of apps. It's the textbook case for why a software inventory (SBOM) turns \u201care we affected?\u201d from days of panic into a single query." },
+            { t: "note", variant: "key", html: "<strong>A vulnerability program fails at its edges, not its middle.</strong> Scoring is the easy part; what hurts you is the asset nobody inventoried and the finding marked remediated without a rescan to prove it. Spend your effort on discovery and verification, because those two steps decide whether the prioritization between them meant anything at all." }
           ]
         },
         {
@@ -214,7 +219,7 @@ window.TRACKS.offensive = {
                 ["<strong>N-day</strong>", "A known, patched vuln \u2014 still works on the unpatched"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Most real attacks use n-days, not zero-days.</strong> Defenders sometimes obsess over exotic zero-days while last quarter's patched CVE sits unapplied on an internet-facing server. Patch hygiene beats exotic fears." },
+            { t: "note", variant: "trap", html: "<strong>Most real attacks use n-days, not zero-days.</strong> Defenders sometimes obsess over exotic zero-days while last quarter's patched CVE sits unapplied on an internet-facing server. Patch hygiene beats exotic fears." },
             { t: "h", text: "Coordinated disclosure: the honorable path" },
             { t: "p", html: "Found a real flaw in someone else's product? The professional route is <strong>coordinated (responsible) disclosure</strong>: report privately, give the vendor reasonable time to fix, then (often) publish once a patch exists." },
             {
@@ -230,6 +235,7 @@ window.TRACKS.offensive = {
               good: { title: "Coordinated disclosure", items: ["Private report first, within scope", "Reasonable time to patch", "Public write-up after the fix \u2014 credit, not chaos"] }
             },
             { t: "note", variant: "warn", html: "Selling exploits to the highest bidder or extorting a vendor crosses from research into crime. A bug-bounty program is the legal, paid, and reputation-building way to be rewarded for finding flaws." },
+            { t: "note", variant: "key", html: "<strong>Disclosure timing is a safety decision about other people's systems.</strong> The moment a technique becomes public, every unpatched deployment inherits the risk \u2014 which is why a private report first, and a patch before detail, is a norm rather than a courtesy. The same arithmetic runs on your side of the fence: your exposure window is the gap between a fix existing and you applying it." },
             { t: "quiz", id: "offensive-findingflaws" }
           ]
         }
@@ -260,7 +266,7 @@ window.TRACKS.offensive = {
                 ["<strong>Config & supply chain</strong>", "Misconfiguration, exposed secrets, vulnerable dependencies"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Access control is consistently #1.</strong> The highest-value test is rarely an exotic injection \u2014 it's logging in as a low-privilege user and methodically trying to reach data and actions that should be off-limits (change an id, replay an admin request)." },
+            { t: "note", variant: "tip", html: "<strong>Access control is consistently #1.</strong> The highest-value test is rarely an exotic injection \u2014 it's logging in as a low-privilege user and methodically trying to reach data and actions that should be off-limits (change an id, replay an admin request)." },
             { t: "h", text: "How a tester walks an app" },
             {
               t: "ol", items: [
@@ -272,7 +278,8 @@ window.TRACKS.offensive = {
               ]
             },
             { t: "note", variant: "tip", html: "An intercepting proxy (a tool that sits between browser and server so you can inspect and modify every request) is the web tester's core instrument. Conceptually, it makes the client-side trust boundary visible \u2014 and reminds you why the server must re-check everything." },
-            { t: "note", variant: "trap", html: "Automated scanners find the easy, known categories. The high-severity findings \u2014 broken access control and business-logic flaws \u2014 almost always need a human who understands what the app is <em>supposed</em> to allow." }
+            { t: "note", variant: "trap", html: "Automated scanners find the easy, known categories. The high-severity findings \u2014 broken access control and business-logic flaws \u2014 almost always need a human who understands what the app is <em>supposed</em> to allow." },
+            { t: "note", variant: "key", html: "<strong>A web test is a coverage problem before it is a cleverness problem.</strong> Bugs hide in the input nobody enumerated and the role nobody re-tested, so the map \u2014 every endpoint, every parameter, every privilege level \u2014 is what makes a finding repeatable rather than lucky. It also lets you state what you did <em>not</em> reach, which is the other half of an honest result." }
           ]
         },
         {
@@ -295,9 +302,10 @@ window.TRACKS.offensive = {
                 ["<strong>Exfiltration / impact</strong>", "DLP, egress filtering, backups, alerting"]
               ]
             },
-            { t: "note", variant: "key", html: "Every defensive idea from the other tracks has its purpose here. <strong>Least privilege</strong> blunts escalation; <strong>segmentation</strong> blunts lateral movement; <strong>credential hygiene</strong> blunts the pivot. The attack chain is the argument for all of them." },
+            { t: "note", variant: "tip", html: "Every defensive idea from the other tracks has its purpose here. <strong>Least privilege</strong> blunts escalation; <strong>segmentation</strong> blunts lateral movement; <strong>credential hygiene</strong> blunts the pivot. The attack chain is the argument for all of them." },
             { t: "p", html: "These steps map directly onto the later stages of the kill chain and the MITRE ATT&CK tactics \u2014 the same vocabulary defenders use to describe what they're watching for. We go deep on ATT&CK in the Threats track." },
-            { t: "note", variant: "trap", html: "\u201cAssume breach\u201d exists because of this lesson. Design as if an attacker already holds one valid account, then ask how far they get. If the answer is \u201ceverywhere,\u201d your network is flat and your privileges are too broad." }
+            { t: "note", variant: "trap", html: "\u201cAssume breach\u201d exists because of this lesson. Design as if an attacker already holds one valid account, then ask how far they get. If the answer is \u201ceverywhere,\u201d your network is flat and your privileges are too broad." },
+            { t: "note", variant: "key", html: "<strong>The attacker's longest phase is the defender's best chance.</strong> Initial access can be a single request, but escalation, credential theft, lateral movement and exfiltration take time and generate traffic that has no business reason to exist. Controls that shrink that chain also stretch it out \u2014 and a stretched chain is one you can still interrupt in the middle." }
           ]
         },
         {
@@ -318,13 +326,14 @@ window.TRACKS.offensive = {
                 "<strong>Remediation</strong> \u2014 a specific, actionable fix, not \u201cvalidate input.\u201d"
               ]
             },
-            { t: "note", variant: "key", html: "Pair every finding with a <strong>fix</strong> and a <strong>retest</strong>. The loop only closes when a remediated issue is rescanned and confirmed gone. \u201cReported\u201d is not \u201cresolved.\u201d" },
+            { t: "note", variant: "tip", html: "Pair every finding with a <strong>fix</strong> and a <strong>retest</strong>. The loop only closes when a remediated issue is rescanned and confirmed gone. \u201cReported\u201d is not \u201cresolved.\u201d" },
             { t: "h", text: "Writing for two audiences" },
             { t: "compare",
               bad: { title: "A report that gathers dust", items: ["Raw tool output dumped in", "No business impact", "Vague fixes (\u201cbe more secure\u201d)", "No prioritization \u2014 everything's \u201chigh\u201d"] },
               good: { title: "A report that drives change", items: ["Executive summary + technical detail", "Impact in money/trust terms", "Specific, testable remediation", "Ranked by real risk, with a retest plan"] }
             },
             { t: "note", variant: "tip", html: "The best testers are valued for their writing as much as their hacking. Translating \u201cI chained an IDOR with a weak token\u201d into \u201ca logged-in customer can read any other customer's invoices\u201d is the skill that gets things fixed." },
+            { t: "note", variant: "key", html: "<strong>A finding is worth exactly what the reader can act on.</strong> Reproduction steps decide whether an engineer believes it, business impact decides whether anyone funds the fix, and the retest decides whether the risk actually went away. Everything technically true in between is optional." },
             { t: "quiz", id: "offensive-webhacking" }
           ]
         }

@@ -18,7 +18,7 @@
    friendly action while still matching the sibling .icon-btn controls.
    --accent flips per theme, so this stays correct in light and dark. */
 .cy-install-btn.show svg,
-.cy-install-btn.show:hover svg { stroke: var(--accent); }
+.cy-install-btn.show:hover svg { stroke: var(--accent-ink); }
 
 /* Keyboard focus ring in the theme accent, over a solid surface for contrast. */
 .cy-install-btn:focus-visible {

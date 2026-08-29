@@ -115,7 +115,7 @@
         readout.appendChild(document.createTextNode("window [" + f.L + ".." + f.R + "] sum = "));
         readout.appendChild(h("b", {}, String(f.sum)));
         readout.appendChild(document.createTextNode("   best so far = "));
-        readout.appendChild(h("b", { style: "color:var(--lime)" }, f.best === -Infinity ? "—" : String(f.best)));
+        readout.appendChild(h("b", { style: "color:var(--lime-ink)" }, f.best === -Infinity ? "—" : String(f.best)));
       }
       if (appendLog && !f.building) {
         const d = h("div", {});
@@ -179,9 +179,9 @@
         row.appendChild(node);
         if (i < n - 1) row.appendChild(h("div", { class: "ll-arrow" }, h("span", { html: '<svg viewBox="0 0 24 16"><path d="M2 8h18M15 3l5 5-5 5"/></svg>' })));
       }
-      if (cycleTo >= 0) row.appendChild(h("span", { class: "gt-ds-lbl", style: "margin-left:8px;font-family:var(--font-mono);font-size:.66rem;color:var(--violet)" }, "tail ↺ " + String.fromCharCode(65 + cycleTo)));
+      if (cycleTo >= 0) row.appendChild(h("span", { class: "gt-ds-lbl", style: "margin-left:8px;font-family:var(--font-mono);font-size:.66rem;color:var(--violet-ink)" }, "tail ↺ " + String.fromCharCode(65 + cycleTo)));
       readout.innerHTML = "";
-      readout.appendChild(h("b", { style: "color:" + (f.done === "cycle" ? "var(--rose)" : f.done === "none" ? "var(--cyan)" : "var(--accent)") }, f.msg));
+      readout.appendChild(h("b", { style: "color:" + (f.done === "cycle" ? "var(--rose-ink)" : f.done === "none" ? "var(--cyan-ink)" : "var(--accent-ink)") }, f.msg));
       if (appendLog) { const d = h("div", f.done === "cycle" ? { class: "no" } : f.done === "none" ? { class: "ok" } : {}); d.textContent = f.msg; log.insertBefore(d, log.firstChild); }
     }
 
@@ -235,7 +235,7 @@
         }
       }
       readout.innerHTML = "";
-      readout.appendChild(h("b", { style: "color:" + (f.done ? "var(--lime)" : "var(--accent)") }, f.msg));
+      readout.appendChild(h("b", { style: "color:" + (f.done ? "var(--lime-ink)" : "var(--accent-ink)") }, f.msg));
     }
 
     mount.appendChild(h("div", { class: "widget-controls" },
@@ -422,8 +422,8 @@
           i === f.mid ? h("span", { class: "ptr" }, "M") : (i === f.lo ? h("span", { class: "ptr" }, "L") : (i === f.hi ? h("span", { class: "ptr" }, "R") : null))));
       });
       readout.innerHTML = "";
-      if (f.notfound) readout.appendChild(h("b", { style: "color:var(--rose)" }, target + " not found"));
-      else if (f.found) readout.appendChild(h("b", { style: "color:var(--lime)" }, "found " + target + " at index " + f.mid + " ✓"));
+      if (f.notfound) readout.appendChild(h("b", { style: "color:var(--rose-ink)" }, target + " not found"));
+      else if (f.found) readout.appendChild(h("b", { style: "color:var(--lime-ink)" }, "found " + target + " at index " + f.mid + " ✓"));
       else {
         readout.appendChild(document.createTextNode("mid = arr[" + f.mid + "] = " + arr[f.mid] + " "));
         readout.appendChild(h("b", {}, f.cmp === "lt" ? "< " + target + " → search right" : "> " + target + " → search left"));
@@ -558,7 +558,7 @@
       }
       readout.innerHTML = "";
       readout.appendChild(document.createTextNode("islands found = "));
-      readout.appendChild(h("b", { style: "color:var(--lime)" }, String(f.count)));
+      readout.appendChild(h("b", { style: "color:var(--lime-ink)" }, String(f.count)));
       readout.appendChild(document.createTextNode("   " + f.msg));
     }
 
@@ -613,7 +613,7 @@
         board.appendChild(h("div", { class: cls }, f.dp[r][c] > 0 ? String(f.dp[r][c]) : ""));
       }
       readout.innerHTML = "";
-      readout.appendChild(h("b", { style: "color:" + (f.done ? "var(--lime)" : "var(--accent)") }, f.msg));
+      readout.appendChild(h("b", { style: "color:" + (f.done ? "var(--lime-ink)" : "var(--accent-ink)") }, f.msg));
     }
 
     mount.appendChild(h("div", { class: "widget-controls" },
@@ -675,5 +675,5 @@
     render();
   };
 
-  window.Widgets = Widgets;
+  window.Widgets = Object.assign(window.Widgets || {}, Widgets);
 })();

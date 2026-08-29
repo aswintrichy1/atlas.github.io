@@ -40,8 +40,8 @@ window.TRACKS.threats = {
             { t: "p", html: "<strong>MITRE ATT&CK</strong> is a free, community knowledge base of real-world adversary behavior, organized as <strong>tactics</strong> (the attacker's goal at each stage) and <strong>techniques</strong> (how they achieve it). It gives defenders one vocabulary for \u201cwhat are we actually watching for?\u201d" },
             { t: "p", html: "Browse the enterprise tactics below \u2014 each is a stage of an intrusion, with example techniques and the kind of defense that catches them." },
             { t: "widget", id: "attack" },
-            { t: "note", variant: "key", html: "ATT&CK's power is <strong>coverage mapping</strong>: list the techniques you can actually detect, and the gaps jump out. \u201cWe have great coverage of execution but nothing for lateral movement\u201d is a roadmap, not a guess." },
-            { t: "note", variant: "tip", html: "TTPs \u2014 <strong>Tactics, Techniques, and Procedures</strong> \u2014 describe attacker behavior from general to specific. Behavior is far harder for an adversary to change than an IP or a file hash, which is exactly the point of the next lesson." }
+            { t: "note", variant: "tip", html: "TTPs \u2014 <strong>Tactics, Techniques, and Procedures</strong> \u2014 describe attacker behavior from general to specific. Behavior is far harder for an adversary to change than an IP or a file hash, which is exactly the point of the next lesson." },
+            { t: "note", variant: "key", html: "<strong>Intelligence that changes no decision is trivia.</strong> The practical gift of a shared behavior map is coverage mapping \u2014 write down the techniques you could genuinely detect today and the empty rows become a roadmap instead of a guess. Just remember the map is assembled from what has been observed and published, so read blank space as unmeasured rather than safe, and let the question of who would plausibly come for you decide which gap is worth a quarter of work." }
           ]
         },
         {
@@ -54,7 +54,7 @@ window.TRACKS.threats = {
             { t: "p", html: "An <strong>indicator of compromise (IOC)</strong> is an observable sign of malicious activity \u2014 a file hash, an IP, a domain, a registry key. But blocking IOCs is a treadmill if you pick the wrong ones. The <strong>Pyramid of Pain</strong> ranks indicators by how much it hurts the attacker when you deny them." },
             { t: "p", html: "Click up the pyramid to see how trivially an attacker swaps each indicator \u2014 and why detecting behavior at the top is worth far more than blocking a hash at the bottom." },
             { t: "widget", id: "pyramid" },
-            { t: "note", variant: "key", html: "<strong>Hashes are free for the attacker to change</strong> (recompile, and the hash is new). <strong>TTPs are expensive</strong> \u2014 forcing an adversary to re-tool their whole method is the most durable win in defense. Aim your detections high." },
+            { t: "note", variant: "tip", html: "<strong>Hashes are free for the attacker to change</strong> (recompile, and the hash is new). <strong>TTPs are expensive</strong> \u2014 forcing an adversary to re-tool their whole method is the most durable win in defense. Aim your detections high." },
             { t: "h", text: "IOCs vs IOAs" },
             {
               t: "ul", items: [
@@ -63,7 +63,8 @@ window.TRACKS.threats = {
                 "Mature defense uses both: IOCs for fast, cheap blocking; IOAs for the attacks no one has seen before."
               ]
             },
-            { t: "note", variant: "trap", html: "A feed of a million IP indicators feels powerful and mostly isn't \u2014 IPs rotate hourly. Quality over quantity: a few solid behavioral detections beat an ocean of stale, bottom-of-the-pyramid indicators." }
+            { t: "note", variant: "trap", html: "A feed of a million IP indicators feels powerful and mostly isn't \u2014 IPs rotate hourly. Quality over quantity: a few solid behavioral detections beat an ocean of stale, bottom-of-the-pyramid indicators." },
+            { t: "note", variant: "key", html: "<strong>Every indicator has a cost the attacker pays once and you pay forever.</strong> A hash or an address is cheap to block and cheaper to replace, so feeds from the base of the pyramid quietly become maintenance that expires faster than anyone can review it \u2014 whereas a behavioral detection is expensive to write and forces an adversary to rebuild their method to escape it. Spend where their re-tooling cost is highest, and judge a feed by how long its entries stay true rather than by how many it holds." }
           ]
         },
         {
@@ -83,12 +84,13 @@ window.TRACKS.threats = {
                 "<strong>Respond or refine</strong> \u2014 escalate a find to incident response, or turn a fruitful hunt into a new automated detection."
               ]
             },
-            { t: "note", variant: "key", html: "A successful hunt's best output is often a <strong>new detection rule</strong>. You hunted manually once; now the SIEM watches for it forever. Hunting and detection engineering feed each other." },
+            { t: "note", variant: "tip", html: "A successful hunt's best output is often a <strong>new detection rule</strong>. You hunted manually once; now the SIEM watches for it forever. Hunting and detection engineering feed each other." },
             { t: "p", html: "Hunting depends on the logging and visibility you built in the Defense track \u2014 you can only hunt through data you actually collect. No telemetry, no hunt." },
             { t: "h", text: "Map your detection coverage" },
             { t: "p", html: "Lay your detections over the ATT&CK tactics and the gaps reveal themselves. Click each technique you could actually <em>detect</em> today \u2014 the tactics that stay empty are your <strong>blind spots</strong>, and they make the best next hunt." },
             { t: "widget", id: "attackmatrix" },
             { t: "note", variant: "tip", html: "Good hunters think in behaviors, not artifacts. \u201cAny process making outbound connections it never made before\u201d catches tomorrow's malware; \u201cthis one bad IP\u201d catches only yesterday's." },
+            { t: "note", variant: "key", html: "<strong>A hunt that finds nothing only reassures you if you know what you were able to see.</strong> The practice is bounded entirely by telemetry, so a hypothesis you cannot test for lack of a log <em>is</em> the finding, and it should leave the hunt as a collection request rather than as a clean result. Measure the programme by the detections and the visibility gaps it produces, because a quarter of empty hunts is just as easily a quarter of measuring nothing." },
             { t: "quiz", id: "threats-intel" }
           ]
         }
@@ -123,7 +125,7 @@ window.TRACKS.threats = {
                 ["<strong>Loader / dropper</strong>", "A small first stage that pulls in the rest"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Ransomware is the dominant business threat</strong> \u2014 and it has evolved to <em>double extortion</em>: steal the data first, then encrypt it, so backups alone don't save you from the leak. This is why egress monitoring and offline backups both matter." },
+            { t: "note", variant: "trap", html: "<strong>Ransomware is the dominant business threat</strong> \u2014 and it has evolved to <em>double extortion</em>: steal the data first, then encrypt it, so backups alone don't save you from the leak. This is why egress monitoring and offline backups both matter." },
             { t: "h", text: "How it gets in" },
             {
               t: "ul", items: [
@@ -134,7 +136,8 @@ window.TRACKS.threats = {
                 "<strong>Removable media</strong> \u2014 the USB drop, still effective."
               ]
             },
-            { t: "note", variant: "tip", html: "\u201cLiving off the land\u201d is the modern twist: instead of dropping obvious malware, attackers abuse legitimate built-in tools (scripting engines, admin utilities) so their activity blends into normal operations. It's why behavioral detection beats signatures." }
+            { t: "note", variant: "tip", html: "\u201cLiving off the land\u201d is the modern twist: instead of dropping obvious malware, attackers abuse legitimate built-in tools (scripting engines, admin utilities) so their activity blends into normal operations. It's why behavioral detection beats signatures." },
+            { t: "note", variant: "key", html: "<strong>The archetypes describe intent; what you actually detect is behavior.</strong> Real intrusions arrive as modular kits that borrow from several categories at once and increasingly prefer the tools already installed on the machine, so the taxonomy earns its keep as a way to reason about impact and containment \u2014 does this steal, spread, or destroy \u2014 rather than as a lookup table for detection. Name the behavior you can observe and act on that; the label can wait for the report." }
           ]
         },
         {
@@ -145,6 +148,7 @@ window.TRACKS.threats = {
           tags: ["malware-analysis", "reverse-engineering"],
           blocks: [
             { t: "p", html: "When something suspicious lands, analysts need to know what it does \u2014 without detonating it on a real network. <strong>Malware analysis</strong> has two complementary modes, and both happen inside strict isolation." },
+            { t: "note", variant: "tip", html: "This is the triage view — deciding quickly what a sample does. <a href='#/reversing/re/static-dynamic-re'>The reversing track</a> takes the same static-versus-dynamic split much deeper, including how samples detect and evade a sandbox." },
             { t: "p", html: "Sort each technique into the right approach \u2014 examining the file at rest, or watching it run." },
             { t: "widget", id: "analysis" },
             {
@@ -183,8 +187,8 @@ window.TRACKS.threats = {
                 ["<strong>Time bombs / sleep</strong>", "Extended detonation; trigger conditions"]
               ]
             },
-            { t: "note", variant: "key", html: "Notice the pattern: nearly every evasion of <em>static</em> signatures is defeated by watching <em>behavior</em>. A packed, obfuscated, novel binary still has to <em>act</em> \u2014 spawn a process, touch the registry, beat a path to the network \u2014 and that's where you catch it." },
             { t: "note", variant: "trap", html: "Because evasion keeps improving, no single control is enough. Defense in depth \u2014 email filtering, EDR, network detection, least privilege, segmentation \u2014 means defeating one layer still leaves the attacker facing the next." },
+            { t: "note", variant: "key", html: "<strong>Whatever hides still has to act.</strong> Packing, obfuscation and anti-debugging all defeat inspection of the file at rest, and none of them removes the need to spawn a process, establish persistence or reach the network \u2014 which is why watching behavior ages so much better than matching signatures. The honest limit is that behavior indistinguishable from an administrator's is caught by none of it, so the layer underneath is baselining: legitimate tools used in an unusual way, by an account that has never used them before." },
             { t: "quiz", id: "threats-malware" }
           ]
         }
@@ -229,7 +233,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "Apply the vendor fix, remove exposed vulnerable endpoints, rotate affected credentials, segment the app from sensitive stores, and run emergency scans for the same component."],
               ["Lesson learned", "Severity is not enough. Internet exposure, exploit availability, data sensitivity and ownership decide what must be patched first."]
             ] },
-            { t: "note", variant: "trap", html: "A scanner finding is not remediation. The loop closes only when the owner patches, validates, and the asset is rescanned clean." }
+            { t: "note", variant: "trap", html: "A scanner finding is not remediation. The loop closes only when the owner patches, validates, and the asset is rescanned clean." },
+            { t: "note", variant: "key", html: "<strong>The patch existed; the inventory did not.</strong> Vulnerability management fails at ownership far more often than at detection \u2014 an asset nobody is accountable for generates findings nobody closes, and an internet-facing service is precisely where that gap gets discovered on your behalf. Before anyone argues about a severity number, be able to answer three things about the host: who owns it, what it can reach, and the date by which they must have acted." }
           ]
         },
         {
@@ -265,7 +270,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "Upgrade OpenSSL, restart dependent services, rotate certificates and private keys, invalidate sessions and reset exposed credentials where needed."],
               ["Lesson learned", "Patching code is only half the response. If secrets may have leaked, rotate the secrets and invalidate what they protected."]
             ] },
-            { t: "note", variant: "tip", html: "Crypto failures often become <strong>key-management</strong> incidents. Ask what material might have been exposed, not just whether the package is now fixed." }
+            { t: "note", variant: "tip", html: "Crypto failures often become <strong>key-management</strong> incidents. Ask what material might have been exposed, not just whether the package is now fixed." },
+            { t: "note", variant: "key", html: "<strong>Some flaws leak quietly, and those you cannot close by patching alone.</strong> A memory-disclosure bug typically leaves nothing in a log, so you can never establish that nothing was taken \u2014 which moves the response from investigation to assumption, and means keys, certificates, sessions and credentials get rotated on the possibility rather than on proof. Ask early in any triage whether the flaw could have exposed secrets silently; that one question decides whether you are running an upgrade or a rotation programme." }
           ]
         },
         {
@@ -301,7 +307,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "Apply vendor patches, take exposed instances offline during triage if needed, review IOCs, remove unauthorized files, rotate credentials, and notify affected data owners."],
               ["Lesson learned", "Systems that broker sensitive data need extra isolation, aggressive patch SLAs, upload/download monitoring and least-privilege database access."]
             ] },
-            { t: "note", variant: "trap", html: "A managed file transfer server is not 'just plumbing'. It often contains the most regulated data in the company." }
+            { t: "note", variant: "trap", html: "A managed file transfer server is not 'just plumbing'. It often contains the most regulated data in the company." },
+            { t: "note", variant: "key", html: "<strong>Concentration is the risk, not the product.</strong> Any tier that brokers files for the whole organization accumulates the sensitivity of everything passing through it, so one input-handling flaw there yields far more than the same flaw in a dozen ordinary applications \u2014 and the people harmed are usually your customers' customers. Rank systems by the data that flows through them rather than the data they nominally own, and give the concentrators shorter patch deadlines, narrower database rights and real monitoring of what gets downloaded." }
           ]
         },
         {
@@ -355,7 +362,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "MFA on every remote path, disable stale accounts, segment IT and operational networks, rehearse restore and crisis communications."],
               ["Lesson learned", "Ransomware is a business-continuity event. Technical recovery, legal, communications and operations must already know the playbook."]
             ] },
-            { t: "note", variant: "trap", html: "The question during ransomware is not only 'can we decrypt?' It is 'can we safely operate while proving the attacker is contained?'" }
+            { t: "note", variant: "trap", html: "The question during ransomware is not only 'can we decrypt?' It is 'can we safely operate while proving the attacker is contained?'" },
+            { t: "note", variant: "key", html: "<strong>The outage can outgrow the infection.</strong> When you cannot establish where an intruder reached, containment has to assume the worst, and the shutdown that follows is a business decision made under uncertainty rather than a technical necessity \u2014 which is exactly what segmentation and clean evidence are worth, because they shrink the set of systems you must treat as suspect. Rehearse that decision alongside the restore, since the hardest question on the day is how much you are willing to switch off in order to be sure." }
           ]
         },
         {
@@ -373,7 +381,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "Use phishing-resistant MFA where possible, number matching, prompt rate limits, session risk scoring, least-privilege secrets and rapid session revocation."],
               ["Lesson learned", "MFA must resist social pressure. A second factor is only strong when the approval proves intent, not exhaustion."]
             ] },
-            { t: "note", variant: "tip", html: "Alert on MFA reset and prompt-spam patterns. Identity recovery and MFA approval are security events, not helpdesk noise." }
+            { t: "note", variant: "tip", html: "Alert on MFA reset and prompt-spam patterns. Identity recovery and MFA approval are security events, not helpdesk noise." },
+            { t: "note", variant: "key", html: "<strong>A second factor is only a factor while the approval still carries information.</strong> A prompt that asks a tired person to confirm something they cannot inspect decays into a button that makes the buzzing stop, and by then the password half of the login has already been solved \u2014 which is the reason number matching, prompt rate limits and origin-bound methods exist. Judge a rollout by what an approval actually proves about intent, and assume that whatever survives login will reach every secret that account can read." }
           ]
         },
         {
@@ -391,7 +400,8 @@ window.TRACKS.threats = {
               ["Patch / mitigation", "Use phishing-resistant MFA, require strong identity proofing for resets, separate helpdesk privileges, alert on recovery events, and revoke sessions after suspicious changes."],
               ["Lesson learned", "Identity is the perimeter. Secure the reset path as strongly as login, because attackers choose the softer one."]
             ] },
-            { t: "note", variant: "tip", html: "A mature control is not just 'MFA enabled'. Ask who can reset it, under what evidence, with what audit trail, and who gets alerted." }
+            { t: "note", variant: "tip", html: "A mature control is not just 'MFA enabled'. Ask who can reset it, under what evidence, with what audit trail, and who gets alerted." },
+            { t: "note", variant: "key", html: "<strong>Attackers rarely defeat the strongest control; they take the sanctioned path that avoids it.</strong> Recovery exists because people genuinely lose devices, so it must succeed for someone who cannot pass the normal check \u2014 which makes it, by construction, the weakest approved route into an account and the one worth the most scrutiny. Hold a reset to the same bar as a login: verified evidence, helpdesk privileges separated from account ownership, an alert to the real user, and an audit trail that names who approved it." }
           ]
         },
         {
@@ -508,7 +518,7 @@ window.TRACKS.threats = {
           tags: ["forensics", "dfir"],
           blocks: [
             { t: "p", html: "<strong>Digital forensics</strong> is the disciplined recovery and analysis of digital evidence to reconstruct what happened. Paired with incident response, it's <strong>DFIR</strong>. The work may end up in court, so <em>how</em> you handle evidence matters as much as what you find." },
-            { t: "note", variant: "key", html: "<strong>Locard's exchange principle:</strong> every interaction leaves a trace. An attacker on a system inevitably leaves artifacts \u2014 logs, files, memory, timestamps. Forensics is the craft of finding and interpreting them without destroying them." },
+            { t: "note", variant: "tip", html: "<strong>Locard's exchange principle:</strong> every interaction leaves a trace. An attacker on a system inevitably leaves artifacts \u2014 logs, files, memory, timestamps. Forensics is the craft of finding and interpreting them without destroying them." },
             { t: "h", text: "Chain of custody" },
             { t: "p", html: "Evidence is only as trustworthy as its <strong>chain of custody</strong> \u2014 a documented, unbroken record of who handled it, when, and how. Break the chain and the evidence may be worthless." },
             {
@@ -522,7 +532,8 @@ window.TRACKS.threats = {
             { t: "h", text: "Order of volatility" },
             { t: "p", html: "Some evidence vanishes the instant you power off; some survives for years. Collect from <strong>most volatile to least</strong>, or you'll lose it. Put the sources below in the right order." },
             { t: "widget", id: "volatility" },
-            { t: "note", variant: "trap", html: "The instinct to \u201cjust reboot it\u201d or \u201cre-image and move on\u201d destroys the most valuable evidence first \u2014 the contents of RAM, where running malware, keys, and network state live. Capture memory <em>before</em> you pull the plug." }
+            { t: "note", variant: "trap", html: "The instinct to \u201cjust reboot it\u201d or \u201cre-image and move on\u201d destroys the most valuable evidence first \u2014 the contents of RAM, where running malware, keys, and network state live. Capture memory <em>before</em> you pull the plug." },
+            { t: "note", variant: "key", html: "<strong>The first responder usually destroys more evidence than the attacker does.</strong> Rebooting a machine to clear it, mounting a disk to look around, or re-imaging to get the service back all overwrite the volatile layer where running code, keys and live connections lived \u2014 and none of that is recoverable afterwards. Settle the collection order while nothing is on fire, because during an incident the pressure to restore service always arrives before the pressure to explain what happened." }
           ]
         },
         {
@@ -542,10 +553,11 @@ window.TRACKS.threats = {
                 ["<strong>Network</strong>", "Packet captures, flow logs, DNS, proxy logs", "What talked to whom, and what left?"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Memory forensics</strong> is the modern crown jewel. Fileless malware that never touches disk, decryption keys, and live C2 connections all live only in RAM \u2014 invisible to disk-only analysis. It's why capturing memory early is worth so much." },
+            { t: "note", variant: "tip", html: "<strong>Memory forensics</strong> is the modern crown jewel. Fileless malware that never touches disk, decryption keys, and live C2 connections all live only in RAM \u2014 invisible to disk-only analysis. It's why capturing memory early is worth so much." },
             { t: "h", text: "The humble log, revisited" },
             { t: "p", html: "Logs straddle all three domains and are often the backbone of a timeline: authentication events, process creation, firewall and proxy records. This is the forensic pay-off for the centralized, tamper-evident logging you set up defensively \u2014 and the reason attackers try to clear logs (itself a detectable act)." },
-            { t: "note", variant: "tip", html: "Timestamps are gold and treacherous. Time zones, clock skew, and timestamp tampering all bite. Normalizing everything to one synchronized clock (UTC) is what lets you line up evidence from different systems into a coherent story." }
+            { t: "note", variant: "tip", html: "Timestamps are gold and treacherous. Time zones, clock skew, and timestamp tampering all bite. Normalizing everything to one synchronized clock (UTC) is what lets you line up evidence from different systems into a coherent story." },
+            { t: "note", variant: "key", html: "<strong>No single domain tells the truth on its own.</strong> Disk records what persisted, memory records what was live at one instant, and the network records what left \u2014 so a sentence as consequential as \u201cno data was exfiltrated\u201d is only as strong as the seam that could have shown it, which is usually a flow or proxy log you either kept or did not. Support each claim from at least two domains, and be explicit in the write-up about which conclusions rest on the absence of evidence rather than on evidence." }
           ]
         },
         {
@@ -566,10 +578,11 @@ window.TRACKS.threats = {
                 "<strong>Eradication check</strong> \u2014 is every foothold and persistence mechanism gone?"
               ]
             },
-            { t: "note", variant: "key", html: "Forensics closes the incident-response loop. \u201cLessons learned\u201d is only honest when a defensible timeline shows the full picture \u2014 otherwise you may eradicate one foothold and miss the persistence that brings the attacker right back." },
+            { t: "note", variant: "tip", html: "Forensics closes the incident-response loop. \u201cLessons learned\u201d is only honest when a defensible timeline shows the full picture \u2014 otherwise you may eradicate one foothold and miss the persistence that brings the attacker right back." },
             { t: "h", text: "Anti-forensics" },
             { t: "p", html: "Sophisticated attackers fight the investigation: clearing or tampering with logs, wiping files, manipulating timestamps (\u201ctimestomping\u201d), and working only in memory to leave nothing on disk." },
             { t: "note", variant: "trap", html: "Anti-forensics often <em>is</em> the evidence. A suspiciously empty log, a cleared event history, or impossible timestamps are themselves strong indicators of compromise. The attempt to hide leaves its own trace \u2014 Locard again." },
+            { t: "note", variant: "key", html: "<strong>A timeline is an argument, and its weakest link is the clock.</strong> Every entry rests on a timestamp that some system wrote \u2014 clocks drift, zones differ, and the field itself can be edited by whoever held the access you are now investigating \u2014 so the order you present is only as defensible as the corroboration behind each step. Assert where two independent sources agree, and say plainly where a step stands on one source alone, because the part of an investigation that gets challenged later is always the sequence." },
             { t: "quiz", id: "threats-forensics" }
           ]
         }

@@ -29,7 +29,7 @@
             tags: ["array", "memory", "amortized"],
             blocks: [
               { t: "p", html: "Almost every other data structure is built on top of the <strong>array</strong>: a block of <em>contiguous</em> memory holding equal-sized slots. Because the slots are contiguous and equal-sized, the address of element <code>i</code> is just <code>base + i × size</code> — a single multiply-and-add. That is why array indexing is <strong>O(1)</strong>." },
-              { t: "note", variant: "key", html: "DSA feels hard not because you lack talent, but because the prerequisites are skipped. This whole track rebuilds them from the ground up — and the array is step one." },
+              { t: "note", variant: "tip", html: "DSA feels hard not because you lack talent, but because the prerequisites are skipped. This whole track rebuilds them from the ground up — and the array is step one." },
               { t: "h", text: "Static vs. dynamic arrays" },
               { t: "p", html: "A <strong>static</strong> array has a fixed capacity. A <strong>dynamic</strong> array (Python <code>list</code>, Java <code>ArrayList</code>, C++ <code>vector</code>, Go <code>slice</code>) grows automatically: when it fills up, it allocates a bigger block (usually 2×) and copies everything over." },
               {
@@ -55,7 +55,8 @@
                 "for r in range(R):\n" +
                 "    for c in range(C):\n" +
                 "        total += grid[r][c]   # walks memory sequentially"
-              }
+              },
+              { t: "note", variant: "key", html: "<strong>Contiguity is the entire bargain.</strong> Equal-sized slots in one block are what buy you O(1) indexing and cache-friendly scans; the price is O(n) to insert or delete anywhere but the end, because every element after the gap has to shift. Doubling on growth is what keeps append amortized O(1) — so the moment a structure's real workload is cheap edits in the middle, the array is the wrong foundation." }
             ]
           },
           {
@@ -126,6 +127,7 @@
               },
               { t: "compare", bad: { title: "Brute force", items: ["Two nested loops", "O(n\u00b2) time", "Re-checks every pair"] }, good: { title: "Hash table", items: ["One pass, remember what you've seen", "O(n) time, O(n) space", "Lookup is O(1) average"] } },
               { t: "note", variant: "tip", html: "Reach for a hash set/map when a problem says \u201chave I seen this before?\u201d, \u201ccount occurrences\u201d, \u201cfind duplicates\u201d, or \u201cgroup by\u201d. It usually collapses an O(n\u00b2) scan into O(n)." },
+              { t: "note", variant: "key", html: "<strong>Average O(1), never guaranteed O(1).</strong> Turning a key into an address is what makes insert, lookup and delete constant time on average, and it is also why a bad hash or adversarial keys can pile everything into one bucket and drag a lookup to O(n). You pay O(n) extra memory and you surrender ordering completely — so the question that decides whether a hash table fits is whether you will need that order back." },
               { t: "quiz", id: "dsa-foundations" }
             ]
           }
@@ -180,6 +182,7 @@
                 "    return False"
               },
               { t: "note", variant: "trap", html: "Always guard <code>fast and fast.next</code> before hopping two steps, and don't lose the <code>next</code> pointer before you overwrite it. Most linked-list bugs are a dropped or null pointer." },
+              { t: "note", variant: "key", html: "<strong>You trade indexing away to buy splicing.</strong> Following pointers makes reaching element <code>i</code> an O(n) walk and scatters your data across memory, but once you already hold a node, inserting or removing it is O(1) with nothing to shift. Reversal and the fast/slow pair are the two techniques worth having in muscle memory, because between them they answer middle, cycle, cycle start and palindrome without ever allocating a second list." }
             ]
           },
           {
@@ -238,7 +241,8 @@
               },
               { t: "note", variant: "tip", html: "The same idea generalizes: 2-D prefix sums answer sub-rectangle sums in O(1), and a <strong>difference array</strong> is the inverse — it applies many range <em>updates</em> in O(1) each and reconstructs the result at the end." },
               { t: "h", text: "Sparse tables for idempotent queries" },
-              { t: "p", html: "Range <em>min/max</em> can't be undone by subtraction, so prefix sums don't apply. A <strong>sparse table</strong> pre-computes answers for every power-of-two length in O(n log n), then answers each min/max query in <strong>O(1)</strong> by overlapping two pre-computed ranges. It assumes the array doesn't change." }
+              { t: "p", html: "Range <em>min/max</em> can't be undone by subtraction, so prefix sums don't apply. A <strong>sparse table</strong> pre-computes answers for every power-of-two length in O(n log n), then answers each min/max query in <strong>O(1)</strong> by overlapping two pre-computed ranges. It assumes the array doesn't change." },
+              { t: "note", variant: "key", html: "<strong>Pre-computation is a bet that the array holds still.</strong> One O(n) pass buys O(1) range sums, and the same shape scales up to 2-D rectangles and sideways to sparse tables for min and max at an O(n log n) build. Every one of those structures assumes the data is frozen — as soon as elements can be updated between queries, the rebuild eats the savings and a Fenwick or segment tree, at O(log n) for both update and query, is the honest answer." }
             ]
           },
           {
@@ -249,6 +253,7 @@
             tags: ["sliding-window", "technique", "array", "string"],
             blocks: [
               { t: "p", html: "The <strong>sliding window</strong> keeps a contiguous range <code>[L, R]</code> over an array or string and slides it across the data instead of re-examining every subarray. Each element enters the window once (as <code>R</code> advances) and leaves at most once (as <code>L</code> advances), so the whole scan is <strong>O(n)</strong> rather than O(n²)." },
+              { t: "note", variant: "tip", html: "This page is about the mechanism — why the window is O(n) and how the pointers move. <a href='#/patterns/arrays/sliding-window'>Pattern 3 in the Coding Patterns track</a> covers the other half: how to recognise a sliding-window problem from its wording before you have written anything." },
               { t: "widget", id: "slidingwindow" },
               { t: "h", text: "Fixed vs. variable windows" },
               {
@@ -275,8 +280,8 @@
                 "        best = max(best, R - L + 1)\n" +
                 "    return best"
               },
-              { t: "note", variant: "key", html: "The window works when the quantity you track can be updated <em>incrementally</em> as elements enter and leave \u2014 a running sum, a character count, a max via a monotonic deque. If recomputing the window from scratch is unavoidable, it isn't a sliding-window problem." },
               { t: "note", variant: "tip", html: "Spot it from the words: <em>contiguous subarray / substring</em> plus <em>longest, shortest, maximum, minimum,</em> or <em>at most K</em>. A neat counting trick: <strong>exactly K = atMost(K) \u2212 atMost(K\u22121)</strong>, two easy windows instead of one tricky one." },
+              { t: "note", variant: "key", html: "<strong>The window is only O(n) because the answer moves with its edges.</strong> Every element enters once and leaves once, so the pass is linear — but that holds only while a running sum, a character count, or a max kept in a monotonic deque can absorb one arrival and one departure in constant time. When the quantity has to be rebuilt from scratch at each step you are back to O(n\u00b7k), and the contiguous-plus-superlative wording that pointed you here was a false lead." },
               { t: "quiz", id: "dsa-linear" }
             ]
           }
@@ -309,9 +314,10 @@
                   ["Quick", "O(n log n)", "O(n\u00b2)", "O(log n)", "No"]
                 ]
               },
-              { t: "note", variant: "key", html: "<strong>Quicksort</strong> is usually fastest in practice (great cache behavior, in-place) but has an O(n\u00b2) worst case on bad pivots. <strong>Merge sort</strong> guarantees O(n log n) and is stable, at the cost of O(n) extra space. Real libraries often use <em>Timsort</em> — a hybrid of merge and insertion sort tuned for real-world, partially-sorted data." },
+              { t: "note", variant: "tip", html: "<strong>Quicksort</strong> is usually fastest in practice (great cache behavior, in-place) but has an O(n\u00b2) worst case on bad pivots. <strong>Merge sort</strong> guarantees O(n log n) and is stable, at the cost of O(n) extra space. Real libraries often use <em>Timsort</em> — a hybrid of merge and insertion sort tuned for real-world, partially-sorted data." },
               { t: "h", text: "Stability — why it matters" },
-              { t: "p", html: "A sort is <strong>stable</strong> if equal keys keep their original relative order. That's what lets you sort by one field, then another, and have the first ordering survive as a tie-breaker (sort by name, then by age \u2192 same-age people stay alphabetical)." }
+              { t: "p", html: "A sort is <strong>stable</strong> if equal keys keep their original relative order. That's what lets you sort by one field, then another, and have the first ordering survive as a tie-breaker (sort by name, then by age \u2192 same-age people stay alphabetical)." },
+              { t: "note", variant: "key", html: "<strong>The n log n floor is a claim about comparisons, so the only way under it is to stop comparing.</strong> Inside that floor you are no longer picking speed, you are picking a guarantee: quicksort's fast average with an O(n\u00b2) worst case, or merge sort's O(n log n) worst case and stability bought with O(n) extra space. Name which of the three — worst case, memory, or stable ties — the problem actually cares about, and the algorithm chooses itself." }
             ]
           },
           {
@@ -341,6 +347,7 @@
                 "    return out"
               },
               { t: "note", variant: "trap", html: "Counting sort's <code>k</code> is the <em>range</em> of keys, not the count. Sorting values up to a billion would need a billion-slot array \u2014 linear time but disastrous space. These sorts win only when <code>k</code> is comparable to <code>n</code>." },
+              { t: "note", variant: "key", html: "<strong>Linear sorting is bought with an assumption about the keys, not with cleverness.</strong> Counting sort is O(n + k) in the key range and radix is O(d·(n + b)) over <code>d</code> digits, which only beats n log n while <code>k</code> or <code>d</code> stays small — and the space bill is that same <code>k</code> you were willing to ignore. So before you claim linear time, say out loud what bounds the keys; if you can't, you are back to comparisons." },
               { t: "quiz", id: "dsa-sorting" }
             ]
           },
@@ -352,6 +359,7 @@
             tags: ["binary-search", "invariant"],
             blocks: [
               { t: "p", html: "On a <strong>sorted</strong> array, <strong>binary search</strong> finds a target in <strong>O(log n)</strong> by repeatedly halving the search window. Each comparison throws away half of what's left \u2014 32 elements take at most 5 checks, a billion take ~30." },
+              { t: "note", variant: "tip", html: "<a href='#/patterns/search/binary-search'>Pattern 9</a> extends this past plain lookup into searching an answer space, which is where binary search actually shows up in interviews." },
               { t: "code", lang: "python", code:
                 "# Classic binary search; returns index or -1\n" +
                 "def binary_search(arr, target):\n" +
@@ -366,8 +374,8 @@
                 "            hi = mid - 1            # discard right half\n" +
                 "    return -1"
               },
-              { t: "note", variant: "key", html: "Pick a <strong>loop invariant</strong> and never break it. With inclusive bounds <code>[lo, hi]</code> the loop runs while <code>lo &lt;= hi</code> and each branch moves a bound <em>past</em> mid (<code>mid+1</code> / <code>mid-1</code>) so the window always shrinks. Mixing inclusive and exclusive bounds is where the off-by-one bugs live." },
-              { t: "note", variant: "tip", html: "Binary search isn't just for arrays. \u201cBinary search on the answer\u201d solves optimization problems: if you can cheaply test \u201cis a value of X feasible?\u201d and feasibility is monotonic, binary-search the smallest feasible X." }
+              { t: "note", variant: "tip", html: "Binary search isn't just for arrays. \u201cBinary search on the answer\u201d solves optimization problems: if you can cheaply test \u201cis a value of X feasible?\u201d and feasibility is monotonic, binary-search the smallest feasible X." },
+              { t: "note", variant: "key", html: "<strong>Binary search is an invariant you maintain, not a snippet you recall.</strong> Fix what your bounds mean, make every branch move one of them strictly <em>past</em> mid, and the window is forced to shrink — that discipline is what earns the O(log n) and what keeps you out of the infinite loop. Once the invariant is the thing you are tracking rather than the array, the array stops mattering: any monotonic feasibility test is already a sorted search space." }
             ]
           }
         ]
@@ -428,6 +436,7 @@
               { t: "h", text: "3 · Huffman coding" },
               { t: "p", html: "To build an optimal prefix code, repeatedly merge the two <em>least-frequent</em> symbols into a subtree. A min-heap on frequency makes \u201ctwo smallest\u201d an O(log n) operation, and the result is a provably minimal-length encoding." },
               { t: "note", variant: "tip", html: "The tell that a heap fits: the problem repeatedly needs \u201cthe smallest / largest / closest / most-frequent remaining thing\u201d while the set keeps changing. That's a priority queue." },
+              { t: "note", variant: "key", html: "<strong>Reach for a heap when the set keeps changing and you only ever need one end of it.</strong> That single capability is why a size-k heap answers top-k in O(n log k) rather than sorting everything at O(n log n), why Dijkstra can settle the nearest unsettled vertex at O((V + E) log V), and why Huffman can keep pulling the two rarest symbols at O(log n) each. The cost is that a heap orders nothing but its root — ask it for the k-th item, a sorted range, or a membership test and it has nothing to offer." }
             ]
           },
           {
@@ -517,6 +526,7 @@
                 "    if not directed:\n" +
                 "        graph[v].append(u)"
               },
+              { t: "note", variant: "key", html: "<strong>Edge density picks the representation, and you should pick it before you write any traversal.</strong> An adjacency list costs O(V + E) space and walks a vertex's neighbors in O(degree), which is what nearly every real graph wants; a matrix costs O(V\u00b2) but answers \u201cis there an edge u\u2013v?\u201d in O(1). Choosing wrong doesn't break your algorithm — it quietly multiplies its running time, which is far harder to notice." }
             ]
           },
           {
@@ -528,7 +538,7 @@
             blocks: [
               { t: "p", html: "<strong>Breadth-first search</strong> explores a graph in rings: all vertices one edge away, then two edges away, and so on. It uses a <strong>queue</strong> (FIFO) and visits each vertex and edge once \u2014 <strong>O(V + E)</strong>." },
               { t: "widget", id: "graphtraversal" },
-              { t: "note", variant: "key", html: "Because BFS reaches vertices in order of distance, the first time it reaches a vertex is via a <strong>shortest path</strong> (in number of edges). That's why BFS \u2014 not Dijkstra \u2014 is the right tool for shortest paths on <em>unweighted</em> graphs." },
+              { t: "note", variant: "tip", html: "Because BFS reaches vertices in order of distance, the first time it reaches a vertex is via a <strong>shortest path</strong> (in number of edges). That's why BFS \u2014 not Dijkstra \u2014 is the right tool for shortest paths on <em>unweighted</em> graphs." },
               { t: "h", text: "What BFS gives you" },
               {
                 t: "ul", items: [
@@ -550,6 +560,7 @@
                 "                q.append(v)\n" +
                 "    return dist"
               },
+              { t: "note", variant: "key", html: "<strong>One O(V + E) sweep, three answers, all of them resting on the ordering.</strong> Because BFS arrives at every vertex in order of edge distance, first arrival is a shortest path, each fresh sweep is exactly one component, and alternating colors by level decides bipartiteness. Mark a vertex when you <em>enqueue</em> it rather than when you dequeue it — otherwise the same vertex is queued several times and the level structure the whole thing depends on quietly comes apart." }
             ]
           },
           {
@@ -581,6 +592,7 @@
                 "    return any(dfs(s, -1) for s in range(n) if s not in seen)"
               },
               { t: "note", variant: "tip", html: "Articulation points and bridges matter in the real world: they are the routers and links whose failure splits a network. Finding them is how you locate single points of failure in a topology." },
+              { t: "note", variant: "key", html: "<strong>Choose DFS when the question is about structure rather than distance.</strong> One O(V + E) descent, plus a note of when each vertex was discovered and how far back its subtree can still reach, is enough to name every cycle, cut vertex and bridge — none of which BFS's level order exposes at all. What you give up is any claim about shortest paths, and on a deep or skewed graph, a call stack that can run out before the algorithm does." }
             ]
           },
           {
@@ -610,7 +622,8 @@
               },
               { t: "note", variant: "trap", html: "Topological sort only exists if the graph is acyclic. If DFS finds a back edge (an edge to a node still on the recursion stack), there's a cycle \u2014 and no valid ordering. Many schedulers use this to detect circular dependencies." },
               { t: "h", text: "Strongly connected components" },
-              { t: "p", html: "A <strong>strongly connected component</strong> (SCC) is a maximal set of vertices where every node can reach every other. <strong>Kosaraju's</strong> algorithm finds them with two DFS passes (one on the graph, one on its transpose); <strong>Tarjan's</strong> does it in a single pass with low-link values. Collapsing each SCC to a point turns any directed graph into a DAG \u2014 the <em>condensation</em>." }
+              { t: "p", html: "A <strong>strongly connected component</strong> (SCC) is a maximal set of vertices where every node can reach every other. <strong>Kosaraju's</strong> algorithm finds them with two DFS passes (one on the graph, one on its transpose); <strong>Tarjan's</strong> does it in a single pass with low-link values. Collapsing each SCC to a point turns any directed graph into a DAG \u2014 the <em>condensation</em>." },
+              { t: "note", variant: "key", html: "<strong>Direction is what turns DFS's finish order into an ordering you can act on.</strong> Record each vertex as it finishes, reverse the list, and you have a topological order in O(V + E) — and the back edge that would have invalidated it is exactly the cycle report you needed anyway, so treat cycle detection as part of the sort rather than a second pass. When the graph genuinely has cycles, collapse each strongly connected component to a point: the condensation is a DAG, so you can still schedule, you just schedule groups instead of vertices." }
             ]
           },
           {
@@ -621,7 +634,7 @@
             tags: ["union-find", "disjoint-set", "graph"],
             blocks: [
               { t: "p", html: "<strong>Union-Find</strong> (a <em>disjoint-set</em> structure) maintains a collection of non-overlapping groups and answers two questions blazingly fast: <strong>union(a, b)</strong> merges the groups containing a and b, and <strong>find(x)</strong> returns a <em>representative</em> for x's group. Two elements are connected exactly when they share a representative." },
-              { t: "cue", html: "<b>Recognize it when</b> a problem is about <em>connectivity</em> or <em>grouping</em> that only ever <em>merges</em> (never splits): connected components in a growing graph, detecting a cycle while adding edges, Kruskal's minimum spanning tree, or 'are these accounts the same person?'" },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> a problem is about <em>connectivity</em> or <em>grouping</em> that only ever <em>merges</em> (never splits): connected components in a growing graph, detecting a cycle while adding edges, Kruskal's minimum spanning tree, or 'are these accounts the same person?'" },
               { t: "widget", id: "unionfind" },
               { t: "h", text: "The two optimizations that make it fast" },
               {
@@ -688,8 +701,8 @@
                 "        return n\n" +
                 "    return fib(n - 1) + fib(n - 2)   # O(n) with the cache, O(2^n) without"
               },
-              { t: "note", variant: "key", html: "Recursion is the natural language of <strong>divide and conquer</strong> (merge sort, quicksort), <strong>trees</strong> (a tree is recursive by definition), and <strong>dynamic programming</strong> (recursion + memoization). Get comfortable trusting the recursive call to \u201cjust work\u201d on the smaller input." },
-              { t: "note", variant: "tip", html: "Any recursion can be rewritten with an explicit stack to avoid deep call stacks. Some languages also do <em>tail-call</em> optimization \u2014 but Python and Java don't, so deep recursion can overflow; convert to iteration when depth can be large." }
+              { t: "note", variant: "tip", html: "Any recursion can be rewritten with an explicit stack to avoid deep call stacks. Some languages also do <em>tail-call</em> optimization \u2014 but Python and Java don't, so deep recursion can overflow; convert to iteration when depth can be large." },
+              { t: "note", variant: "key", html: "<strong>Recursion is a way of describing a problem, and the call stack is what it charges you for the description.</strong> Write the base case first, trust the smaller call to just work, and divide and conquer, every tree algorithm, and memoized DP all collapse into the same short function. The bill is O(d) memory for depth <code>d</code>, with no tail-call relief in Python or Java — so when depth grows with <code>n</code>, plan on carrying your own stack rather than discovering the limit at run time." }
             ]
           },
           {
@@ -700,6 +713,7 @@
             tags: ["backtracking", "recursion", "search"],
             blocks: [
               { t: "p", html: "<strong>Backtracking</strong> builds a solution one decision at a time and abandons a path (\u201cbacktracks\u201d) the instant it can't possibly lead to a valid answer. It's a depth-first search over the tree of partial solutions, with <em>pruning</em>." },
+              { t: "note", variant: "tip", html: "<a href='#/patterns/recursion-dp/backtracking'>Pattern 14</a> approaches the same technique from the recognition side — the prompt wordings that mean “enumerate with pruning” — and is worth reading once this mechanism is solid." },
               { t: "widget", id: "backtracking" },
               { t: "h", text: "The universal template" },
               { t: "code", lang: "python", code:
@@ -714,8 +728,8 @@
                 "            state.remove(choice)       # 3. un-choose (backtrack)"
               },
               { t: "p", html: "<strong>Choose \u2192 explore \u2192 un-choose.</strong> That three-line rhythm solves permutations, combinations, subsets, the N-Queens puzzle, Sudoku, word search, and maze solving. The art is in <code>is_valid</code> \u2014 the earlier you prune a doomed branch, the faster the search." },
-              { t: "note", variant: "key", html: "Backtracking is worst-case exponential because the solution space is exponential. <strong>Pruning</strong> is what makes it practical: a good constraint check (like \u201cthis column/diagonal is already attacked\u201d in N-Queens) cuts off whole subtrees before you waste time exploring them." },
               { t: "note", variant: "trap", html: "Forgetting the un-choose step is the classic bug \u2014 the state leaks into sibling branches and you get garbage. Every change you make on the way down must be undone on the way back up." },
+              { t: "note", variant: "key", html: "<strong>Choose, explore, un-choose is the easy part; the pruning is the actual algorithm.</strong> The solution space is exponential and no template changes that, so the difference between a search that returns and one that hangs is how early an invalid partial state gets rejected — and how reliably every change made on the way down is undone on the way back up. When you present one of these, say the branching factor and the depth, then name the check that deletes whole subtrees." },
               { t: "quiz", id: "dsa-backtracking" }
             ]          },
           {
@@ -726,6 +740,7 @@
             tags: ["dp", "memoization", "tabulation", "recursion"],
             blocks: [
               { t: "p", html: "<strong>Dynamic programming (DP)</strong> applies when a problem has two properties: <em>overlapping subproblems</em> (the same smaller problems recur) and <em>optimal substructure</em> (the best answer is built from the best answers to those subproblems). The fix is simple — compute each subproblem <strong>once</strong> and remember it — but spotting <em>which</em> recursion to memoize is the skill." },
+              { t: "note", variant: "tip", html: "Mechanism first here. <a href='#/patterns/recursion-dp/dynamic-programming'>Pattern 15</a> drills recognition and the standard state shapes, and <a href='#/cpat/structures/dp-taxonomy'>the five DP shapes</a> in Advanced Coding Patterns sorts the families so you can name one under time pressure." },
               { t: "p", html: "Naive Fibonacci recomputes <code>fib(n-2)</code> an exponential number of times. Memoizing collapses it to a single pass." },
               { t: "widget", id: "dptable" },
               { t: "h", text: "Two ways to write the same DP" },
@@ -758,8 +773,8 @@
                   "<strong>Pick a direction</strong> — memoize the recursion, or tabulate bottom-up; optionally compress space."
                 ]
               },
-              { t: "note", variant: "key", html: "Most interview DP is a variation of a few archetypes: <strong>0/1 knapsack</strong>, <strong>unbounded knapsack</strong> (coin change), <strong>LCS / edit distance</strong> (two sequences), <strong>LIS</strong>, <strong>grid paths</strong>, and <strong>interval / partition DP</strong>. Recognize the archetype and the transition usually follows." },
-              { t: "note", variant: "trap", html: "DP is <em>not</em> always the answer — if subproblems don't overlap, plain divide-and-conquer (or a greedy choice) is simpler and faster. Reach for DP only when the same subproblem is being recomputed." }
+              { t: "note", variant: "trap", html: "DP is <em>not</em> always the answer — if subproblems don't overlap, plain divide-and-conquer (or a greedy choice) is simpler and faster. Reach for DP only when the same subproblem is being recomputed." },
+              { t: "note", variant: "key", html: "<strong>Defining the state is the whole problem; the transition almost always follows from it.</strong> Nearly all of it is a handful of archetypes — 0/1 and unbounded knapsack, two-sequence LCS and edit distance, LIS, grid paths, interval partitioning — so spend your thinking on what <code>dp[i]</code> means and which smaller states it depends on, and treat memoization versus tabulation as a later decision about stack depth and space. First, though, confirm the subproblems really do repeat: without overlap you have paid for a table that plain divide and conquer would have handed you for nothing." }
             ]          }
         ]
       },
@@ -789,8 +804,8 @@
                   "<strong>Test & analyze.</strong> Dry-run your hand example, probe edges (empty, one element, all-equal, overflow), then state final time and space complexity."
                 ]
               },
-              { t: "note", variant: "key", html: "The interviewer is evaluating how you <em>think</em>, not whether you instantly recall the trick. Communicating a structured approach \u2014 even on a problem you don't fully crack \u2014 beats a silent correct answer." },
               { t: "note", variant: "tip", html: "Practice this framework on easy problems until it's automatic. Under stress you fall back to your habits, so build the right ones when the stakes are low." },
+              { t: "note", variant: "key", html: "<strong>The framework exists so the hard thinking happens before the typing.</strong> Clarify, work a small example by hand, state a brute force with its complexity, then optimize the bottleneck you just named — out loud. That sequence stays legible even when the solution isn't finished, which is precisely what earns credit on a problem you only half crack, and it is why a structured attempt beats a silent one." },
               { t: "quiz", id: "dsa-interview" }
             ]
           }

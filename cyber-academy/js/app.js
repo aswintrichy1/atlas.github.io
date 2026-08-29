@@ -901,7 +901,7 @@
       case "h2": return "### " + b.text + "\n";
       case "ul": return b.items.map((i) => "- " + stripTags(i)).join("\n") + "\n";
       case "ol": return b.items.map((i, n) => (n + 1) + ". " + stripTags(i)).join("\n") + "\n";
-      case "cue": return "> **Recognize it:** " + stripTags(b.html) + "\n";
+      case "cue": return "> **Spotting it in a prompt:** " + stripTags(b.html) + "\n";
       case "note": return "> **" + (NOTE_MD[b.variant] || "Note") + ".** " + stripTags(b.html) + "\n";
       case "code": return "```" + (b.lang || "") + "\n" + b.code + "\n```\n";
       case "table": {

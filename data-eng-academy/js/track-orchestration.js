@@ -20,7 +20,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
   function node(g, n, stroke, fill) {
     var r = svgEl("rect", { x: n.x - 48, y: n.y - 15, width: 96, height: 30, rx: 8, fill: fill || "var(--surface-solid)", stroke: stroke, "stroke-width": 2 });
@@ -188,7 +188,7 @@
         var onDown = (e[0] === sel || down[e[0]]) && (down[e[1]] || e[1] === sel === false && down[e[1]]);
         var inDown = down[e[1]] && (e[0] === sel || down[e[0]]);
         var inUp = up[e[0]] && (e[1] === sel || up[e[1]]);
-        var col = inDown ? "var(--rose)" : (inUp ? "var(--cyan)" : "var(--line-strong)");
+        var col = inDown ? "var(--rose-ink)" : (inUp ? "var(--cyan-ink)" : "var(--line-strong)");
         svg.appendChild(svgEl("path", { class: "gt-edge", style: "stroke:" + col + (inDown || inUp ? ";stroke-width:3" : ""), d: "M" + (a.x + 48) + " " + a.y + " L" + (b.x - 48) + " " + b.y }));
       });
       Object.keys(nodes).forEach(function (k) {
@@ -303,7 +303,7 @@
       rows.forEach(function (r) {
         r.forEach(function (c, i) {
           var good = i === 2 && /owned|approved|ingested|masked|green/.test(c);
-          board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:6px 4px;font-size:.64rem;color:" + (good ? "var(--accent)" : "var(--text)") }, c));
+          board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:6px 4px;font-size:.64rem;color:" + (good ? "var(--accent-ink)" : "var(--text)") }, c));
         });
       });
       stage.appendChild(board);
@@ -341,7 +341,7 @@
       steps.forEach(function (s, i) {
         var done = i < step;
         var blocked = legalHold && i === 3;
-        log.appendChild(h("div", { class: blocked ? "no" : (done ? "ok" : "") }, (blocked ? "! HOLD  " : (done ? "✓ DONE  " : "• TODO  ")) + s[0] + " — " + s[1]));
+        log.appendChild(h("div", { class: blocked ? "no" : (done ? "ok" : "") }, (blocked ? "! HOLD  " : (done ? "✓ DONE  " : "• QUEUED")) + s[0] + " — " + s[1]));
       });
       stage.appendChild(log);
       readout.innerHTML = "";
@@ -384,7 +384,7 @@
       rows.forEach(function (r) {
         board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:7px;font-size:.64rem" }, r[0]));
         board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:7px;font-size:.64rem" }, r[1]));
-        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:7px;font-size:.64rem;color:" + (r[2] === "wasteful" || r[2] === "idle burn" ? "var(--rose)" : "var(--accent)") }, r[2]));
+        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:7px;font-size:.64rem;color:" + (r[2] === "wasteful" || r[2] === "idle burn" ? "var(--rose-ink)" : "var(--accent-ink)") }, r[2]));
       });
       stage.appendChild(board);
       readout.innerHTML = "";
@@ -414,20 +414,20 @@
       questions: [
         {
           q: "Why must orchestrated tasks be idempotent?",
-          options: ["To run faster", "So automatic retries and backfills don\u2019t corrupt or duplicate data", "To avoid writing logs", "To skip dependencies"],
-          answer: 1,
+          options: ["To run faster", "To avoid writing logs", "So automatic retries and backfills don\u2019t corrupt or duplicate data", "To skip dependencies"],
+          answer: 2,
           explain: "Schedulers retry failed tasks and re-run backfills, so a task must produce the same result when re-run \u2014 otherwise a retry double-writes or corrupts the output."
         },
         {
           q: "In Airflow, the 'execution date' (logical date) is used to\u2026",
-          options: ["Record wall-clock time only", "Parameterize a run for the data interval it processes, enabling deterministic backfills", "Set the timezone", "Name the DAG"],
-          answer: 1,
+          options: ["Record wall-clock time only", "Name the DAG", "Set the timezone", "Parameterize a run for the data interval it processes, enabling deterministic backfills"],
+          answer: 3,
           explain: "Tasks key their inputs/outputs to the logical date (the interval being processed), so re-running a past date reprocesses exactly that partition \u2014 making backfills deterministic."
         },
         {
           q: "A sensor in Airflow is typically used to\u2026",
-          options: ["Transform data", "Wait for an external condition (a file/partition) before downstream tasks run", "Send email", "Compress files"],
-          answer: 1,
+          options: ["Wait for an external condition (a file/partition) before downstream tasks run", "Transform data", "Send email", "Compress files"],
+          answer: 0,
           explain: "Sensors poll/await an external dependency \u2014 a file landing, a partition appearing, another DAG finishing \u2014 so downstream tasks only start when inputs are actually ready."
         }
       ]
@@ -438,20 +438,20 @@
       questions: [
         {
           q: "What is the biggest difference between a task DAG and an asset graph?",
-          options: ["A task DAG models execution steps; an asset graph models data products and their dependencies", "A task DAG cannot retry", "An asset graph never has dependencies", "They are different names for SQL joins"],
-          answer: 0,
+          options: ["A task DAG cannot retry", "A task DAG models execution steps; an asset graph models data products and their dependencies", "An asset graph never has dependencies", "They are different names for SQL joins"],
+          answer: 1,
           explain: "Task DAGs answer 'what runs next?' Asset graphs answer 'which dataset exists, depends on what, and is fresh?' Both matter, but asset-centric tools make data products first-class."
         },
         {
           q: "Dataset-aware scheduling is useful because it starts downstream work when...",
-          options: ["The calendar reaches midnight", "A declared upstream dataset has been updated or materialized", "A dashboard user logs in", "A warehouse is most expensive"],
-          answer: 1,
+          options: ["The calendar reaches midnight", "A dashboard user logs in", "A declared upstream dataset has been updated or materialized", "A warehouse is most expensive"],
+          answer: 2,
           explain: "Dataset-aware scheduling removes fragile time guesses. A downstream job can run when its declared input dataset is actually available."
         },
         {
           q: "Dynamic partitions are most helpful when...",
-          options: ["The set of partitions is known forever", "Partitions appear from data, tenants, regions or files discovered at runtime", "Every job writes one table only", "The pipeline has no backfills"],
-          answer: 1,
+          options: ["The set of partitions is known forever", "The pipeline has no backfills", "Every job writes one table only", "Partitions appear from data, tenants, regions or files discovered at runtime"],
+          answer: 3,
           explain: "Dynamic partitions let an orchestrator materialize new keys as they appear, such as a new tenant, country or late-arriving date partition."
         },
         {
@@ -474,14 +474,14 @@
         },
         {
           q: "Which is a dimension of data quality?",
-          options: ["Compression ratio", "Completeness (no missing required values)", "Partition count", "Query cost"],
-          answer: 1,
+          options: ["Compression ratio", "Partition count", "Completeness (no missing required values)", "Query cost"],
+          answer: 2,
           explain: "Classic quality dimensions include accuracy, completeness, validity, uniqueness, timeliness and consistency \u2014 properties of the data itself, not of storage or cost."
         },
         {
           q: "A data contract primarily defines\u2026",
-          options: ["The warehouse price", "The agreed schema and guarantees between a data producer and its consumers", "The dashboard colors", "The backup schedule"],
-          answer: 1,
+          options: ["The warehouse price", "The backup schedule", "The dashboard colors", "The agreed schema and guarantees between a data producer and its consumers"],
+          answer: 3,
           explain: "A data contract pins down the schema, semantics and SLAs a producer promises, so a breaking change is caught (and negotiated) before it silently shatters downstream consumers."
         }
       ]
@@ -492,26 +492,26 @@
       questions: [
         {
           q: "What makes a catalog an active metadata control plane instead of a passive wiki?",
-          options: ["It stores PDFs only", "Metadata changes drive workflows such as access approval, alerts, ownership routing and policy enforcement", "It has more colors", "It replaces all pipelines"],
-          answer: 1,
+          options: ["Metadata changes drive workflows such as access approval, alerts, ownership routing and policy enforcement", "It stores PDFs only", "It has more colors", "It replaces all pipelines"],
+          answer: 0,
           explain: "Active metadata is operational: ownership, lineage, glossary terms, quality results and policy tags feed automation instead of sitting unused in documentation."
         },
         {
           q: "An OpenLineage facet is best described as...",
-          options: ["A typed metadata attachment to a job, run or dataset", "A dashboard filter", "A warehouse size", "A file compression codec"],
-          answer: 0,
+          options: ["A dashboard filter", "A typed metadata attachment to a job, run or dataset", "A warehouse size", "A file compression codec"],
+          answer: 1,
           explain: "Facets attach structured metadata such as schema, SQL, ownership, errors or data quality results to lineage events."
         },
         {
           q: "Policy tags on sensitive columns should ideally...",
-          options: ["Only appear in a spreadsheet", "Drive masking, approval routing and access reviews automatically", "Be removed before production", "Disable lineage"],
-          answer: 1,
+          options: ["Only appear in a spreadsheet", "Be removed before production", "Drive masking, approval routing and access reviews automatically", "Disable lineage"],
+          answer: 2,
           explain: "Tags are most valuable when they control behavior: who can request access, what gets masked, and which reviews/audits are required."
         },
         {
           q: "Freshness and quality signals become product signals when they...",
-          options: ["Are visible to consumers and tied to an owner/SLO", "Are hidden in worker logs", "Run only once", "Ignore lineage"],
-          answer: 0,
+          options: ["Ignore lineage", "Are hidden in worker logs", "Run only once", "Are visible to consumers and tied to an owner/SLO"],
+          answer: 3,
           explain: "A data product should expose whether it is fresh and trustworthy, who owns it, and what SLO it is meeting or missing."
         }
       ]
@@ -522,8 +522,8 @@
       questions: [
         {
           q: "Why does a privacy deletion request begin with discovery?",
-          options: ["Deletes are optional", "Data platforms create raw, derived, exported and backup copies that must be located before action", "Discovery is cheaper than SQL", "It avoids audit logs"],
-          answer: 1,
+          options: ["Data platforms create raw, derived, exported and backup copies that must be located before action", "Deletes are optional", "Discovery is cheaper than SQL", "It avoids audit logs"],
+          answer: 0,
           explain: "You cannot prove erasure if you do not know every place the subject's data landed. Catalog tags and lineage are the map."
         },
         {
@@ -534,14 +534,14 @@
         },
         {
           q: "Legal hold changes a deletion workflow by...",
-          options: ["Allowing immediate permanent deletion of all copies", "Requiring protected copies to be retained while access is restricted and the exception is documented", "Removing masking requirements", "Skipping the audit trail"],
-          answer: 1,
+          options: ["Allowing immediate permanent deletion of all copies", "Removing masking requirements", "Requiring protected copies to be retained while access is restricted and the exception is documented", "Skipping the audit trail"],
+          answer: 2,
           explain: "A legal hold can override normal deletion timing. The workflow must preserve required evidence, restrict access and record why retention continues."
         },
         {
           q: "Good audit proof for deletion includes...",
-          options: ["Only a success toast", "Request id, subject key, assets touched, counts, retained exceptions and reviewer approval", "A screenshot of the dashboard", "The user's raw PII in logs"],
-          answer: 1,
+          options: ["Only a success toast", "The user's raw PII in logs", "A screenshot of the dashboard", "Request id, subject key, assets touched, counts, retained exceptions and reviewer approval"],
+          answer: 3,
           explain: "Audit proof should show what was requested, what was changed, what could not be changed yet, and who approved it without leaking sensitive data."
         }
       ]
@@ -552,8 +552,8 @@
       questions: [
         {
           q: "An ADR in the capstone should primarily capture...",
-          options: ["Only the final answer", "The decision, context, options considered, trade-offs and consequences", "Every meeting note", "A vendor logo list"],
-          answer: 1,
+          options: ["The decision, context, options considered, trade-offs and consequences", "Only the final answer", "Every meeting note", "A vendor logo list"],
+          answer: 0,
           explain: "Architecture Decision Records are useful because they preserve why a choice was made, not just what the choice was."
         },
         {
@@ -564,14 +564,14 @@
         },
         {
           q: "Which artifact best turns runtime behavior into incident evidence?",
-          options: ["A color palette", "OpenLineage events with job/run/dataset facets and SLO dashboard history", "A table name alone", "A monthly invoice only"],
-          answer: 1,
+          options: ["A color palette", "A table name alone", "OpenLineage events with job/run/dataset facets and SLO dashboard history", "A monthly invoice only"],
+          answer: 2,
           explain: "Runtime lineage plus SLO history shows what ran, what data it touched, whether it met promises, and where failure started."
         },
         {
           q: "A warehouse incident update should include...",
-          options: ["Impact, affected datasets, current freshness, owner, mitigation, ETA and next update time", "Only 'we are checking'", "The full stack trace for consumers", "No status until fixed"],
-          answer: 0,
+          options: ["No status until fixed", "Only 'we are checking'", "The full stack trace for consumers", "Impact, affected datasets, current freshness, owner, mitigation, ETA and next update time"],
+          answer: 3,
           explain: "Consumers need decision-grade communication: what is safe, what is stale, who owns it, and when they will hear more."
         }
       ]
@@ -582,26 +582,26 @@
       questions: [
         {
           q: "Data lineage is most directly useful for\u2026",
-          options: ["Compressing tables", "Impact analysis and root-cause tracing across dependencies", "Encrypting columns", "Indexing"],
-          answer: 1,
+          options: ["Impact analysis and root-cause tracing across dependencies", "Compressing tables", "Encrypting columns", "Indexing"],
+          answer: 0,
           explain: "Lineage maps how datasets feed each other, so you can see what a change will break (downstream impact) and where a bad number came from (upstream root cause)."
         },
         {
           q: "Which is one of the five pillars of data observability?",
-          options: ["Freshness", "Compression", "Sharding", "Indexing"],
-          answer: 0,
+          options: ["Compression", "Freshness", "Sharding", "Indexing"],
+          answer: 1,
           explain: "The five pillars are freshness, volume, schema, distribution and lineage \u2014 the signals that tell you whether data is healthy, late, missing, malformed or anomalous."
         },
         {
           q: "A sudden drop in a table\u2019s row-count volume most likely indicates\u2026",
-          options: ["Better performance", "An upstream failure or partial load worth investigating", "Successful compaction", "A schema improvement"],
-          answer: 1,
+          options: ["Better performance", "Successful compaction", "An upstream failure or partial load worth investigating", "A schema improvement"],
+          answer: 2,
           explain: "Volume anomalies (far fewer rows than usual) usually mean an upstream source failed or a load ran partially \u2014 exactly the kind of signal observability monitors should alert on."
         },
         {
           q: "OpenLineage events are most useful because they connect\u2026",
-          options: ["Dashboard colors to users", "Jobs, runs, datasets and runtime facets into a portable lineage graph", "Object storage buckets to invoices only", "SQL keywords to syntax highlighting"],
-          answer: 1,
+          options: ["Dashboard colors to users", "SQL keywords to syntax highlighting", "Object storage buckets to invoices only", "Jobs, runs, datasets and runtime facets into a portable lineage graph"],
+          answer: 3,
           explain: "OpenLineage standardizes runtime metadata: which job ran, which run instance it was, which datasets it read/wrote and which facets describe schema, SQL, errors or ownership."
         }
       ]
@@ -612,8 +612,8 @@
       questions: [
         {
           q: "A data catalog primarily helps with\u2026",
-          options: ["Running queries faster", "Discovery, documentation and ownership of datasets", "Compressing data", "Replacing the warehouse"],
-          answer: 1,
+          options: ["Discovery, documentation and ownership of datasets", "Running queries faster", "Compressing data", "Replacing the warehouse"],
+          answer: 0,
           explain: "A catalog makes data discoverable and trustworthy \u2014 what exists, what it means, who owns it, how fresh it is \u2014 which is foundational to governance and self-service."
         },
         {
@@ -624,8 +624,8 @@
         },
         {
           q: "Which most reduces warehouse cost on a bursty analytical workload?",
-          options: ["Never partitioning", "Auto-suspend idle compute and prune scans via partitioning/clustering", "Always running the largest warehouse", "Disabling caching"],
-          answer: 1,
+          options: ["Never partitioning", "Always running the largest warehouse", "Auto-suspend idle compute and prune scans via partitioning/clustering", "Disabling caching"],
+          answer: 2,
           explain: "Per-second billing rewards suspending idle compute, and scanning less data (partition/cluster pruning) cuts the dominant cost \u2014 the heart of FinOps for data."
         }
       ]
@@ -669,8 +669,9 @@
                 "    load = PythonOperator(task_id=\"load\", python_callable=load_day)\n" +
                 "    publish = PythonOperator(task_id=\"publish\", python_callable=publish)\n" +
                 "    wait >> load >> publish" },
-              { t: "note", variant: "key", html: "The " + tok(">>") + " operator wires dependencies. " + tok("{{ ds }}") + " is the run\u2019s logical date \u2014 the key to deterministic, idempotent runs and backfills." },
-              { t: "note", variant: "tip", html: "Keep operators thin and idempotent; push heavy logic into the systems they call (the warehouse, Spark). Airflow should orchestrate, not compute." }
+              { t: "note", variant: "tip", html: "The " + tok(">>") + " operator wires dependencies. " + tok("{{ ds }}") + " is the run\u2019s logical date \u2014 the key to deterministic, idempotent runs and backfills." },
+              { t: "note", variant: "tip", html: "Keep operators thin and idempotent; push heavy logic into the systems they call (the warehouse, Spark). Airflow should orchestrate, not compute." },
+              { t: "note", variant: "key", html: "<strong>An orchestrator exists to make a run reproducible, not to do the work.</strong> Everything a task needs has to arrive through its logical date and its declared inputs, because the scheduler will run it again \u2014 on a retry, on catchup, on a backfill of a year of history. A task that reads <em>now</em> instead of its own interval returns a different answer every time it is replayed, and you will not find out until the day you have to reprocess." }
             ]
           },
           {
@@ -702,6 +703,7 @@
               ] },
               { t: "p", html: "<strong>Prefect</strong> and <strong>Kestra</strong>-style flows are useful conceptually because the workflow can be ordinary code with retries, parameters and states. The trade-off is discipline: if every flow invents its own conventions, the platform loses uniform lineage and asset health." },
               { t: "note", variant: "tip", html: "Use events when the producer can emit reliable facts. Use sensors when you must observe an external condition. Use dynamic partitions when the work units are discovered, not pre-enumerated." },
+              { t: "note", variant: "key", html: "<strong>Waiting is cheap to write and expensive to run.</strong> A sensor occupies a worker for as long as the upstream is late, so a handful of polite pollers can crowd out the scheduler at exactly the moment a slow morning needs its capacity back \u2014 while an event trigger costs you a producer that must emit durable, deduplicated facts. Choose by which cost you can absorb at peak, and give every dynamic partition its own retry state so one bad tenant fails alone instead of failing the batch." },
               { t: "quiz", id: "de-ops-assets" }
             ]
           },
@@ -722,8 +724,9 @@
             minutes: 6, tags: ["sla", "dependencies"],
             blocks: [
               { t: "p", html: "Real pipelines depend on each other. Rather than guessing with timers, wait on the <em>data</em>: a <strong>sensor</strong> or a <strong>dataset</strong>-triggered schedule starts a job only when its inputs actually land. An <strong>SLA</strong> defines how fresh the output must be, and alerts when it slips." },
-              { t: "note", variant: "key", html: "Trigger on data availability, not on a fixed time. Time-based chaining ('run at 2am and hope the upstream finished') is the classic cause of pipelines processing yesterday\u2019s incomplete data." },
+              { t: "note", variant: "tip", html: "Trigger on data availability, not on a fixed time. Time-based chaining ('run at 2am and hope the upstream finished') is the classic cause of pipelines processing yesterday\u2019s incomplete data." },
               { t: "note", variant: "tip", html: "Define SLAs in business terms ('orders mart fresh by 7am') and monitor them; an SLA miss is an early warning that an upstream is slow or broken." },
+              { t: "note", variant: "key", html: "<strong>An SLA is a promise about the output, so it has to be measured on the output.</strong> A green DAG only tells you the tasks you scheduled finished; it says nothing about whether the data those tasks produced was complete or arrived in time to be used. The distance between those two statements is where every \u201cthe dashboard was wrong and nothing failed\u201d incident lives." },
               { t: "quiz", id: "de-ops-orchestration" }
             ]
           }
@@ -828,8 +831,9 @@
             blocks: [
               { t: "p", html: "<strong>Lineage</strong> is the dependency graph of your data \u2014 which tables (and even columns) feed which. It answers the two questions you ask in every incident: <em>where did this number come from?</em> (upstream root cause) and <em>what will this change break?</em> (downstream impact)." },
               { t: "widget", id: "de-ops-lineage" },
-              { t: "note", variant: "key", html: "Lineage turns 'a column changed' from a guessing game into a query: highlight downstream to scope a deploy\u2019s blast radius, or walk upstream to find the source of a bad value." },
-              { t: "note", variant: "tip", html: "Column-level lineage (not just table-level) is the gold standard \u2014 it tells you a change to " + tok("orders.amount") + " affects exactly three downstream metrics, not the whole warehouse." }
+              { t: "note", variant: "tip", html: "Lineage turns 'a column changed' from a guessing game into a query: highlight downstream to scope a deploy\u2019s blast radius, or walk upstream to find the source of a bad value." },
+              { t: "note", variant: "tip", html: "Column-level lineage (not just table-level) is the gold standard \u2014 it tells you a change to " + tok("orders.amount") + " affects exactly three downstream metrics, not the whole warehouse." },
+              { t: "note", variant: "key", html: "<strong>Lineage is only as true as the coverage it was captured from.</strong> A graph that stops at the edge of your orchestrator misses the ad-hoc extract, the spreadsheet export and the notebook that someone scheduled elsewhere \u2014 and those are precisely the copies that surface during an incident or a deletion request. Judge a lineage system by what fraction of real data movement it observes, not by how good the diagram looks." }
             ]
           },
           {
@@ -873,8 +877,9 @@
                 { v: "Volume", k: "too few / many rows?" },
                 { v: "Distribution", k: "values anomalous?" }
               ] },
-              { t: "note", variant: "key", html: "Most data incidents are silent: no error is thrown, the numbers are just wrong. Observability catches them \u2014 a 40% volume drop or a null-rate spike \u2014 before a stakeholder does." },
-              { t: "note", variant: "tip", html: "Start with freshness and volume monitors on your most-used tables; they catch the majority of real incidents for little effort." }
+              { t: "note", variant: "tip", html: "Most data incidents are silent: no error is thrown, the numbers are just wrong. Observability catches them \u2014 a 40% volume drop or a null-rate spike \u2014 before a stakeholder does." },
+              { t: "note", variant: "tip", html: "Start with freshness and volume monitors on your most-used tables; they catch the majority of real incidents for little effort." },
+              { t: "note", variant: "key", html: "<strong>Every monitor you add is a promise to answer it.</strong> These pillars are cheap to instrument and just as cheap to over-instrument: distribution checks on a seasonal metric will page all weekend, and a team that has learned to scroll past the alert channel is worse off than one with two signals it believes. Instrument the tables people make decisions from, and keep tightening the threshold until a page reliably means somebody has to act." }
             ]
           },
           {
@@ -889,8 +894,9 @@
                 "<strong>Fix & backfill</strong> \u2014 correct, then reprocess affected partitions idempotently.",
                 "<strong>Prevent</strong> \u2014 add a test/monitor so this class of bug can\u2019t recur silently."
               ] },
-              { t: "note", variant: "key", html: "Treat data like a product with on-call: every incident ends by adding the check that would have caught it. Over time your test/monitor suite encodes every painful lesson." },
+              { t: "note", variant: "tip", html: "Treat data like a product with on-call: every incident ends by adding the check that would have caught it. Over time your test/monitor suite encodes every painful lesson." },
               { t: "note", variant: "tip", html: "Idempotent, partition-keyed pipelines make the 'fix & backfill' step safe \u2014 you reprocess just the bad dates without fear of double-counting." },
+              { t: "note", variant: "key", html: "<strong>Consumers are part of the incident, not an audience for it.</strong> Unlike a down service, broken data keeps serving confident answers the whole time you are debugging \u2014 so the first move is marking the affected tables untrusted and publishing a next-update time, before the root cause is even known. You can backfill the partitions; you cannot backfill the decision someone made at nine o\u2019clock off a stale dashboard." },
               { t: "quiz", id: "de-ops-observability" }
             ]
           }
@@ -911,13 +917,14 @@
                 ["Enum grew", "Business added a state consumers were not coded to handle"],
                 ["Null-rate spike", "Upstream enrichment failed or contract was weakened"]
               ] },
-              { t: "note", variant: "key", html: "Treat data schemas like APIs. Breaking changes need versioning, contract tests and consumer notification; compatible changes still need monitoring." },
+              { t: "note", variant: "tip", html: "Treat data schemas like APIs. Breaking changes need versioning, contract tests and consumer notification; compatible changes still need monitoring." },
               { t: "code", lang: "text", code:
                 "Safe rollout:\n" +
                 "1. Add new column while keeping the old one\n" +
                 "2. Backfill and dual-write\n" +
                 "3. Move consumers\n" +
-                "4. Remove old column after an agreed window" }
+                "4. Remove old column after an agreed window" },
+              { t: "note", variant: "key", html: "<strong>The drift that hurts is the drift that still parses.</strong> A vanished column fails loudly and gets fixed the same morning; a new status value that quietly lands in an <em>else</em> branch, or a type that widens so amounts start arriving as strings, keeps every job green while the numbers move underneath. That is why drift detection has to watch value distributions and enum membership, not just the column list \u2014 the column list is the part that already alerts you." }
             ]
           },
           {
@@ -933,8 +940,9 @@
                 ["Freshness / volume expectations", "A producer lowering guarantees silently"],
                 ["Ownership metadata", "Orphaned data products with no escalation path"]
               ] },
-              { t: "note", variant: "key", html: "Consumer-driven contract tests are the safest version: important consumers publish the assumptions they rely on, and producer CI must keep them passing." },
-              { t: "note", variant: "trap", html: "Do not rely on wiki agreements. If the contract cannot fail a build, it will eventually fail production." }
+              { t: "note", variant: "tip", html: "Consumer-driven contract tests are the safest version: important consumers publish the assumptions they rely on, and producer CI must keep them passing." },
+              { t: "note", variant: "trap", html: "Do not rely on wiki agreements. If the contract cannot fail a build, it will eventually fail production." },
+              { t: "note", variant: "key", html: "<strong>A contract\u2019s real cost is the deprecation window, and that is the part teams forget to budget.</strong> Blocking a breaking change in CI takes an afternoon; carrying two shapes of a field while consumers migrate takes months of dual-write, reconciliation and chasing owners who have moved teams. Price the migration when you publish the interface \u2014 otherwise the check that was meant to make change routine becomes a permanent veto nobody has the time to clear." }
             ]
           },
           {
@@ -950,7 +958,8 @@
                 ["Deletes not propagated", "Handle tombstones and test delete paths, not just inserts"],
                 ["Snapshot overlaps with stream", "Fence the snapshot boundary and dedupe by key/version"]
               ] },
-              { t: "note", variant: "trap", html: "CDC is not automatically exactly-once. Correctness comes from checkpoint discipline plus an idempotent sink." }
+              { t: "note", variant: "trap", html: "CDC is not automatically exactly-once. Correctness comes from checkpoint discipline plus an idempotent sink." },
+              { t: "note", variant: "key", html: "<strong>CDC moves the correctness boundary out of your query and into the connector\u2019s offset bookkeeping.</strong> A nightly reload is wrong for one run and right on the next; a change stream that skips, reorders or replays a single event leaves the target permanently out of step with the source, and no job reports a failure because none of them failed. Reconcile counts and keys against the source on a schedule \u2014 that comparison is the only thing in the pipeline capable of noticing." }
             ]
           },
           {
@@ -999,8 +1008,9 @@
                 ["RCA closure", "Explains cause, changed partitions, consumer action, prevention monitor and runbook update"]
               ] },
               { t: "note", variant: "trap", html: "Do not start with orphan deletion. During an active incident, a too-short cleanup window can delete files from a still-running writer or long query. Stabilize and validate before destructive cleanup." },
-              { t: "note", variant: "key", html: "A good lakehouse incident response balances three tracks: <strong>maintenance</strong> to restore layout, <strong>backfill</strong> to repair correctness, and <strong>communication</strong> so consumers know what changed and when to trust it." },
-              { t: "note", variant: "tip", html: "After drafting your answer, compare it with the <a class='inline' href='#/scenarios/lakehouse-tiny-file-incident'>tiny-file scenario outline</a> and grade it with the <a class='inline' href='#/rubrics'>practice rubrics</a>." }
+              { t: "note", variant: "tip", html: "A good lakehouse incident response balances three tracks: <strong>maintenance</strong> to restore layout, <strong>backfill</strong> to repair correctness, and <strong>communication</strong> so consumers know what changed and when to trust it." },
+              { t: "note", variant: "tip", html: "After drafting your answer, compare it with the <a class='inline' href='#/scenarios/lakehouse-tiny-file-incident'>tiny-file scenario outline</a> and grade it with the <a class='inline' href='#/rubrics'>practice rubrics</a>." },
+              { t: "note", variant: "key", html: "<strong>In a live incident every repair is itself a write, and writes are what broke you.</strong> Compaction, snapshot expiry and orphan cleanup all mutate the same table a misbehaving job may still be touching, which is why the order is not negotiable: stop the bad writer, confirm what is actually on disk, repair bounded partitions into a shadow target, and only then run anything destructive. Invert that order and a slow dashboard becomes missing data \u2014 the one outcome a backfill cannot undo." }
             ]
           },
           {
@@ -1016,7 +1026,8 @@
                 ["Latency", "CDC changes visible in the mart within five minutes"],
                 ["Quality", "Critical tests pass before publication"]
               ] },
-              { t: "note", variant: "tip", html: "Alert on consumer impact, not every internal retry. Page when the SLO is burning, not when an invisible transient self-heals." }
+              { t: "note", variant: "tip", html: "Alert on consumer impact, not every internal retry. Page when the SLO is burning, not when an invisible transient self-heals." },
+              { t: "note", variant: "key", html: "<strong>An objective you would not wake someone for is a dashboard, not an SLO.</strong> A freshness or completeness target only starts doing work once it has an owner, a budget the business has actually agreed to spend, and a defined action for when that budget burns. Without those three, the number quietly drifts to match whatever the pipeline happens to deliver, and you have documented the current behavior instead of committing to any." }
             ]
           },
           {
@@ -1032,7 +1043,8 @@
                 ["Backfill scans all history repeatedly", "Process bounded partitions once and checkpoint progress"],
                 ["No owner on expensive jobs", "Showback/chargeback with dataset and job ownership"]
               ] },
-              { t: "note", variant: "tip", html: "Cost observability belongs next to freshness and quality. Alert on spend anomalies before finance becomes your monitoring system." }
+              { t: "note", variant: "tip", html: "Cost observability belongs next to freshness and quality. Alert on spend anomalies before finance becomes your monitoring system." },
+              { t: "note", variant: "key", html: "<strong>Elastic compute removed the ceiling that used to stop a bad query.</strong> On fixed hardware a runaway job simply ran slowly and somebody noticed; on metered compute it succeeds, on schedule, every few minutes, and the only feedback arrives on an invoice weeks later. Put the ceiling back on purpose \u2014 warehouse size caps, scan quotas, refresh intervals and a named owner on every scheduled job \u2014 because spend is the one failure mode with no natural backpressure." }
             ]
           },
           {
@@ -1079,7 +1091,7 @@
                 ["Streaming mart", "Operations needs fresh metrics within minutes", "More state, offset and late-event complexity"],
                 ["Hybrid lakehouse", "CDC stream lands into bronze/silver/gold with batch backfills", "Two operating modes must share contracts and lineage"]
               ] },
-              { t: "note", variant: "key", html: "The ADR should name the decision, context, rejected options, consequences and rollback trigger. Do not write 'we chose lakehouse' without explaining what latency, replay, governance and cost trade-offs made it right." },
+              { t: "note", variant: "tip", html: "The ADR should name the decision, context, rejected options, consequences and rollback trigger. Do not write 'we chose lakehouse' without explaining what latency, replay, governance and cost trade-offs made it right." },
               { t: "h", text: "2. Contract and migration plan" },
               { t: "code", lang: "yaml", code:
                 "contract: orders_product.v2\n" +
@@ -1148,7 +1160,7 @@
                 ["Runbook", "Covers impact comms, root-cause workflow, shadow validation, atomic publish and closure proof"]
               ] },
               { t: "note", variant: "tip", html: "A great capstone is operable. Reviewers should be able to answer: why this architecture, what contracts guard it, what graph runs it, what SLOs prove health, and exactly how to recover when it breaks." },
-              { t: "note", variant: "key", html: "Use the <a class='inline' href='#/interview/orders-data-product'>orders data product prompt</a>, <a class='inline' href='#/cheatsheets/data-contract-template'>contract template</a> and <a class='inline' href='#/rubrics'>rubrics</a> as the model-answer reference set." },
+              { t: "note", variant: "key", html: "<strong>The artifact pack is the design — the diagram is only its cover page.</strong> A contract states what consumers are allowed to rely on, an ADR records the option you rejected and why, lineage answers what breaks when this table does, and a runbook answers what to do at three in the morning. Remove any one of them and the platform still runs, but it stops being operable by anyone except you — which is exactly the difference a reviewer is listening for between a design you can hand over and a design that needs you in the room. Use the <a class='inline' href='#/interview/orders-data-product'>orders data product prompt</a>, <a class='inline' href='#/cheatsheets/data-contract-template'>contract template</a> and <a class='inline' href='#/rubrics'>rubrics</a> as the model-answer reference set." },
               { t: "quiz", id: "de-ops-capstone" }
             ]
           },
@@ -1177,7 +1189,7 @@
                 ["Operations", "Owner, SLOs, lineage, privacy workflow, cost alert and incident communication template"]
               ] },
               { t: "note", variant: "tip", html: "A production data product is not done when the dashboard loads. It is done when the next schema change, late file, cost spike and deletion request have a rehearsed path." },
-              { t: "note", variant: "key", html: "Before marking this complete, check your design against <a class='inline' href='#/scenarios'>scenario packs</a> for schema drift, tiny files, cost spikes and privacy deletion, then grade the answer with <a class='inline' href='#/rubrics/senior'>senior rubric signals</a>." },
+              { t: "note", variant: "key", html: "<strong>A data product is finished when somebody else can trust it without asking you.</strong> Published freshness and quality SLOs, a contract that pins the schema, and a named owner are what turn a working pipeline into something a consumer can safely build on — and every one of them is cheap to add now and close to impossible to retrofit once dashboards already depend on the table. That asymmetry is the whole argument: the work that makes data trustworthy has to happen before anyone trusts it. Before marking this complete, check your design against <a class='inline' href='#/scenarios'>scenario packs</a> for schema drift, tiny files, cost spikes and privacy deletion, then grade the answer with <a class='inline' href='#/rubrics/senior'>senior rubric signals</a>." },
               { t: "quiz", id: "de-ops-governance" }
             ]
           }
@@ -1192,8 +1204,9 @@
             minutes: 5, tags: ["catalog", "metadata"],
             blocks: [
               { t: "p", html: "A <strong>data catalog</strong> is the index of your data estate: what tables exist, what each column means, who owns it, how fresh it is, and how it\u2019s used. It turns a sprawling warehouse from a maze into something self-serviceable." },
-              { t: "note", variant: "key", html: "Metadata is the product here: a <strong>business glossary</strong> (shared definitions), <strong>ownership</strong> (a human to ask), and <strong>popularity/usage</strong> (which table is the trusted one) are what make data discoverable and trustworthy." },
-              { t: "note", variant: "tip", html: "Catalogs ingest lineage, quality results and usage automatically \u2014 the best metadata is generated by your pipelines, not hand-maintained docs that rot." }
+              { t: "note", variant: "tip", html: "Metadata is the product here: a <strong>business glossary</strong> (shared definitions), <strong>ownership</strong> (a human to ask), and <strong>popularity/usage</strong> (which table is the trusted one) are what make data discoverable and trustworthy." },
+              { t: "note", variant: "tip", html: "Catalogs ingest lineage, quality results and usage automatically \u2014 the best metadata is generated by your pipelines, not hand-maintained docs that rot." },
+              { t: "note", variant: "key", html: "<strong>A catalog stays trusted only while its metadata is a by-product of the pipeline.</strong> Anything a person has to remember to update \u2014 an owner, a description, a freshness claim \u2014 decays until readers stop believing any of it. And a catalog nobody believes is worse than no catalog, because it makes an abandoned table look certified." }
             ]
           },
           {
@@ -1263,8 +1276,9 @@
                 "<strong>Materialize</strong> expensive repeated queries instead of re-scanning.",
                 "<strong>Tier storage</strong> and expire old partitions; <strong>chargeback</strong> cost to teams."
               ] },
-              { t: "note", variant: "key", html: "The biggest lever ties back to the storage track: <strong>scan less data</strong>. Partition pruning and column projection cut the dominant cost line far more than fiddling with warehouse size." },
+              { t: "note", variant: "tip", html: "The biggest lever ties back to the storage track: <strong>scan less data</strong>. Partition pruning and column projection cut the dominant cost line far more than fiddling with warehouse size." },
               { t: "note", variant: "tip", html: "Attribute cost to teams (chargeback/showback). Nothing curbs a runaway " + tok("SELECT *") + " dashboard faster than the owning team seeing its bill." },
+              { t: "note", variant: "key", html: "<strong>Analytics spend is a layout problem wearing a finance costume.</strong> Idle warehouses and oversized clusters are the visible waste and the easiest to fix, but the line that grows with the business is bytes read per query \u2014 and that was set by the partitioning, clustering and column choices made when the table was written. No amount of query-time tuning rescues a table laid out for the wrong access pattern; you rewrite the table or you keep paying." },
               { t: "quiz", id: "de-ops-governance" }
             ]
           }

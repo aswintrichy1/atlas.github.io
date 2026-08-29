@@ -47,7 +47,7 @@ window.TRACKS.core = {
                 ["<strong>Availability</strong>", "Authorized users can access it when needed", "A DDoS or ransomware takes it down", "Redundancy, backups, rate limits"]
               ]
             },
-            { t: "note", variant: "key", html: "The three pull against each other. Lock data down hard enough (confidentiality) and you can hurt availability. Security is the craft of <strong>balancing</strong> the triad for a given system — not maximizing one." },
+            { t: "note", variant: "trap", html: "The three pull against each other. Lock data down hard enough (confidentiality) and you can hurt availability. Security is the craft of <strong>balancing</strong> the triad for a given system — not maximizing one." },
             { t: "h", text: "A worked example" },
             { t: "p", html: "Think about online banking. <strong>Confidentiality</strong> keeps your balance private. <strong>Integrity</strong> guarantees a $100 transfer doesn't become $1,000 in flight. <strong>Availability</strong> means the app is up on payday. A single feature — say, a transfer — usually depends on all three at once." },
             { t: "h", text: "The supporting cast: AAA and non-repudiation" },
@@ -62,7 +62,8 @@ window.TRACKS.core = {
             { t: "note", variant: "tip", html: "When you read an incident report, label each impact with a CIA letter. \u201cCustomer emails exposed\u201d is a C breach; \u201csite down 4 hours\u201d is an A breach. The habit sharpens your analysis fast." },
             { t: "h", text: "Classify it yourself" },
             { t: "p", html: "Below, decide which property each scenario threatens. The reasoning is the point — there is often a primary property plus a secondary one." },
-            { t: "widget", id: "ciaclassifier" }
+            { t: "widget", id: "ciaclassifier" },
+            { t: "note", variant: "key", html: "<strong>The triad is a budget, not a scoreboard.</strong> Every control you add spends one property to buy another — an extra approval step buys integrity with availability, aggressive rate limits buy availability with usability. So the question that actually moves a design forward is never \u201cis this secure?\u201d but \u201cwhich property am I protecting here, and which one am I paying with?\u201d" }
           ]
         },
         {
@@ -84,7 +85,7 @@ window.TRACKS.core = {
                 ["<strong>Risk</strong>", "The chance and impact of harm", "Likely breach \u2192 fines + lost trust"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Risk = Likelihood \u00d7 Impact.</strong> A scary-sounding vulnerability with no plausible threat and low impact can be a lower risk than a \u201cboring\u201d one that is trivially exploitable on a crown-jewel asset." },
+            { t: "note", variant: "tip", html: "<strong>Risk = Likelihood \u00d7 Impact.</strong> A scary-sounding vulnerability with no plausible threat and low impact can be a lower risk than a \u201cboring\u201d one that is trivially exploitable on a crown-jewel asset." },
             { t: "h", text: "The four ways to treat a risk" },
             {
               t: "ul", items: [
@@ -98,7 +99,8 @@ window.TRACKS.core = {
               bad: { title: "Vulnerability-driven panic", items: ["Patch whatever scanner screams loudest", "Ignore who would actually attack you", "No sense of business impact", "Burn out chasing low-risk noise"] },
               good: { title: "Risk-driven prioritization", items: ["Rank by likelihood \u00d7 impact", "Model real threat actors", "Protect crown-jewel assets first", "Accept documented low risks on purpose"] }
             },
-            { t: "note", variant: "trap", html: "<strong>Zero risk is not the goal.</strong> It is unachievable and ruinously expensive to chase. The goal is risk that the business has consciously decided it can live with." }
+            { t: "note", variant: "trap", html: "<strong>Zero risk is not the goal.</strong> It is unachievable and ruinously expensive to chase. The goal is risk that the business has consciously decided it can live with." },
+            { t: "note", variant: "key", html: "<strong>The likelihood half of the equation is a guess about an adversary who adapts.</strong> Impact you can usually reason about from the asset; likelihood you are estimating against someone who changes tactics when you patch. That is why the value of the calculation is mostly in the argument it forces — naming the asset, the actor and the consequence out loud — and why a documented decision to accept a risk is worth more than a precise-looking score nobody can defend." }
           ]
         },
         {
@@ -125,7 +127,7 @@ window.TRACKS.core = {
                 ["Psychological acceptability", "If it's painful, people route around it"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>\u201cOpen design\u201d is why we don't trust security by obscurity.</strong> Kerckhoffs's principle says a system should stay secure even if everything about it except the key is public. Hiding the algorithm is not a control." },
+            { t: "note", variant: "tip", html: "<strong>\u201cOpen design\u201d is why we don't trust security by obscurity.</strong> Kerckhoffs's principle says a system should stay secure even if everything about it except the key is public. Hiding the algorithm is not a control." },
             { t: "h", text: "Fail closed, not open" },
             { t: "p", html: "When a control errors out, what happens? A door lock that springs open on a power cut <em>fails open</em> — convenient, insecure. An authorization check that <em>denies</em> on exception <em>fails closed</em> — the safe default for security decisions." },
             {
@@ -139,6 +141,7 @@ window.TRACKS.core = {
 "        return False                              # safe default\n"
             },
             { t: "note", variant: "trap", html: "A surprising number of breaches come from controls that <strong>failed open</strong> under load or error — the check timed out, threw, and the code \u201cjust let it through.\u201d Always make the safe path the default path." },
+            { t: "note", variant: "key", html: "<strong>Layers only buy time if they fail independently.</strong> Five controls that all trust the same directory, the same network position or the same admin credential are one control wearing five costumes, and the attacker who defeats that shared assumption walks the whole stack in a single step. When you add a layer, the test is not \u201cdoes this stop an attack?\u201d but \u201cwhat does an attacker now need that they did not already have?\u201d" },
             { t: "quiz", id: "core-foundations" }
           ]
         }
@@ -191,7 +194,7 @@ window.TRACKS.core = {
           tags: ["threat-modeling", "architecture"],
           blocks: [
             { t: "p", html: "A <strong>trust boundary</strong> is any point where data or control passes between zones of different trust — browser to server, service to database, your code to a third-party API. Attacks concentrate at these crossings, because that's where assumptions break." },
-            { t: "note", variant: "key", html: "<strong>The golden rule: never trust input that crossed a boundary.</strong> Validate it, authenticate its source, and authorize the action — on the trusted side, every time. Client-side checks are UX, not security." },
+            { t: "note", variant: "tip", html: "<strong>The golden rule: never trust input that crossed a boundary.</strong> Validate it, authenticate its source, and authorize the action — on the trusted side, every time. Client-side checks are UX, not security." },
             { t: "h", text: "Where the boundaries usually are" },
             {
               t: "ul", items: [
@@ -206,7 +209,8 @@ window.TRACKS.core = {
               bad: { title: "Trust the client", items: ["Hide the 'Delete' button for non-admins and call it done", "Validate the price in JavaScript only", "Believe a user-supplied <code>role=admin</code> field"] },
               good: { title: "Re-check on the server", items: ["Authorize every action server-side", "Recompute prices from trusted data", "Derive role from the session, never the request body"] }
             },
-            { t: "note", variant: "trap", html: "\u201cIt's an internal service, it's behind the firewall\u201d is how flat networks turn one foothold into total compromise. Treat internal calls as crossing a boundary too — this is the seed of zero trust." }
+            { t: "note", variant: "trap", html: "\u201cIt's an internal service, it's behind the firewall\u201d is how flat networks turn one foothold into total compromise. Treat internal calls as crossing a boundary too — this is the seed of zero trust." },
+            { t: "note", variant: "key", html: "<strong>Drawing the line does not create the boundary; it only records one that was already there.</strong> The dangerous crossings are the ones nobody labelled — an internal RPC, a queue another team writes to, a dependency upgrade — because both sides quietly assume the other one validated. When you inherit a system, the fastest way to find real bugs is to list every place data changes hands and ask which side is doing the checking." }
           ]
         },
         {
@@ -234,13 +238,13 @@ window.TRACKS.core = {
                 "<strong>CISA KEV</strong> — a list of vulnerabilities <em>known to be actively exploited</em>. If it's on KEV, stop arguing and patch."
               ]
             },
-            { t: "note", variant: "key", html: "A CVSS 9.8 on a server with no network path and no sensitive data may be a lower <em>risk</em> than a CVSS 6 on your internet-facing login. Context — exposure and asset value — is what turns a severity score into a risk." },
             { t: "stat", items: [
               { v: "Likelihood", k: "how probable is exploitation?" },
               { v: "\u00d7 Impact", k: "how bad if it happens?" },
               { v: "= Risk", k: "what you actually rank by" },
               { v: "KEV", k: "the 'drop everything' signal" }
             ] },
+            { t: "note", variant: "key", html: "<strong>Severity is a property of the flaw; risk is a property of your system.</strong> A scanner can tell you a bug scores 9.8, but it does not know whether that host is reachable from the internet or holds anything an attacker wants — which is why a 9.8 on an isolated box can rank below a 6 on your login page. Score the vulnerability, then rank by exposure and asset value, and let evidence of live exploitation cut the argument short: something already being used is no longer a forecast." },
             { t: "quiz", id: "core-threat-modeling" }
           ]
         }
@@ -270,7 +274,7 @@ window.TRACKS.core = {
                 ["Something you <strong>are</strong>", "Fingerprint, face", "Can't be changed once leaked"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>MFA = two or more <em>different</em> factors.</strong> A password plus a security question is still one factor (both \u201cknow\u201d). Phishing-resistant MFA (FIDO2/passkeys) beats SMS codes, which can be intercepted or SIM-swapped." },
+            { t: "note", variant: "tip", html: "<strong>MFA = two or more <em>different</em> factors.</strong> A password plus a security question is still one factor (both \u201cknow\u201d). Phishing-resistant MFA (FIDO2/passkeys) beats SMS codes, which can be intercepted or SIM-swapped." },
             { t: "h", text: "Passkeys, token theft, and MFA bypass" },
             { t: "p", html: "<strong>Passkeys</strong> use WebAuthn/FIDO2 cryptography: the private key stays on the user's device, and the browser binds the login to the real site origin. There is no shared password for a fake login page to collect." },
             {
@@ -294,7 +298,8 @@ window.TRACKS.core = {
                 "<strong>SAML</strong> — XML-based SSO common in the enterprise."
               ]
             },
-            { t: "note", variant: "trap", html: "OAuth 2.0 is for <em>authorization</em>, not authentication. Apps that used raw OAuth to \u201clog you in\u201d have shipped account-takeover bugs. Use OIDC when you need identity." }
+            { t: "note", variant: "trap", html: "OAuth 2.0 is for <em>authorization</em>, not authentication. Apps that used raw OAuth to \u201clog you in\u201d have shipped account-takeover bugs. Use OIDC when you need identity." },
+            { t: "note", variant: "key", html: "<strong>Every login eventually becomes a token, and the token is what gets stolen.</strong> Strong factors defend the moment of authentication; the session that moment issues is a bearer credential that any code holding it can replay. A system that proves identity flawlessly and then hands out a long-lived, script-readable cookie has moved the target rather than removed it — so judge an identity design by how fast a stolen session dies, not by how hard the login was to pass." }
           ]
         },
         {
@@ -315,7 +320,7 @@ window.TRACKS.core = {
                 ["<strong>SAML</strong>", "Enterprise SSO using signed XML assertions between an IdP and a service provider.", "Trusting an assertion without strict audience, issuer, time and signature checks."]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>ID token vs access token:</strong> an ID token is meant for the client to learn who authenticated. An access token is meant for an API to decide whether a caller may access a resource. Do not swap their jobs." },
+            { t: "note", variant: "tip", html: "<strong>ID token vs access token:</strong> an ID token is meant for the client to learn who authenticated. An access token is meant for an API to decide whether a caller may access a resource. Do not swap their jobs." },
             { t: "h", text: "Assertion trust is precise" },
             {
               t: "ul", items: [
@@ -334,6 +339,7 @@ window.TRACKS.core = {
               good: { title: "Defensible federation", items: ["Short lifetimes plus refresh-token rotation", "Central session and token revocation", "Strict issuer, audience, signature and time validation", "Step-up verification and logging for MFA reset workflows"] }
             },
             { t: "note", variant: "warn", html: "<strong>Helpdesk and MFA reset flows are identity controls.</strong> Attackers often bypass strong login by socially engineering recovery. Require verified channels, supervisor approval for high-risk accounts, cooldowns, alerts to the user, and audit logs that record who approved the reset." },
+            { t: "note", variant: "key", html: "<strong>Federation concentrates the password problem; it does not delete it.</strong> Every application that trusts the identity provider also inherits that provider's account-recovery process, so the real strength of single sign-on is the weakest verified path back into the directory — which is usually a phone call to a helpdesk, not a signing algorithm. Validate issuer, audience and expiry carefully, then spend equal effort on who is allowed to reset a factor and how that reset is proven." },
             { t: "quiz", id: "core-federated-identity" }
           ]
         },
@@ -355,11 +361,12 @@ window.TRACKS.core = {
                 ["<strong>ABAC</strong> — Attribute-based", "Attributes + context (time, location)", "Fine-grained, dynamic policy"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>RBAC is the workhorse.</strong> Assign permissions to roles, assign roles to people. When someone changes teams you swap their role, not 40 individual grants. ABAC adds context when roles aren't expressive enough." },
+            { t: "note", variant: "tip", html: "<strong>RBAC is the workhorse.</strong> Assign permissions to roles, assign roles to people. When someone changes teams you swap their role, not 40 individual grants. ABAC adds context when roles aren't expressive enough." },
             { t: "h", text: "See RBAC as a matrix" },
             { t: "p", html: "An access-control matrix is just subjects \u00d7 objects with the allowed actions in each cell. Toggle roles below and watch which actions a user inherits." },
             { t: "widget", id: "rbac" },
-            { t: "note", variant: "trap", html: "<strong>Role explosion</strong> is the classic RBAC failure: a new role for every edge case until you have more roles than users. When you get there, that's the signal to move some decisions to ABAC attributes." }
+            { t: "note", variant: "trap", html: "<strong>Role explosion</strong> is the classic RBAC failure: a new role for every edge case until you have more roles than users. When you get there, that's the signal to move some decisions to ABAC attributes." },
+            { t: "note", variant: "key", html: "<strong>Every model answers the request; none of them answers the calendar.</strong> DAC, MAC, RBAC and ABAC all decide correctly at the moment of the call, and all of them are silent about the grant that was made for a two-week migration and is still live two years later. Access control fails by accumulation far more often than by a wrong decision, so whichever model you pick, the control that keeps it honest is expiry plus a recurring review that removes what nobody can justify." }
           ]
         },
         {
@@ -370,7 +377,7 @@ window.TRACKS.core = {
           tags: ["principles", "access-control"],
           blocks: [
             { t: "p", html: "<strong>Least privilege</strong>: every identity gets the minimum access required to do its job, and no more. When that account is phished or that service is popped, the damage is bounded by what it could legitimately touch." },
-            { t: "note", variant: "key", html: "Least privilege is the highest-leverage control there is. It doesn't prevent the initial compromise — it shrinks the <strong>blast radius</strong>, turning \u201cgame over\u201d into \u201ccontained incident.\u201d" },
+            { t: "note", variant: "tip", html: "Least privilege is the highest-leverage control there is. It doesn't prevent the initial compromise — it shrinks the <strong>blast radius</strong>, turning \u201cgame over\u201d into \u201ccontained incident.\u201d" },
             { t: "h", text: "Putting it into practice" },
             {
               t: "ul", items: [
@@ -388,6 +395,7 @@ window.TRACKS.core = {
               good: { title: "Least privilege + SoD", items: ["Scoped roles, default deny", "Per-service identities, rotated", "Just-in-time elevation with expiry", "Author \u2260 approver for risky changes"] }
             },
             { t: "note", variant: "tip", html: "Assume breach. Design as if an attacker already has one valid account, then ask: how far can they get? Least privilege and segmentation are the answers that keep that number small." },
+            { t: "note", variant: "key", html: "<strong>Privilege is granted under deadline and revoked by nobody.</strong> That asymmetry, not a bad initial design, is why entitlements drift upward until an ordinary account can reach production — least privilege is a property you have to keep re-establishing, not a project you finish. The honest test of any access model is to pick one service account and ask what an attacker holding its credential could reach tonight; if the answer takes more than a minute to work out, the scope is already too broad." },
             { t: "quiz", id: "core-access" }
           ]
         }

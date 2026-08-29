@@ -26,9 +26,9 @@
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   /* ---------------- data model ---------------- */
-  const TRACKS = [window.TRACKS.hld, window.TRACKS.lld].filter(Boolean);
+  const TRACKS = [window.TRACKS.hld, window.TRACKS.deepdives, window.TRACKS.sdpatterns, window.TRACKS.breakdowns, window.TRACKS.lld].filter(Boolean);
   const QUIZZES = window.QUIZZES || {};
-  const ACTIVE_QUIZ_PREFIXES = ["hld-", "lld-"];
+  const ACTIVE_QUIZ_PREFIXES = ["hld-", "deepdives-", "sdpatterns-", "breakdowns-", "lld-"];
   const activeQuizKeys = () => Object.keys(QUIZZES).filter((qid) => ACTIVE_QUIZ_PREFIXES.some((p) => qid.startsWith(p)));
   const Widgets = window.Widgets || {};
   const Practice = window.BlueprintPractice || {};
@@ -151,6 +151,74 @@
         "#/hld/ai-ml/llm-systems",
         "#/hld/ai-ml/genai-design",
         "#/hld/protocols-security/security-threat-modeling"
+      ]
+    },
+    {
+      id: "deep-dives",
+      title: "Technology Deep Dives",
+      label: "Name it and defend it",
+      color: "#38bdf8",
+      desc: "Move from knowing that caching exists to naming a specific store and defending the choice. Ends able to answer 'why this and not the obvious alternative' for every technology you reach for.",
+      routes: [
+        "#/deepdives/stores/postgres",
+        "#/deepdives/stores/cassandra",
+        "#/deepdives/stores/redis",
+        "#/deepdives/stores/elasticsearch",
+        "#/deepdives/streams/kafka",
+        "#/deepdives/streams/flink",
+        "#/deepdives/specialized/geospatial",
+        "#/deepdives/specialized/probabilistic",
+        "#/deepdives/specialized/cdc"
+      ]
+    },
+    {
+      id: "design-patterns",
+      title: "Design Patterns",
+      label: "Recognition path",
+      color: "#5eead4",
+      desc: "Seven recurring shapes, each with a graded ladder from the naive answer to the senior one. Ends able to name the pattern the moment the requirement appears, which is where the ten minutes you save comes from.",
+      routes: [
+        "#/sdpatterns/delivery/realtime-updates",
+        "#/sdpatterns/delivery/large-blobs",
+        "#/sdpatterns/scaling/scaling-reads",
+        "#/sdpatterns/scaling/scaling-writes",
+        "#/sdpatterns/coordination/contention",
+        "#/sdpatterns/coordination/long-running-tasks",
+        "#/sdpatterns/coordination/multi-step-processes"
+      ]
+    },
+    {
+      id: "breakdown-ladder",
+      title: "Breakdown Ladder",
+      label: "Graded practice",
+      color: "#f472b6",
+      desc: "Nine full design walkthroughs climbing from a warm-up to genuinely hard. Each closes with an explicit mid, senior, and staff bar so you can see which rung you are actually on.",
+      routes: [
+        "#/breakdowns/foundations/bitly",
+        "#/breakdowns/foundations/ticketmaster",
+        "#/breakdowns/foundations/whatsapp",
+        "#/breakdowns/scale/rate-limiter",
+        "#/breakdowns/scale/youtube",
+        "#/breakdowns/scale/notification-system",
+        "#/breakdowns/hard/uber",
+        "#/breakdowns/hard/google-docs",
+        "#/breakdowns/hard/payment-system"
+      ]
+    },
+    {
+      id: "concurrency-depth",
+      title: "Concurrency In Depth",
+      label: "LLD path",
+      color: "#a78bfa",
+      desc: "Past the introductory lesson into the material that actually shows up in senior object-design rounds: visibility versus exclusion, deadlock prevention, when lock-free is worth it, and structuring async work.",
+      routes: [
+        "#/lld/principles/concurrency",
+        "#/lld/concurrency-deep/threads-and-state",
+        "#/lld/concurrency-deep/locks-and-deadlock",
+        "#/lld/concurrency-deep/lockfree-and-atomics",
+        "#/lld/concurrency-deep/async-patterns",
+        "#/lld/lldcases/case-rate-limiter",
+        "#/lld/lldcases/case-logger"
       ]
     }
   ];
@@ -922,7 +990,7 @@
       case "h2": return "### " + b.text + "\n";
       case "ul": return b.items.map((i) => "- " + stripTags(i)).join("\n") + "\n";
       case "ol": return b.items.map((i, n) => (n + 1) + ". " + stripTags(i)).join("\n") + "\n";
-      case "cue": return "> **Recognize it:** " + stripTags(b.html) + "\n";
+      case "cue": return "> **Spotting it in a prompt:** " + stripTags(b.html) + "\n";
       case "note": return "> **" + (NOTE_MD[b.variant] || "Note") + ".** " + stripTags(b.html) + "\n";
       case "code": return "```" + (b.lang || "") + "\n" + b.code + "\n```\n";
       case "table": {

@@ -1,0 +1,80 @@
+{
+  "dir": "ml-ai-academy",
+  "name": "Synapse",
+  "subtitle": "The ML System Design Atlas",
+  "tracks": [
+    { "id": "mlsd", "short": "MLSD", "name": "ML System Design" },
+    { "id": "mlcase", "short": "CASES", "name": "ML Problem Breakdowns" }
+  ],
+  "heroTag": "Interactive ML system-design atlas",
+  "heroH1": "Design ML systems<br>that <span class=\"grad\">learn</span> &amp; ship<br>models that <span class=\"grad\">hold up</span>.",
+  "heroLede": "Work the machine-learning design interview end to end \\u2014 turning a fuzzy business goal into a measurable ML objective, choosing features and models you can defend, and serving predictions inside a real latency budget. Then walk seven full problem breakdowns, graded Naive \\u2192 Solid \\u2192 Standout.",
+  "ctaPrimary": { "route": "#/mlsd/framework/what-is-mlsd", "label": "Start the framework" },
+  "ctaSecondary": { "route": "#/mlcase/recsys/video-recommendations", "label": "Jump to a breakdown" },
+  "featLabs": "Tune a precision/recall guardrail, walk a two-tower retrieval index, watch feature drift bend a live metric, size an inference budget, and grade your own objective against the Naive/Solid/Standout ladder.",
+  "pathBanner": "Pick MLSD Foundations, Modelling Depth, Serving &amp; Operations, or Breakdown Drills and copy the path as Markdown study notes.",
+  "paths": [
+    {
+      "id": "mlsd-foundations",
+      "title": "MLSD Foundations",
+      "label": "Foundations",
+      "color": "#a78bfa",
+      "desc": "The interview shape, the six-phase framework, and how a business goal becomes an ML objective you can measure.",
+      "routes": [
+        "#/mlsd/framework/what-is-mlsd",
+        "#/mlsd/framework/phase-plan",
+        "#/mlsd/framework/problem-framing",
+        "#/mlsd/framework/high-level-design",
+        "#/mlsd/framework/assessment",
+        "#/mlsd/framework/level-expectations"
+      ]
+    },
+    {
+      "id": "mlsd-modelling",
+      "title": "Modelling Depth",
+      "label": "Modelling",
+      "color": "#38bdf8",
+      "desc": "Embeddings, features, training pipelines, generalization, and the metrics that decide whether any of it worked.",
+      "routes": [
+        "#/mlsd/concepts/embeddings",
+        "#/mlsd/concepts/ann-serving",
+        "#/mlsd/concepts/feature-engineering",
+        "#/mlsd/concepts/feature-pitfalls",
+        "#/mlsd/concepts/feature-stores",
+        "#/mlsd/concepts/training-pipelines",
+        "#/mlsd/concepts/generalization",
+        "#/mlsd/concepts/evaluation",
+        "#/mlsd/concepts/ab-testing"
+      ]
+    },
+    {
+      "id": "mlsd-serving",
+      "title": "Serving & Operations",
+      "label": "Serving",
+      "color": "#34d399",
+      "desc": "Two-stage retrieval, inference architecture, drift monitoring, and closing the feedback loop without poisoning it.",
+      "routes": [
+        "#/mlsd/serving/retrieval-ranking",
+        "#/mlsd/serving/inference-architecture",
+        "#/mlsd/serving/drift-monitoring",
+        "#/mlsd/serving/feedback-loops"
+      ]
+    },
+    {
+      "id": "mlsd-drills",
+      "title": "Breakdown Drills",
+      "label": "Breakdowns",
+      "color": "#f472b6",
+      "desc": "Seven full walkthroughs, each graded Naive / Solid / Standout with an explicit mid, senior and staff bar.",
+      "routes": [
+        "#/mlcase/recsys/video-recommendations",
+        "#/mlcase/recsys/feed-ranking",
+        "#/mlcase/recsys/ad-click-prediction",
+        "#/mlcase/trust/harmful-content",
+        "#/mlcase/trust/bot-detection",
+        "#/mlcase/retrieval/search-ranking",
+        "#/mlcase/retrieval/rag-assistant"
+      ]
+    }
+  ]
+}

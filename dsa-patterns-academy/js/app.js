@@ -26,9 +26,9 @@
   const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 
   /* ---------------- data model ---------------- */
-  const TRACKS = [window.TRACKS.dsa, window.TRACKS.patterns].filter(Boolean);
+  const TRACKS = [window.TRACKS.dsa, window.TRACKS.patterns, window.TRACKS.cpat, window.TRACKS.aiec].filter(Boolean);
   const QUIZZES = window.QUIZZES || {};
-  const ACTIVE_QUIZ_PREFIXES = ["dsa-", "pat-"];
+  const ACTIVE_QUIZ_PREFIXES = ["dsa-", "pat-", "cpat-", "aiec-"];
   const activeQuizKeys = () => Object.keys(QUIZZES).filter((qid) => ACTIVE_QUIZ_PREFIXES.some((p) => qid.startsWith(p)));
   const Widgets = window.Widgets || {};
   const Practice = window.CodexPractice || {};
@@ -142,6 +142,93 @@
         "#/dsa/recursion/backtracking",
         "#/dsa/recursion/dynamic-programming",
         "#/dsa/interview/framework"
+      ]
+    },
+    {
+      id: "coding-craft",
+      title: "Coding Delivery Craft",
+      label: "How to run the round",
+      color: "#fbbf24",
+      desc: "The part of the coding interview nobody teaches: a phase-by-phase framework with time budgets, reading the target complexity off the constraints, narrating while you code, and testing before you are asked.",
+      routes: [
+        "#/cpat/craft/phase-plan",
+        "#/cpat/craft/complexity-ladder",
+        "#/cpat/craft/communicating-code",
+        "#/cpat/craft/testing-and-edges",
+        "#/cpat/arrays/cyclic-sort",
+        "#/cpat/arrays/greedy",
+        "#/cpat/arrays/divide-conquer",
+        "#/cpat/arrays/math-number-theory"
+      ]
+    },
+    {
+      id: "advanced-algorithms",
+      title: "Weighted Graphs & DP Shapes",
+      label: "Advanced path",
+      color: "#818cf8",
+      desc: "The families the fundamentals tracks stop short of: ordering and shortest paths on weighted graphs, the DP taxonomy that lets you pattern-match a new problem onto a known shape, and range structures.",
+      routes: [
+        "#/cpat/graphs/topo-sort",
+        "#/cpat/graphs/dijkstra",
+        "#/cpat/graphs/mst",
+        "#/cpat/graphs/grid-as-graph",
+        "#/cpat/structures/dp-taxonomy",
+        "#/cpat/structures/knapsack-family",
+        "#/cpat/structures/range-structures",
+        "#/cpat/structures/design-problems"
+      ]
+    },
+    {
+      id: "ai-enabled",
+      title: "AI-Enabled Coding",
+      label: "The new round",
+      color: "#22d3ee",
+      desc: "A newer interview format where you build a small feature alongside an AI assistant and are scored on judgement rather than recall. Ends able to drive the tool instead of riding it, and to prove the output is correct.",
+      routes: [
+        "#/aiec/overview/format",
+        "#/aiec/overview/evaluation",
+        "#/aiec/overview/structured-vs-open",
+        "#/aiec/fundamentals/orientation",
+        "#/aiec/fundamentals/planning",
+        "#/aiec/fundamentals/driving",
+        "#/aiec/fundamentals/verification",
+        "#/aiec/fundamentals/communication",
+        "#/aiec/aibreakdowns/maze-solver",
+        "#/aiec/aiecreview/aiec-review"
+      ]
+    },
+    {
+      id: "ai-patterns",
+      title: "Patterns With an AI Pair",
+      label: "Reframed",
+      color: "#2dd4bf",
+      desc: "The classic algorithm families, taught for a round where the model writes most of the code. Ends able to name the family, prompt for it at the right granularity, and spot the plausible-looking output that gets it subtly wrong.",
+      routes: [
+        "#/aiec/aipatterns/ds-design",
+        "#/aiec/aipatterns/graph-search",
+        "#/aiec/aipatterns/topo-sort",
+        "#/aiec/aipatterns/backtracking",
+        "#/aiec/aipatterns/greedy-packing",
+        "#/aiec/aipatterns/dp",
+        "#/aiec/aipatterns/string-parsing"
+      ]
+    },
+    {
+      id: "ai-features",
+      title: "Build a Feature, Not a LeetCode",
+      label: "Practice",
+      color: "#f472b6",
+      desc: "Ten small feature-building tasks of the shape this round actually uses, each graded from a naive first cut to a benchmarked improvement. Ends with a felt sense of how much to hand the model at once.",
+      routes: [
+        "#/aiec/aibreakdowns/battleship",
+        "#/aiec/aibreakdowns/card-game",
+        "#/aiec/aibreakdowns/connect-four",
+        "#/aiec/aibreakdowns/friend-recommender",
+        "#/aiec/aibreakdowns/inventory-packer",
+        "#/aiec/aibreakdowns/kitchen-queue",
+        "#/aiec/aibreakdowns/route-planner",
+        "#/aiec/aibreakdowns/spell-checker",
+        "#/aiec/aibreakdowns/task-scheduler"
       ]
     }
   ];
@@ -874,7 +961,7 @@
       case "h2": return "### " + b.text + "\n";
       case "ul": return b.items.map((i) => "- " + stripTags(i)).join("\n") + "\n";
       case "ol": return b.items.map((i, n) => (n + 1) + ". " + stripTags(i)).join("\n") + "\n";
-      case "cue": return "> **Recognize it:** " + stripTags(b.html) + "\n";
+      case "cue": return "> **Spotting it in a prompt:** " + stripTags(b.html) + "\n";
       case "note": return "> **" + (NOTE_MD[b.variant] || "Note") + ".** " + stripTags(b.html) + "\n";
       case "code": return "```" + (b.lang || "") + "\n" + b.code + "\n```\n";
       case "table": {

@@ -39,8 +39,9 @@ window.TRACKS.defense = {
                 ["WAF", "HTTP layer \u2014 blocks web attacks like SQLi/XSS"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Segmentation contains blast radius.</strong> Put the database in a tier that only the app tier can reach; keep user laptops off the server VLANs. When something is popped, segmentation decides whether it's one box or the whole estate." },
-            { t: "note", variant: "trap", html: "<strong>Flat networks</strong> \u2014 everything can reach everything \u2014 are how ransomware spreads from one phished laptop to every server in hours. Segment by sensitivity and default-deny between zones." }
+            { t: "note", variant: "tip", html: "<strong>Segmentation contains blast radius.</strong> Put the database in a tier that only the app tier can reach; keep user laptops off the server VLANs. When something is popped, segmentation decides whether it's one box or the whole estate." },
+            { t: "note", variant: "trap", html: "<strong>Flat networks</strong> \u2014 everything can reach everything \u2014 are how ransomware spreads from one phished laptop to every server in hours. Segment by sensitivity and default-deny between zones." },
+            { t: "note", variant: "key", html: "<strong>A firewall only knows the paths you thought to write down.</strong> Rules govern where traffic may go, never what it carries \u2014 so an attacker who lands on the app tier inherits the app tier's standing permission to reach the database, over a connection that looks identical to every legitimate one. Segmentation buys you fewer paths to watch and more time to notice; deciding that a permitted query is hostile is a job it cannot do for you." }
           ]
         },
         {
@@ -61,7 +62,7 @@ window.TRACKS.defense = {
                 ["<strong>SSH</strong>", "Encrypted admin access and tunnels"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Encrypt internal traffic too.</strong> The old model trusted the LAN and encrypted only the edge. Modern designs encrypt service-to-service with mTLS \u2014 a captured internal link should reveal nothing. This is the network face of zero trust." },
+            { t: "note", variant: "tip", html: "<strong>Encrypt internal traffic too.</strong> The old model trusted the LAN and encrypted only the edge. Modern designs encrypt service-to-service with mTLS \u2014 a captured internal link should reveal nothing. This is the network face of zero trust." },
             { t: "h", text: "Getting transport right" },
             {
               t: "ul", items: [
@@ -71,7 +72,8 @@ window.TRACKS.defense = {
                 "Manage certificate lifecycles \u2014 expiry causes outages and panic-driven mistakes."
               ]
             },
-            { t: "note", variant: "trap", html: "Stripping or downgrading TLS is a classic on-path attack. Without HSTS, a single plaintext request can be hijacked before the redirect to HTTPS ever happens." }
+            { t: "note", variant: "trap", html: "Stripping or downgrading TLS is a classic on-path attack. Without HSTS, a single plaintext request can be hijacked before the redirect to HTTPS ever happens." },
+            { t: "note", variant: "key", html: "<strong>Transport encryption proves you reached a name, not that the name deserves your data.</strong> A valid certificate says the far end controls that hostname and that the wire is confidential; it says nothing about whether the code behind it is trustworthy or whether it should be holding what you are about to send. Encrypting the link removes the network as an attacker position and moves the whole fight to the endpoints \u2014 which is where the data is decrypted, and where the breaches are." }
           ]
         },
         {
@@ -125,7 +127,7 @@ window.TRACKS.defense = {
                 "<strong>Never</strong> log secrets, full card numbers, passwords or session tokens."
               ]
             },
-            { t: "note", variant: "key", html: "A <strong>SIEM</strong> (Security Information and Event Management) centralizes logs from across the estate and correlates them \u2014 a failed login here plus a privilege change there plus data egress becomes one alert. Centralization also stops attackers from erasing local logs to cover their tracks." },
+            { t: "note", variant: "tip", html: "A <strong>SIEM</strong> (Security Information and Event Management) centralizes logs from across the estate and correlates them \u2014 a failed login here plus a privilege change there plus data egress becomes one alert. Centralization also stops attackers from erasing local logs to cover their tracks." },
             { t: "h", text: "Good logs share traits" },
             {
               t: "table",
@@ -137,7 +139,8 @@ window.TRACKS.defense = {
                 ["Retained appropriately", "Investigations span weeks/months"]
               ]
             },
-            { t: "note", variant: "tip", html: "Logging without alerting is just expensive storage. Define detections for the events that matter and tune them \u2014 an ignored, noisy alert console is the same as no monitoring at all." }
+            { t: "note", variant: "tip", html: "Logging without alerting is just expensive storage. Define detections for the events that matter and tune them \u2014 an ignored, noisy alert console is the same as no monitoring at all." },
+            { t: "note", variant: "key", html: "<strong>An investigation can only reach as far back as a decision you made months earlier.</strong> You cannot retroactively collect the event you never enabled, and a retention window silently caps how much of an intrusion you will ever be able to reconstruct \u2014 which turns two boring budget questions, what to log and for how long, into the real limit on what you can discover. Volume is not the measure; the measure is whether the events that would expose an intruder are among the ones you kept." }
           ]
         },
         {
@@ -157,7 +160,7 @@ window.TRACKS.defense = {
                 ["Weakness", "Misses new/zero-day", "More false positives"]
               ]
             },
-            { t: "note", variant: "key", html: "The hard part is the trade-off between <strong>false positives</strong> (crying wolf \u2014 analysts tune out) and <strong>false negatives</strong> (missing the real thing). An IPS set too aggressively can also block legitimate traffic, so prevention is tuned carefully." },
+            { t: "note", variant: "trap", html: "The hard part is the trade-off between <strong>false positives</strong> (crying wolf \u2014 analysts tune out) and <strong>false negatives</strong> (missing the real thing). An IPS set too aggressively can also block legitimate traffic, so prevention is tuned carefully." },
             { t: "h", text: "Beyond the network" },
             {
               t: "ul", items: [
@@ -167,7 +170,8 @@ window.TRACKS.defense = {
                 "Threat-intelligence feeds supply known-bad indicators (IOCs)."
               ]
             },
-            { t: "note", variant: "tip", html: "Detection works best in <strong>layers</strong>, mapped to attacker behavior. Frameworks like MITRE ATT&CK help you ask \u201cwhich techniques can we actually see?\u201d and find the blind spots." }
+            { t: "note", variant: "tip", html: "Detection works best in <strong>layers</strong>, mapped to attacker behavior. Frameworks like MITRE ATT&CK help you ask \u201cwhich techniques can we actually see?\u201d and find the blind spots." },
+            { t: "note", variant: "key", html: "<strong>A detection system reports what it was taught to look for, and silence is not evidence.</strong> Signatures find what somebody already wrote down, anomaly models find deviation from a baseline that a patient attacker can reshape, and neither has much to say about an intruder using sanctioned tools with valid credentials. So read an empty queue as a question about coverage rather than a statement about safety \u2014 the useful exercise is naming a technique and checking whether any sensor you own would have produced a record of it." }
           ]
         },
         {
@@ -189,11 +193,12 @@ window.TRACKS.defense = {
                 "<strong>Actions on objectives</strong> \u2014 data theft, encryption, fraud."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Phishing</strong> is the most common delivery mechanism by far. Most intrusions begin with a human clicking something \u2014 which is why recognizing a malicious message or link is a frontline skill, not just an IT concern." },
+            { t: "note", variant: "tip", html: "<strong>Phishing</strong> is the most common delivery mechanism by far. Most intrusions begin with a human clicking something \u2014 which is why recognizing a malicious message or link is a frontline skill, not just an IT concern." },
             { t: "h", text: "Inspect a suspicious link" },
             { t: "p", html: "Defenders read URLs carefully. Paste a link below to highlight the real registrable domain and common deception tricks \u2014 lookalike domains, the <code>@</code> trick, punycode, and credential-in-URL." },
             { t: "widget", id: "phish" },
             { t: "note", variant: "trap", html: "The weakest link is rarely the firewall \u2014 it's a tired human at 4:59pm. Technical controls (MFA, email filtering, link rewriting) must assume someone <em>will</em> click, and limit what that click can do." },
+            { t: "note", variant: "key", html: "<strong>You do not have to catch the first move.</strong> That is the whole reason for staging an intrusion: the callback to command and control, the reuse of a credential somewhere it has never been used, the bulk read that precedes exfiltration \u2014 each is another link, and the later ones are harder for an attacker to avoid than the initial click. Build detection on the assumption that delivery already worked, because a defense that only tries to stop step one gets exactly one chance to be right." },
             { t: "quiz", id: "defense-detect" }
           ]
         }
@@ -223,7 +228,7 @@ window.TRACKS.defense = {
                 "<strong>Lessons learned</strong> \u2014 a blameless post-mortem that fixes root causes."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Containment usually comes before eradication.</strong> Isolate affected systems to stop spread first; investigate and remove second. Preserve evidence (don't just wipe and reboot) if the incident may be legal or regulated." },
+            { t: "note", variant: "tip", html: "<strong>Containment usually comes before eradication.</strong> Isolate affected systems to stop spread first; investigate and remove second. Preserve evidence (don't just wipe and reboot) if the incident may be legal or regulated." },
             { t: "h", text: "Decisions that go better when pre-made" },
             {
               t: "ul", items: [
@@ -233,7 +238,8 @@ window.TRACKS.defense = {
                 "How do you communicate when normal channels may be compromised?"
               ]
             },
-            { t: "note", variant: "trap", html: "An untested plan is a wish. Run <strong>tabletop exercises</strong> \u2014 walk through a realistic scenario \u2014 so people know their roles before the real 3am call. Practice is what converts a plan into competence." }
+            { t: "note", variant: "trap", html: "An untested plan is a wish. Run <strong>tabletop exercises</strong> \u2014 walk through a realistic scenario \u2014 so people know their roles before the real 3am call. Practice is what converts a plan into competence." },
+            { t: "note", variant: "key", html: "<strong>The lifecycle is a structure for making decisions, not a checklist to complete.</strong> What actually goes wrong at 3am is rarely a missing tool; it is a decision made too late or by someone without the authority to make it \u2014 who may take revenue-generating systems offline, when legal and comms are pulled in, whether preserving evidence outranks restoring service. Preparation is the only phase you get to do calmly, and it quietly sets the ceiling on how well every phase after it goes." }
           ]
         },
         {
@@ -255,14 +261,15 @@ window.TRACKS.defense = {
                 "Use least-privilege and application allow-listing where feasible."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Most breaches exploit known vulnerabilities with available patches.</strong> Attackers don't need a zero-day when last quarter's unpatched CVE is sitting on an internet-facing box. Patch management is unsexy and it wins." },
+            { t: "note", variant: "tip", html: "<strong>Most breaches exploit known vulnerabilities with available patches.</strong> Attackers don't need a zero-day when last quarter's unpatched CVE is sitting on an internet-facing box. Patch management is unsexy and it wins." },
             { t: "note", variant: "trap", html: "Backups aren't a recovery plan until you've <strong>restored from them</strong>. Ransomware specifically hunts and encrypts backups \u2014 keep offline/immutable copies and rehearse the restore." },
             { t: "stat", items: [
               { v: "Patch", k: "close known holes first" },
               { v: "Minimize", k: "fewer services = smaller surface" },
               { v: "MFA", k: "kill credential replay" },
               { v: "Restore", k: "a tested backup is the real control" }
-            ] }
+            ] },
+            { t: "note", variant: "key", html: "<strong>A hardened system starts drifting the day it goes into service.</strong> A service gets re-enabled for one debugging session, a temporary exception outlives the person who asked for it, a new dependency arrives carrying a default account \u2014 none of which is visible in the build you signed off. So the durable control is not the baseline but continuous measurement against it, paired with a patch cadence you can genuinely hold, because an attacker only has to find the single host that fell out of the pattern." }
           ]
         },
         {
@@ -303,8 +310,8 @@ window.TRACKS.defense = {
                 "<strong>Communicate</strong>: use crisis channels that do not depend on compromised email or chat."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Restore testing is the control.</strong> A backup that has never been restored is only a hope. Practice proves the data, credentials, runbook, staffing and dependencies actually work together." },
             { t: "note", variant: "tip", html: "Crisis communications should be drafted and rehearsed before the incident: who informs employees, customers, regulators, partners and executives, and what channel is trusted if normal collaboration tools are down." },
+            { t: "note", variant: "key", html: "<strong>Recovery capability is measured in rehearsals, not in copies.</strong> An RTO and an RPO are promises until someone has restored end to end with the people, credentials, runbooks and dependencies you would actually have on the day \u2014 and the backup estate is targeted precisely because so few organizations have walked that path. The sharpest test is to assume your production administrators are already compromised and ask whether recovery still works; if one credential owns both production and the backups, you do not have two systems." },
             { t: "quiz", id: "defense-resilience" }
           ]
         },
@@ -345,13 +352,13 @@ window.TRACKS.defense = {
                 ["No EDR/log coverage", "Add network and appliance logging before and after patching"]
               ]
             },
-            { t: "note", variant: "key", html: "Edge-device response is part patching and part incident response. If an exposed appliance had a known-exploited flaw, assume credentials and sessions may be suspect until logs, config, and secrets are reviewed." },
             { t: "stat", items: [
               { v: "Expose", k: "is it reachable?" },
               { v: "KEV", k: "is it exploited?" },
               { v: "Contain", k: "limit management paths" },
               { v: "Verify", k: "patch, logs, secrets" }
-            ] }
+            ] },
+            { t: "note", variant: "key", html: "<strong>Patching an exposed appliance closes the door; it does not tell you whether anyone already walked through it.</strong> These devices sit in front of your authentication and usually outside your endpoint tooling, so sessions, device-held secrets and configuration each have to be cleared on their own evidence before you call the case shut \u2014 treat a known-exploited flaw on an internet-facing box as an incident until the logs say otherwise. And let exposure plus confirmed exploitation set your order of work; the number attached to the advisory is a distant third." }
           ]
         },
         {
@@ -372,7 +379,7 @@ window.TRACKS.defense = {
                 ["<strong>Purple</strong>", "Red + blue collaborating to improve detection"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Authorization is the line</strong> between security testing and a crime. Red teams, pen tests and bug bounties operate under explicit written permission and a defined scope. The skills in this atlas are for defending systems and testing your own \u2014 with consent." },
+            { t: "note", variant: "warn", html: "<strong>Authorization is the line</strong> between security testing and a crime. Red teams, pen tests and bug bounties operate under explicit written permission and a defined scope. The skills in this atlas are for defending systems and testing your own \u2014 with consent." },
             { t: "h", text: "Security is a culture, not a gate" },
             {
               t: "ul", items: [
@@ -384,6 +391,7 @@ window.TRACKS.defense = {
               ]
             },
             { t: "note", variant: "tip", html: "You've now walked the full loop \u2014 foundations, cryptography, application security, and defensive operations. Real skill comes from doing: build something, threat-model it, then try to break it (with permission) and watch your own logs light up." },
+            { t: "note", variant: "key", html: "<strong>Operations is the part of security that compounds.</strong> A control is bought once and decays from there, while the loop \u2014 detect, respond, then push the fix back into the default path everyone already uses \u2014 converts each incident into coverage you keep. That is also why time to detect and time to contain are the numbers worth defending in a review: they describe whether the loop is turning, where counts of tools and blocked events only describe activity." },
             { t: "quiz", id: "defense-respond" }
           ]
         }

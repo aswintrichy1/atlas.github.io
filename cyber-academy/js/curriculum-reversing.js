@@ -40,7 +40,7 @@ window.TRACKS.reversing = {
             },
             { t: "code", lang: "c", code: "int add(int a, int b) {\n    return a + b;\n}" },
             { t: "code", lang: "asm", code: "add:\n    push rbp\n    mov  rbp, rsp\n    mov  [rbp-4], edi      ; a\n    mov  [rbp-8], esi      ; b\n    mov  eax, [rbp-8]\n    add  eax, [rbp-4]\n    pop  rbp\n    ret" },
-            { t: "note", variant: "key", html: "Compilation is <strong>lossy</strong>. Variable names, comments, and most type information are discarded \u2014 only the instructions survive. That loss is exactly why reading a release binary is hard, and why analysts rebuild meaning from structure and behavior." },
+            { t: "note", variant: "tip", html: "Compilation is <strong>lossy</strong>. Variable names, comments, and most type information are discarded \u2014 only the instructions survive. That loss is exactly why reading a release binary is hard, and why analysts rebuild meaning from structure and behavior." },
             { t: "h", text: "Why this matters for defense" },
             {
               t: "ul", items: [
@@ -50,7 +50,8 @@ window.TRACKS.reversing = {
               ]
             },
             { t: "note", variant: "tip", html: "Ship stripped, optimized release builds and keep the matching debug symbols private. Defenders get full diagnostics; an attacker who only has the shipped binary gets far less to work with." },
-            { t: "note", variant: "warn", html: "Only build, run, or analyze software you are authorized to. Treat any unknown or untrusted binary as hostile and examine it in an <strong>isolated virtual machine</strong>, never on your day-to-day host." }
+            { t: "note", variant: "warn", html: "Only build, run, or analyze software you are authorized to. Treat any unknown or untrusted binary as hostile and examine it in an <strong>isolated virtual machine</strong>, never on your day-to-day host." },
+            { t: "note", variant: "key", html: "<strong>What you ship is the adversary's only copy, which makes the build a security decision.</strong> Stripping symbols and optimizing changes nothing about behavior but raises the cost of understanding your binary, and a reproducible build lets you prove the artifact came from the source you reviewed. Neither hides a flaw \u2014 together they decide who reads your code first and whether you can tell a tampered copy from yours." }
           ]
         },
         {
@@ -75,7 +76,7 @@ window.TRACKS.reversing = {
                 ["<strong>Stack</strong>", "Locals, arguments, return addresses (grows down \u2193)", "Read + write, not executable"]
               ]
             },
-            { t: "note", variant: "key", html: "Keeping <strong>code</strong> and <strong>data</strong> apart is a defense. Code is mapped executable-but-not-writable; data is writable-but-not-executable. This <strong>W^X</strong> (\u201cwrite XOR execute\u201d) rule means bytes an attacker writes as data cannot later run as instructions." },
+            { t: "note", variant: "tip", html: "Keeping <strong>code</strong> and <strong>data</strong> apart is a defense. Code is mapped executable-but-not-writable; data is writable-but-not-executable. This <strong>W^X</strong> (\u201cwrite XOR execute\u201d) rule means bytes an attacker writes as data cannot later run as instructions." },
             { t: "h", text: "Where the bugs live" },
             {
               t: "ul", items: [
@@ -84,7 +85,8 @@ window.TRACKS.reversing = {
                 "<strong>Globals</strong> \u2014 a linear overflow can spill into adjacent variables, including ones that gate decisions."
               ]
             },
-            { t: "note", variant: "warn", html: "Inspecting how a real, unknown process uses memory is a job for a sandboxed lab VM with controlled networking \u2014 never a production system or your own workstation." }
+            { t: "note", variant: "warn", html: "Inspecting how a real, unknown process uses memory is a job for a sandboxed lab VM with controlled networking \u2014 never a production system or your own workstation." },
+            { t: "note", variant: "key", html: "<strong>What a memory bug is worth depends on what sits next to it.</strong> An overflow into a scratch buffer is a crash; the same overflow beside a saved return address, a function pointer or allocator bookkeeping is a loss of control over the program. Region permissions are the wall between those two outcomes, so read writable code or executable data as a wall removed, not a constraint eased." }
           ]
         },
         {
@@ -107,11 +109,12 @@ window.TRACKS.reversing = {
             { t: "h", text: "The call stack" },
             { t: "p", html: "Each function call pushes a <strong>stack frame</strong>: the arguments, a saved return address, and space for local variables. <code>call</code> pushes the return address and jumps; <code>ret</code> pops it and jumps back. That saved return address is the hinge of program control \u2014 remember it." },
             { t: "code", lang: "asm", code: "; System V x86-64: first integer args go in rdi, rsi, rdx ...\n    mov  edi, 2        ; arg a = 2\n    mov  esi, 3        ; arg b = 3\n    call add           ; push return address, jump into add\n    ; result comes back in eax" },
-            { t: "note", variant: "key", html: "Because the saved <strong>return address</strong> sits on the stack next to local buffers, a buffer that writes past its bounds can overwrite it. That single fact is the reason <strong>stack canaries</strong> exist \u2014 we cover the defense in Module 3." },
+            { t: "note", variant: "tip", html: "Because the saved <strong>return address</strong> sits on the stack next to local buffers, a buffer that writes past its bounds can overwrite it. That single fact is the reason <strong>stack canaries</strong> exist \u2014 we cover the defense in Module 3." },
             { t: "h", text: "Endianness: byte order matters" },
             { t: "p", html: "A multi-byte value can be stored most-significant-byte-first (<strong>big-endian</strong>, the traditional \u201cnetwork byte order\u201d) or least-significant-byte-first (<strong>little-endian</strong>, what x86 and most ARM use). Misreading byte order is a classic source of confusion when reading memory dumps." },
             { t: "widget", id: "endianness" },
             { t: "note", variant: "tip", html: "A <strong>calling convention</strong> (System V on Linux/macOS, the Microsoft x64 ABI on Windows) is the agreed contract for where arguments and return values live. Knowing it turns a wall of <code>mov</code> instructions into a readable function call." },
+            { t: "note", variant: "key", html: "<strong>Defenses attach to structure, which is why the conventions are worth learning.</strong> Stack canaries, shadow stacks and control-flow checks all work by policing the very frame layout a calling convention forces the compiler to emit. Read a function's prologue and epilogue and you can see which of those protections a shipped binary is actually carrying." },
             { t: "quiz", id: "reversing-internals" }
           ]
         }
@@ -131,6 +134,7 @@ window.TRACKS.reversing = {
           tags: ["re", "analysis"],
           blocks: [
             { t: "p", html: "There are two ways to understand a compiled program. <strong>Static analysis</strong> examines it at rest \u2014 no execution. <strong>Dynamic analysis</strong> runs it under observation and watches what it actually does. Each catches what the other misses." },
+            { t: "note", variant: "tip", html: "<a href='#/threats/malware/malware-analysis'>The malware-analysis lesson</a> introduces this split from the defender's triage angle. Here the same distinction is treated as a reverse-engineering workflow, with the tooling and the anti-analysis tricks that come with it." },
             {
               t: "table",
               headers: ["Aspect", "Static analysis", "Dynamic analysis"],
@@ -151,9 +155,10 @@ window.TRACKS.reversing = {
             },
             { t: "code", lang: "asm", code: "; disassembly (what the bytes really are)\n  cmp  dword [rbp-4], 0\n  jle  .skip\n  lea  rdi, [rip+msg]      ; \"ok\"\n  call puts\n.skip:" },
             { t: "code", lang: "c", code: "// decompiler's reconstruction (a readable best-effort)\nif (x > 0) {\n    puts(\"ok\");\n}" },
-            { t: "note", variant: "key", html: "Neither view is automatically correct. A decompiler can mislabel types or miss a jump; the disassembly can hide intent behind optimization. Cross-check static reading against <strong>dynamic</strong> observation before you trust a conclusion." },
+            { t: "note", variant: "trap", html: "Neither view is automatically correct. A decompiler can mislabel types or miss a jump; the disassembly can hide intent behind optimization. Cross-check static reading against <strong>dynamic</strong> observation before you trust a conclusion." },
             { t: "note", variant: "warn", html: "Run an unknown sample <strong>only</strong> inside an isolated VM or sandbox with controlled (often no) networking and a snapshot you can roll back. Dynamic analysis means executing untrusted code \u2014 contain it completely." },
-            { t: "note", variant: "tip", html: "The professional loop is static-then-dynamic: map the program statically to form a hypothesis, then run it to confirm or refute what you read." }
+            { t: "note", variant: "tip", html: "The professional loop is static-then-dynamic: map the program statically to form a hypothesis, then run it to confirm or refute what you read." },
+            { t: "note", variant: "key", html: "<strong>Every conclusion about a binary inherits the limits of how you reached it.</strong> Static reading covers all of the code and none of the behavior; dynamic observation covers real behavior on only the paths you managed to trigger. Record which lens produced a claim, because a detection built on an unverified reading fails silently and looks fine until the day it matters." }
           ]
         },
         {
@@ -186,8 +191,9 @@ window.TRACKS.reversing = {
             { t: "code", lang: "text", code: "ELF Header:\n  Magic:    7f 45 4c 46 02 01 01 00 ...\n  Class:                             ELF64\n  Data:                              little endian\n  Type:                              DYN (Position-Independent Executable)\n  Machine:                           Advanced Micro Devices X86-64\n  Entry point address:               0x1060\n  Number of section headers:         29" },
             { t: "h", text: "Strings & symbols: the first foothold" },
             { t: "p", html: "Before any disassembly, analysts dump the printable <strong>strings</strong> and read the <strong>symbol table</strong>. Error messages, URLs, format strings, and leftover function names often reveal a program's purpose in seconds." },
-            { t: "note", variant: "key", html: "For defenders, these same structures are an integrity target. <strong>Code signing</strong> and hash-based verification detect tampering with headers, imports, or sections \u2014 so a modified binary fails to load or is flagged." },
-            { t: "note", variant: "tip", html: "Read-only first steps like listing strings, symbols, and headers are safe even on suspicious files because they never execute the program \u2014 they only parse the container." }
+            { t: "note", variant: "tip", html: "For defenders, these same structures are an integrity target. <strong>Code signing</strong> and hash-based verification detect tampering with headers, imports, or sections \u2014 so a modified binary fails to load or is flagged." },
+            { t: "note", variant: "tip", html: "Read-only first steps like listing strings, symbols, and headers are safe even on suspicious files because they never execute the program \u2014 they only parse the container." },
+            { t: "note", variant: "key", html: "<strong>A file's own description of itself is fast triage and weak evidence.</strong> Imports, sections and strings reveal what a program is equipped to do in seconds, which is why analysts read them first \u2014 and why anything with something to hide lies there first. Cryptographic verification is the one part of that story an attacker cannot simply rewrite." }
           ]
         },
         {
@@ -209,7 +215,7 @@ window.TRACKS.reversing = {
                 ["<strong>Anti-VM</strong>", "Detects a virtual machine and hides", "Harden the lab; the evasion itself is intelligence"]
               ]
             },
-            { t: "note", variant: "key", html: "Packing raises a file's <strong>entropy</strong> (its randomness) because compressed or encrypted data looks random. A high-entropy section is a fast triage signal that real code is hidden until runtime \u2014 a flag, not a verdict." },
+            { t: "note", variant: "tip", html: "Packing raises a file's <strong>entropy</strong> (its randomness) because compressed or encrypted data looks random. A high-entropy section is a fast triage signal that real code is hidden until runtime \u2014 a flag, not a verdict." },
             { t: "h", text: "Crackmes & patching \u2014 the legal way to learn" },
             { t: "p", html: "A <strong>crackme</strong> is a small program made <em>specifically</em> to be reverse-engineered as a puzzle \u2014 the author consents and that is the whole point. <strong>Patching</strong> means changing a binary's logic, and as a methodology it is studied on these consenting targets." },
             {
@@ -221,6 +227,7 @@ window.TRACKS.reversing = {
             },
             { t: "note", variant: "warn", html: "Circumventing protections on software you do not own or license can violate the law (anti-circumvention statutes such as the DMCA) and the product's license terms. Practice patching and unpacking <strong>only</strong> on crackmes, your own code, or explicitly authorized lab targets." },
             { t: "note", variant: "trap", html: "Malware piles on anti-RE precisely to waste your time and trip you into running it carelessly. Analyze it only in a snapshotted, network-controlled sandbox \u2014 and assume it is trying to escape." },
+            { t: "note", variant: "key", html: "<strong>Anti-analysis buys time, and it announces itself doing so.</strong> Packed code has to unpack before it runs and a debugger check has to go looking for the debugger, so every layer of evasion adds behavior a defender can catch even while the payload stays unreadable. Put detection where the program must eventually act, not where it can afford to lie." },
             { t: "quiz", id: "reversing-re" }
           ]
         }
@@ -259,7 +266,7 @@ window.TRACKS.reversing = {
               good: { title: "Patterns that prevent it", items: ["Bounded calls like <code>snprintf</code> / <code>fgets</code>", "Always check sizes against the destination", "Set pointers to <code>NULL</code> after freeing", "Prefer a memory-safe language where you can"] }
             },
             { t: "code", lang: "c", code: "// UNSAFE: copies until a NUL byte, with no bound on the destination\nvoid greet(const char *name) {\n    char buf[64];\n    strcpy(buf, name);              // overflows buf when name is too long\n    printf(\"Hi, %s\\n\", buf);\n}\n\n// SAFER: bound every write to the size of the destination\nvoid greet_safe(const char *name) {\n    char buf[64];\n    snprintf(buf, sizeof(buf), \"Hi, %s\", name);  // never writes past buf\n    fputs(buf, stdout);\n}" },
-            { t: "note", variant: "key", html: "The durable fix is <strong>memory safety</strong>. Managed and safe languages \u2014 Rust, Go, Java, C#, Python \u2014 check bounds and manage lifetimes for you, eliminating whole classes of these bugs. When you must use C/C++, treat every buffer size as sacred." },
+            { t: "note", variant: "tip", html: "The durable fix is <strong>memory safety</strong>. Managed and safe languages \u2014 Rust, Go, Java, C#, Python \u2014 check bounds and manage lifetimes for you, eliminating whole classes of these bugs. When you must use C/C++, treat every buffer size as sacred." },
             { t: "h", text: "A practical memory-safety roadmap" },
             {
               t: "table",
@@ -274,7 +281,8 @@ window.TRACKS.reversing = {
             },
             { t: "note", variant: "tip", html: "Secure by Design does not mean \u201crewrite everything tomorrow.\u201d It means stop adding new memory-unsafe surface, isolate the old sharp edges, and migrate the highest-risk parts on a planned roadmap." },
             { t: "note", variant: "tip", html: "Find these before anyone else does: <strong>fuzzing</strong> throws malformed inputs at the program, and sanitizers like <strong>AddressSanitizer</strong> turn silent corruption into a loud, immediate crash during testing." },
-            { t: "note", variant: "warn", html: "Study these bug classes only in authorized labs or CTFs against targets built for it. Never probe software or systems you do not own or have written permission to test." }
+            { t: "note", variant: "warn", html: "Study these bug classes only in authorized labs or CTFs against targets built for it. Never probe software or systems you do not own or have written permission to test." },
+            { t: "note", variant: "key", html: "<strong>The dangerous property of these bugs is that they are quiet.</strong> An out-of-bounds write or a stale pointer usually produces a passing test and a crash much later in unrelated code, which is why sanitizers, fuzzing and bounds discipline belong in the build rather than in a review meeting. Treat every unbounded copy as a defect you have simply not found yet." }
           ]
         },
         {
@@ -302,9 +310,10 @@ window.TRACKS.reversing = {
             },
             { t: "h", text: "Turn them on at build time" },
             { t: "code", lang: "bash", code: "# Defensive build hardening (gcc / clang) \u2014 enable these in CI\ngcc main.c -o app \\\n  -fstack-protector-strong \\   # stack canaries\n  -D_FORTIFY_SOURCE=2 -O2 \\     # bounds-checked libc variants\n  -fPIE -pie \\                  # position independent => ASLR covers the exe\n  -Wl,-z,relro,-z,now \\         # full RELRO: make the GOT read-only\n  -fcf-protection=full \\        # Intel CET / control-flow integrity\n  -fstack-clash-protection\n# NX is on by default; never link with -z execstack" },
-            { t: "note", variant: "key", html: "Mitigations <strong>stack</strong>. NX alone, or ASLR alone, can often be worked around; together \u2014 NX + ASLR + canaries + PIE + RELRO + CFI \u2014 they remove technique after technique until a bug that would have been trivial becomes a research project." },
+            { t: "note", variant: "tip", html: "Mitigations <strong>stack</strong>. NX alone, or ASLR alone, can often be worked around; together \u2014 NX + ASLR + canaries + PIE + RELRO + CFI \u2014 they remove technique after technique until a bug that would have been trivial becomes a research project." },
             { t: "note", variant: "tip", html: "Verify, don't assume. A <code>checksec</code>-style tool reports which mitigations a binary actually has; enforce a minimum in your build pipeline so a careless flag can't silently ship an unhardened release." },
-            { t: "note", variant: "warn", html: "Mitigations reduce risk \u2014 they do not fix the bug. Always patch the root-cause vulnerability as well; hardening buys time and raises cost, it is not a substitute for correctness." }
+            { t: "note", variant: "warn", html: "Mitigations reduce risk \u2014 they do not fix the bug. Always patch the root-cause vulnerability as well; hardening buys time and raises cost, it is not a substitute for correctness." },
+            { t: "note", variant: "key", html: "<strong>Hardening is a property of each shipped binary, not of your platform.</strong> One dependency built without PIE or RELRO, or a single release where a flag quietly stopped being passed, reintroduces the technique the rest of the process had removed. Make the mitigation set a checked build output, because nothing in the program's behavior will tell you it went missing." }
           ]
         },
         {
@@ -339,6 +348,7 @@ window.TRACKS.reversing = {
               good: { title: "Staying on the right side", items: ["Authorized scope and written permission", "An isolated lab for every experiment", "Coordinated, private disclosure", "Consenting CTFs and crackmes to practice"] }
             },
             { t: "note", variant: "tip", html: "Keep a lab notebook that records, for every exercise, <em>what</em> you were authorized to do and <em>where</em> it ran. Good documentation is both a learning aid and your proof that you stayed inside the lines." },
+            { t: "note", variant: "key", html: "<strong>For every experiment, be able to name the authorization and the containment.</strong> Who permitted this target, and what absorbs the damage if the code misbehaves \u2014 answer both and the technique itself is never the risky part. Everything in this track is reachable on consenting targets, so no exercise here requires borrowing someone else's system." },
             { t: "quiz", id: "reversing-pwn" }
           ]
         }

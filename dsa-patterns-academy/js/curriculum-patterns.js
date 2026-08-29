@@ -33,7 +33,7 @@
             tags: ["array", "prefix-sum"],
             blocks: [
               { t: "p", html: "The <strong>Prefix Sum</strong> pattern trades a little memory for fast range queries. Build an array <code class='tok'>P</code> where <code class='tok'>P[i]</code> holds the sum of the first <code class='tok'>i</code> elements; then the sum of any range <code class='tok'>[l, r]</code> is just <code class='tok'>P[r+1] - P[l]</code> — one subtraction instead of a loop." },
-              { t: "cue", html: "<b>Recognize it when</b> the problem says <em>“sum of a subarray”</em>, <em>“range sum query”</em>, <em>“subarray that sums to k”</em>, or asks the same range question many times over a fixed array. Pair prefix sums with a <strong>hash map</strong> to count subarrays in one pass." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the problem says <em>“sum of a subarray”</em>, <em>“range sum query”</em>, <em>“subarray that sums to k”</em>, or asks the same range question many times over a fixed array. Pair prefix sums with a <strong>hash map</strong> to count subarrays in one pass." },
               { t: "widget", id: "prefixsum" },
               { t: "code", lang: "python", code:
                 "# Build once: O(n).  P[i] = sum of the first i elements\n" +
@@ -59,7 +59,8 @@
                 "Range Sum Query – Immutable", "Subarray Sum Equals K", "Find Pivot Index",
                 "Product of Array Except Self (prefix × suffix)", "Contiguous Array", "Subarray Sums Divisible by K"
               ]),
-              { t: "note", variant: "trap", html: "Mind the off-by-one: with <code class='tok'>P[0] = 0</code> the range <code class='tok'>[l, r]</code> is <code class='tok'>P[r+1] - P[l]</code>, not <code class='tok'>P[r] - P[l]</code>. For <em>counting</em> subarrays equal to <code class='tok'>k</code>, seed the map with <code class='tok'>{0: 1}</code> so subarrays starting at index 0 are counted." }
+              { t: "note", variant: "trap", html: "Mind the off-by-one: with <code class='tok'>P[0] = 0</code> the range <code class='tok'>[l, r]</code> is <code class='tok'>P[r+1] - P[l]</code>, not <code class='tok'>P[r] - P[l]</code>. For <em>counting</em> subarrays equal to <code class='tok'>k</code>, seed the map with <code class='tok'>{0: 1}</code> so subarrays starting at index 0 are counted." },
+              { t: "note", variant: "key", html: "<strong>Any question about a sum over a range is a question about the difference of two prefixes.</strong> That reframing is the recognition cue, and it splits into two moves: precompute in O(n) and answer each range in O(1), or — when the ask is a <em>count</em> of qualifying subarrays rather than one range — put the running prefix in a hash map and finish the whole thing in a single O(n) pass. You are buying that with O(n) extra memory and an assumption that the array does not change under you." }
             ]
           },
           {
@@ -70,7 +71,7 @@
             tags: ["array", "two-pointers"],
             blocks: [
               { t: "p", html: "The <strong>Two Pointers</strong> pattern uses two indices that move in a coordinated way. The headline form: on a <em>sorted</em> array, start one pointer at each end and move them inward based on whether their combination is too small or too big — turning nested loops into one linear scan." },
-              { t: "cue", html: "<b>Recognize it when</b> the input is <em>sorted</em> (or you can sort it), and you need a <em>pair / triplet</em> matching a condition, a <em>palindrome</em> check, to <em>partition</em> in place, or to merge two sequences. Two flavours: <strong>opposite ends</strong> (converging) and <strong>same direction</strong> (fast/slow read-write)." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the input is <em>sorted</em> (or you can sort it), and you need a <em>pair / triplet</em> matching a condition, a <em>palindrome</em> check, to <em>partition</em> in place, or to merge two sequences. Two flavours: <strong>opposite ends</strong> (converging) and <strong>same direction</strong> (fast/slow read-write)." },
               { t: "widget", id: "twopointer" },
               { t: "code", lang: "python", code:
                 "# Opposite ends on a SORTED array — pair summing to target\n" +
@@ -106,7 +107,8 @@
             tags: ["array", "string", "sliding-window"],
             blocks: [
               { t: "p", html: "The <strong>Sliding Window</strong> pattern maintains a contiguous range <code class='tok'>[L, R]</code> and slides it across the data, expanding <code class='tok'>R</code> to include new elements and contracting <code class='tok'>L</code> when a constraint breaks. Each element enters and leaves the window at most once → <strong>O(n)</strong>." },
-              { t: "cue", html: "<b>Recognize it when</b> you see <em>“contiguous subarray / substring”</em> plus a superlative — <em>longest, shortest, maximum, minimum, at most K, exactly K</em>. <strong>Fixed window</strong> when the size is given; <strong>variable window</strong> when you grow/shrink to satisfy a condition." },
+              { t: "note", variant: "tip", html: "If the O(n) argument or the pointer bookkeeping is not yet automatic, <a href='#/dsa/linear/sliding-window'>the fundamentals lesson</a> derives it. This page assumes the mechanism and focuses on spotting the pattern." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you see <em>“contiguous subarray / substring”</em> plus a superlative — <em>longest, shortest, maximum, minimum, at most K, exactly K</em>. <strong>Fixed window</strong> when the size is given; <strong>variable window</strong> when you grow/shrink to satisfy a condition." },
               { t: "widget", id: "slidingwindow" },
               { t: "code", lang: "python", code:
                 "# Fixed window of size k — maximum sum\n" +
@@ -132,6 +134,7 @@
                 "Longest Repeating Character Replacement", "Permutation in String", "Fruit Into Baskets", "Sliding Window Maximum (with a deque)"
               ]),
               { t: "note", variant: "trap", html: "Decide <em>when</em> to shrink. For “at most K distinct”, expand always and shrink while the window is invalid. A neat trick: <strong>“exactly K” = atMost(K) − atMost(K−1)</strong> — two cheap sliding windows instead of one tricky one." },
+              { t: "note", variant: "key", html: "<strong>Contiguous plus a superlative is the cue — but the window is only linear because the answer travels with its edges.</strong> Each element enters once and leaves once, which is where the O(n) comes from, and that holds only while a running sum, a frequency count, or a max held in a monotonic deque can absorb one arrival and one departure in constant time. If the window has to be re-evaluated from scratch at every step, the wording matched and the pattern still doesn't." },
               { t: "quiz", id: "pat-arrays" }
             ]
           }
@@ -152,7 +155,7 @@
             tags: ["linked-list", "two-pointers"],
             blocks: [
               { t: "p", html: "The <strong>Fast &amp; Slow Pointers</strong> pattern (Floyd's tortoise &amp; hare) advances one pointer two steps for every one step of the other. If a list has a cycle, the fast pointer eventually laps the slow one and they meet; if it reaches the end, there's no cycle. It also pinpoints the <em>middle</em> in a single pass." },
-              { t: "cue", html: "<b>Recognize it when</b> a problem mentions a <em>cycle / loop</em>, the <em>middle</em> of a list, the <em>nth node from the end</em>, or a <em>“happy number”</em>-style sequence that may repeat — and asks for <strong>O(1) extra space</strong>." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> a problem mentions a <em>cycle / loop</em>, the <em>middle</em> of a list, the <em>nth node from the end</em>, or a <em>“happy number”</em>-style sequence that may repeat — and asks for <strong>O(1) extra space</strong>." },
               { t: "widget", id: "fastslow" },
               { t: "code", lang: "python", code:
                 "# Detect a cycle — they meet inside the loop\n" +
@@ -188,7 +191,7 @@
             tags: ["linked-list", "pointers"],
             blocks: [
               { t: "p", html: "The <strong>In-place Reversal</strong> pattern walks a list once, flipping each <code class='tok'>next</code> pointer to point at the previous node. Three pointers — <code class='tok'>prev</code>, <code class='tok'>cur</code>, <code class='tok'>next</code> — are all you need, and you mutate the existing nodes rather than allocating a new list." },
-              { t: "cue", html: "<b>Recognize it when</b> you must <em>reverse</em> a list or a <em>sub-list</em>, <em>swap nodes in pairs</em>, reverse in <em>k-groups</em>, or reorder nodes <strong>without extra memory</strong>. The three-pointer dance is the reusable core." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you must <em>reverse</em> a list or a <em>sub-list</em>, <em>swap nodes in pairs</em>, reverse in <em>k-groups</em>, or reorder nodes <strong>without extra memory</strong>. The three-pointer dance is the reusable core." },
               { t: "widget", id: "listreversal" },
               { t: "code", lang: "python", code:
                 "# Reverse an entire list — memorize this dance\n" +
@@ -219,6 +222,7 @@
                 "Reverse Nodes in k-Group", "Rotate List", "Reorder List", "Palindrome Linked List"
               ]),
               { t: "note", variant: "trap", html: "Don't lose the rest of the list: capture <code class='tok'>cur.next</code> <em>before</em> you overwrite it. A <strong>dummy head</strong> node removes the special-casing when the reversal touches the original head." },
+              { t: "note", variant: "key", html: "<strong>The cue is a problem that rearranges links rather than values, and forbids extra memory.</strong> Three pointers, one O(n) pass, O(1) space — and every variant you will be asked for, whether a sub-list, adjacent pairs, k-sized groups or a full reorder, is that same dance wrapped in bookkeeping about where the window starts and ends. All of the risk sits in one place: capture the next node before you flip the arrow, and let a dummy head absorb the case where the original head stops being the head." },
               { t: "quiz", id: "pat-linkedlist" }
             ]
           }
@@ -239,7 +243,7 @@
             tags: ["stack", "monotonic"],
             blocks: [
               { t: "p", html: "A <strong>Monotonic Stack</strong> keeps its elements in increasing or decreasing order as you scan. When a new element would break the order, you <em>pop</em> — and each popped element has just found its “next greater” (or smaller) neighbour. Every item is pushed and popped at most once, so the whole scan is <strong>O(n)</strong>." },
-              { t: "cue", html: "<b>Recognize it when</b> you need the <em>next/previous greater or smaller element</em>, are spanning bars in a <em>histogram</em>, computing <em>stock spans</em>, or trapping water. The tell: a brute force that, for each element, scans left or right for the first bigger/smaller value." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you need the <em>next/previous greater or smaller element</em>, are spanning bars in a <em>histogram</em>, computing <em>stock spans</em>, or trapping water. The tell: a brute force that, for each element, scans left or right for the first bigger/smaller value." },
               { t: "widget", id: "monotonicstack" },
               { t: "code", lang: "python", code:
                 "# Next greater element to the right (-1 if none)\n" +
@@ -268,7 +272,7 @@
             tags: ["heap", "priority-queue", "top-k"],
             blocks: [
               { t: "p", html: "The <strong>Top-K Elements</strong> pattern keeps a <strong>heap of size K</strong> while scanning. For the K <em>largest</em>, use a <em>min</em>-heap and pop the smallest whenever it overflows; what remains is your answer. Cost is <strong>O(n log K)</strong> and space <strong>O(K)</strong> — better than sorting all n when K ≪ n." },
-              { t: "cue", html: "<b>Recognize it when</b> you see <em>“K largest / smallest / closest / most frequent”</em>, a streaming median, or “merge K sorted …”. The words <em>top K</em> or <em>Kth</em> are the giveaway — reach for a priority queue." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you see <em>“K largest / smallest / closest / most frequent”</em>, a streaming median, or “merge K sorted …”. The words <em>top K</em> or <em>Kth</em> are the giveaway — reach for a priority queue." },
               { t: "note", variant: "tip", html: "The heap lab below shows the priority-queue mechanics. For Top-K, mentally add one rule while you click: keep the heap capped at size <code class='tok'>k</code>, and evict the least useful item whenever it grows too large." },
               { t: "widget", id: "heap" },
               { t: "code", lang: "python", code:
@@ -313,7 +317,7 @@
             tags: ["intervals", "sorting"],
             blocks: [
               { t: "p", html: "The <strong>Overlapping Intervals</strong> pattern sorts intervals by start time, then sweeps left to right. If the next interval starts before the current one ends, they overlap — extend the current interval; otherwise, start a new one. The sort dominates at <strong>O(n log n)</strong>." },
-              { t: "cue", html: "<b>Recognize it when</b> the input is a set of <em>ranges / intervals / meetings</em> and you must <em>merge</em> them, <em>insert</em> one, count <em>conflicts</em>, or find the minimum resources (rooms, platforms). Almost always: <strong>sort first</strong>." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the input is a set of <em>ranges / intervals / meetings</em> and you must <em>merge</em> them, <em>insert</em> one, count <em>conflicts</em>, or find the minimum resources (rooms, platforms). Almost always: <strong>sort first</strong>." },
               { t: "widget", id: "mergeintervals" },
               { t: "code", lang: "python", code:
                 "# Merge all overlapping intervals\n" +
@@ -332,7 +336,8 @@
                 "Merge Intervals", "Insert Interval", "Non-overlapping Intervals",
                 "Meeting Rooms / Meeting Rooms II", "Interval List Intersections", "Employee Free Time", "Minimum Number of Arrows to Burst Balloons"
               ]),
-              { t: "note", variant: "tip", html: "For <em>“minimum meeting rooms”</em>, a <strong>min-heap of end times</strong> (or a sorted sweep of +1/−1 events) counts the peak overlap. Many interval problems reduce to a <em>sweep line</em> over sorted start/end events." }
+              { t: "note", variant: "tip", html: "For <em>“minimum meeting rooms”</em>, a <strong>min-heap of end times</strong> (or a sorted sweep of +1/−1 events) counts the peak overlap. Many interval problems reduce to a <em>sweep line</em> over sorted start/end events." },
+              { t: "note", variant: "key", html: "<strong>The moment the input is a list of ranges, the first move is to sort by start.</strong> Sorted order is the entire reason one left-to-right sweep suffices — each interval either extends the one you are holding or begins a new one — and it is why this family lands at O(n log n), with the sort dominating a linear pass. When the question shifts from merging ranges to asking how many overlap at once, keep the sweep and change only the accumulator: a min-heap of end times, or a running tally of start and end events." }
             ]
           },
           {
@@ -343,7 +348,8 @@
             tags: ["binary-search", "search-space"],
             blocks: [
               { t: "p", html: "<strong>Binary Search</strong> repeatedly halves a range, discarding the half that can't contain the answer — <strong>O(log n)</strong>. The interview superpower is <em>“binary search on the answer”</em>: if you can cheaply test <em>“is value X feasible?”</em> and feasibility is monotonic, you can binary-search the smallest/largest feasible X even when there's no sorted array in sight." },
-              { t: "cue", html: "<b>Recognize it when</b> the array is <em>sorted</em> or <em>rotated</em>, or the problem asks to <em>minimize the maximum</em> / <em>maximize the minimum</em> / find the <em>smallest value that works</em> (“Koko eating bananas”, “ship within D days”). Monotonic predicate ⇒ binary search." },
+              { t: "note", variant: "tip", html: "<a href='#/dsa/sorting/binary-search'>The fundamentals lesson</a> establishes the invariant and the off-by-one discipline that this page relies on." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the array is <em>sorted</em> or <em>rotated</em>, or the problem asks to <em>minimize the maximum</em> / <em>maximize the minimum</em> / find the <em>smallest value that works</em> (“Koko eating bananas”, “ship within D days”). Monotonic predicate ⇒ binary search." },
               { t: "widget", id: "binarysearch" },
               { t: "code", lang: "python", code:
                 "# Classic search (inclusive bounds)\n" +
@@ -369,6 +375,7 @@
                 "Find First and Last Position of Element", "Koko Eating Bananas", "Capacity to Ship Packages Within D Days", "Median of Two Sorted Arrays"
               ]),
               { t: "note", variant: "trap", html: "Pick one invariant and never break it. With inclusive <code class='tok'>[lo, hi]</code> loop while <code class='tok'>lo &lt;= hi</code> and move bounds <em>past</em> mid (<code class='tok'>mid±1</code>). Mixing inclusive and half-open bounds is where infinite loops and off-by-ones are born." },
+              { t: "note", variant: "key", html: "<strong>The cue is not a sorted array — it is a monotonic yes or no.</strong> If you can test one candidate answer cheaply and know that every larger candidate answers the same way, then the space of answers is sorted even when the input is not, which is what turns minimize-the-maximum and smallest-value-that-works questions into O(log range) feasibility tests instead of a search. Commit to one bound convention before you write the loop; the pattern is dependable, the off-by-one is not forgiving." },
               { t: "quiz", id: "pat-search" }
             ]
           }
@@ -389,7 +396,7 @@
             tags: ["tree", "dfs", "bfs"],
             blocks: [
               { t: "p", html: "The <strong>Tree Traversal</strong> pattern is the foundation for everything tree-shaped. The three depth-first orders differ <em>only</em> in <strong>when</strong> you process the node relative to its children: <em>pre</em> (before), <em>in</em> (between — sorted order for a BST), <em>post</em> (after — needed when children must be solved first). <strong>Level-order</strong> is breadth-first with a queue." },
-              { t: "cue", html: "<b>Recognize it when</b> the input is a <em>binary tree</em> and you need every node, a depth/height, a path, the BST's sorted values (inorder), to build results from children up (postorder), or a level-by-level result (BFS)." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the input is a <em>binary tree</em> and you need every node, a depth/height, a path, the BST's sorted values (inorder), to build results from children up (postorder), or a level-by-level result (BFS)." },
               { t: "widget", id: "treetraversal" },
               { t: "code", lang: "python", code:
                 "# DFS variants differ only in WHERE 'visit' sits\n" +
@@ -427,7 +434,7 @@
             tags: ["graph", "dfs", "recursion"],
             blocks: [
               { t: "p", html: "<strong>DFS</strong> plunges as deep as possible before backtracking, using the call stack (or an explicit stack). On graphs it visits each vertex and edge once — <strong>O(V + E)</strong> — and a <code class='tok'>visited</code> set stops it from looping forever. It's the natural fit for <em>“explore everything reachable.”</em>" },
-              { t: "cue", html: "<b>Recognize it when</b> you must explore <em>all</em> nodes/paths, find <em>connected components</em>, detect <em>cycles</em>, do <em>topological sort</em>, or answer reachability. If the problem is about going as far as you can down each branch, it's DFS." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you must explore <em>all</em> nodes/paths, find <em>connected components</em>, detect <em>cycles</em>, do <em>topological sort</em>, or answer reachability. If the problem is about going as far as you can down each branch, it's DFS." },
               { t: "note", variant: "tip", html: "The shared traversal lab starts on BFS so you can compare behaviors. Switch the toggle to <strong>DFS</strong> before stepping through this lesson's example." },
               { t: "widget", id: "graphtraversal" },
               { t: "code", lang: "python", code:
@@ -451,7 +458,8 @@
                 "Number of Islands", "Clone Graph", "Course Schedule (cycle / topo-sort)",
                 "Path Sum", "Max Area of Island", "Pacific Atlantic Water Flow", "Word Search"
               ]),
-              { t: "note", variant: "trap", html: "On graphs (unlike trees) you <strong>must</strong> track <code class='tok'>visited</code> or you'll loop forever on a cycle. Watch recursion depth too — a very deep or skewed graph can overflow the call stack; convert to an explicit stack if needed." }
+              { t: "note", variant: "trap", html: "On graphs (unlike trees) you <strong>must</strong> track <code class='tok'>visited</code> or you'll loop forever on a cycle. Watch recursion depth too — a very deep or skewed graph can overflow the call stack; convert to an explicit stack if needed." },
+              { t: "note", variant: "key", html: "<strong>Reach for DFS when the question is reachability or structure, and not distance.</strong> Anything phrased as explore everything, count the components, is there a cycle, or order these dependencies is one O(V + E) descent plus a <code class='tok'>visited</code> set — and the set is not an optimization, because a graph, unlike a tree, will happily send you around a cycle forever. What DFS cannot tell you is how far anything is; the instant the problem says fewest steps, hand it to BFS instead." }
             ]
           },
           {
@@ -462,7 +470,7 @@
             tags: ["graph", "bfs", "shortest-path"],
             blocks: [
               { t: "p", html: "<strong>BFS</strong> explores level by level using a FIFO <strong>queue</strong>, visiting all nodes one edge away, then two, and so on — <strong>O(V + E)</strong>. Because it reaches nodes in order of distance, the first time it touches a node is along a <em>shortest path</em> (in edges)." },
-              { t: "cue", html: "<b>Recognize it when</b> the question asks for the <em>shortest path / fewest steps / minimum moves</em> on an <em>unweighted</em> graph or grid, a <em>level-order</em> result, or “spread / rot / infect” simulations that advance one ring per step (multi-source BFS)." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the question asks for the <em>shortest path / fewest steps / minimum moves</em> on an <em>unweighted</em> graph or grid, a <em>level-order</em> result, or “spread / rot / infect” simulations that advance one ring per step (multi-source BFS)." },
               { t: "widget", id: "graphtraversal" },
               { t: "code", lang: "python", code:
                 "from collections import deque\n\n" +
@@ -494,7 +502,7 @@
             tags: ["matrix", "grid", "flood-fill"],
             blocks: [
               { t: "p", html: "The <strong>Matrix Traversal</strong> pattern recognizes that a 2-D grid <em>is</em> a graph: each cell is a node connected to its 4 (or 8) neighbours. Island, region and flood-fill problems are just DFS/BFS where you mark cells visited as you go — <strong>O(rows × cols)</strong>." },
-              { t: "cue", html: "<b>Recognize it when</b> the input is a <em>grid / matrix / board</em> and you must count <em>islands / regions</em>, <em>flood-fill</em> a color, find <em>enclosed</em> areas, or compute shortest distance across cells (then it's BFS)." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the input is a <em>grid / matrix / board</em> and you must count <em>islands / regions</em>, <em>flood-fill</em> a color, find <em>enclosed</em> areas, or compute shortest distance across cells (then it's BFS)." },
               { t: "widget", id: "matrixtraversal" },
               { t: "code", lang: "python", code:
                 "# Number of islands via DFS flood fill\n" +
@@ -519,6 +527,7 @@
                 "Walls and Gates", "Rotting Oranges", "Word Search", "Spiral Matrix"
               ]),
               { t: "note", variant: "tip", html: "Keep a single <code class='tok'>directions = [(1,0),(-1,0),(0,1),(0,-1)]</code> list and loop it instead of writing four calls — it generalizes to 8 directions and keeps bounds-checking in one place. Mutating the grid to mark visited saves a separate <code class='tok'>seen</code> set." },
+              { t: "note", variant: "key", html: "<strong>A grid is a graph handed to you in disguise, so translate before you solve.</strong> Cells are vertices and the four (or eight) neighbours are edges; once you say that out loud, islands, regions and flood fill are ordinary traversals over O(rows × cols) vertices, and the only remaining decision is DFS or BFS — which the question settles for you, since only BFS gives distance in steps. Marking visited by mutating the grid saves the extra set, but say that you are destroying the input rather than letting the interviewer find it." },
               { t: "quiz", id: "pat-treesgraphs" }
             ]
           }
@@ -539,7 +548,8 @@
             tags: ["backtracking", "recursion"],
             blocks: [
               { t: "p", html: "<strong>Backtracking</strong> builds a candidate solution one decision at a time and abandons a branch (“backtracks”) the moment it can't lead to a valid answer. It's a DFS over the tree of partial solutions, with <em>pruning</em> — and almost every variant is the same three-line rhythm." },
-              { t: "cue", html: "<b>Recognize it when</b> the problem asks for <em>all</em> combinations / permutations / subsets / partitions, or to place items under constraints (N-Queens, Sudoku, word search). Words like <em>“all possible”</em>, <em>“generate every”</em>, or <em>“find a valid arrangement”</em> scream backtracking." },
+              { t: "note", variant: "tip", html: "<a href='#/dsa/recursion/backtracking'>The fundamentals lesson</a> builds the recursion and the pruning step. This page is about recognising when that machinery is the right answer." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> the problem asks for <em>all</em> combinations / permutations / subsets / partitions, or to place items under constraints (N-Queens, Sudoku, word search). Words like <em>“all possible”</em>, <em>“generate every”</em>, or <em>“find a valid arrangement”</em> scream backtracking." },
               { t: "widget", id: "backtracking" },
               { t: "code", lang: "python", code:
                 "# Universal template: choose -> explore -> un-choose\n" +
@@ -559,7 +569,8 @@
                 "Subsets / Subsets II", "Permutations / Permutations II", "Combinations", "Combination Sum",
                 "Palindrome Partitioning", "Word Search", "N-Queens", "Generate Parentheses", "Sudoku Solver"
               ]),
-              { t: "note", variant: "trap", html: "Always undo your choice on the way back up — forgetting the <code class='tok'>path.pop()</code> leaks state into sibling branches and produces garbage. Prune early (a good validity check) to cut whole subtrees; backtracking is exponential without it." }
+              { t: "note", variant: "trap", html: "Always undo your choice on the way back up — forgetting the <code class='tok'>path.pop()</code> leaks state into sibling branches and produces garbage. Prune early (a good validity check) to cut whole subtrees; backtracking is exponential without it." },
+              { t: "note", variant: "key", html: "<strong>The cue is the word <em>all</em>: every arrangement, not the best one.</strong> When a problem wants each subset, permutation, partition or valid placement, you are walking a tree of partial decisions, and choose, explore, un-choose is that walk — an exponential search made practical only because a validity check can reject a partial state and delete its whole subtree with it. If instead the problem wants one optimal number over subproblems that keep repeating, you are looking at a DP, and enumerating will time out." }
             ]
           },
           {
@@ -570,7 +581,8 @@
             tags: ["dp", "memoization", "tabulation"],
             blocks: [
               { t: "p", html: "<strong>Dynamic Programming</strong> applies when a problem has <em>overlapping subproblems</em> and <em>optimal substructure</em>: the answer is built from answers to smaller versions of the same problem, and those smaller answers repeat. DP computes each subproblem <strong>once</strong> and reuses it — <em>top-down</em> with memoization, or <em>bottom-up</em> with a table." },
-              { t: "cue", html: "<b>Recognize it when</b> you see <em>“count the number of ways”</em>, <em>“minimum / maximum cost”</em>, <em>“longest / shortest …”</em> over choices, or a brute-force recursion that recomputes the same inputs. Define the <strong>state</strong>, the <strong>transition</strong>, and the <strong>base case</strong> — that's the whole game." },
+              { t: "note", variant: "tip", html: "<a href='#/dsa/recursion/dynamic-programming'>The fundamentals lesson</a> covers memoisation and the overlapping-subproblems argument. Here the question is narrower: how to tell a DP problem from a greedy one when both look plausible." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> you see <em>“count the number of ways”</em>, <em>“minimum / maximum cost”</em>, <em>“longest / shortest …”</em> over choices, or a brute-force recursion that recomputes the same inputs. Define the <strong>state</strong>, the <strong>transition</strong>, and the <strong>base case</strong> — that's the whole game." },
               { t: "widget", id: "dptable" },
               { t: "code", lang: "python", code:
                 "# Top-down: recursion + memo (climbing stairs)\n" +
@@ -605,7 +617,7 @@
             tags: ["bits", "xor"],
             blocks: [
               { t: "p", html: "The <strong>Bit Manipulation</strong> pattern operates on the binary representation of numbers. A handful of identities solve a surprising range of problems in <strong>O(1)</strong> space — most famously <strong>XOR</strong>, which cancels equal values (<code class='tok'>x ^ x = 0</code>) and so isolates the odd one out." },
-              { t: "cue", html: "<b>Recognize it when</b> a problem involves <em>pairs that cancel</em>, <em>counting set bits</em>, <em>flags / on-off state</em>, generating <em>subsets via bitmasks</em>, or demands <em>no extra space</em>. Also: any “do it without +/−” or “find the unique number” prompt." },
+              { t: "cue", html: "<b>Spot it in a prompt when</b> a problem involves <em>pairs that cancel</em>, <em>counting set bits</em>, <em>flags / on-off state</em>, generating <em>subsets via bitmasks</em>, or demands <em>no extra space</em>. Also: any “do it without +/−” or “find the unique number” prompt." },
               { t: "widget", id: "bitwise" },
               { t: "code", lang: "python", code:
                 "x & 1          # is x odd?\n" +
@@ -684,7 +696,7 @@
                   "<strong>Analyze</strong> — state time & space, and note where the bottleneck moved."
                 ]
               },
-              { t: "note", variant: "key", html: "Patterns aren't just techniques — they're <strong>shortcuts</strong>. They help you understand what the question really wants, pick an approach quickly, and skip brute-force guesswork. Master the right patterns in the right order and a few hundred problems cover the whole interview surface." },
+              { t: "note", variant: "tip", html: "Patterns aren't just techniques — they're <strong>shortcuts</strong>. They help you understand what the question really wants, pick an approach quickly, and skip brute-force guesswork. Master the right patterns in the right order and a few hundred problems cover the whole interview surface." },
               { t: "h", text: "A focused practice plan" },
               { t: "p", html: "You don't need 500+ random problems. The winning formula is <strong>right patterns → right order → right focus</strong>: concise notes per topic, the most-asked questions for each, and the recognition reflex to map a new problem to a pattern fast." },
               { t: "ol", items: [
@@ -695,6 +707,9 @@
                 "<strong>Mix patterns once each is solid.</strong> Real problems blend two (binary search + greedy, BFS + hashing); practise spotting the <em>primary</em> pattern first."
               ] },
               { t: "note", variant: "tip", html: "Quality over quantity. Ten problems you can re-derive from the template beat a hundred you memorized and forgot. The 16 patterns in this track cover the overwhelming majority of array, string, linked-list, tree, graph, and DP questions asked in coding interviews." },
+              { t: "h", text: "Where to go from here" },
+              { t: "p", html: "These sixteen cover the common ground. Two tracks continue from here and they answer different questions. <a href='#/cpat/craft/phase-plan'>Advanced Coding Patterns</a> picks up the material these sixteen deliberately leave out — greedy exchange arguments, minimum spanning trees, <a href='#/cpat/structures/range-structures'>range structures for arrays that change underneath you</a>, and the <a href='#/cpat/structures/dp-taxonomy'>five DP shapes</a> that sit behind the single DP lesson above — and it opens with the round-level craft of framing, narrating and testing. <a href='#/aiec/overview/format'>AI-Enabled Coding</a> assumes you already have this recognition skill and changes the format: the same families, worked with an AI pair, where the graded skill is judgement and control rather than recall." },
+              { t: "note", variant: "key", html: "<strong>Recognition is a separate skill from solving, so practise it separately.</strong> The value of these sixteen patterns isn't that they solve problems — it's that they turn a cold problem statement into a short list of candidates inside the first minute, which is the only stretch of the interview the clock genuinely threatens. So drill the mapping in the direction the interview uses it: read a signal, name the pattern, write its template from memory, and only then go spend an hour on an actual problem." },
               { t: "quiz", id: "pat-mastery" }
             ]
           }

@@ -1,0 +1,654 @@
+{
+  "base": "http://127.0.0.1:8780",
+  "startedAt": "2026-08-29T18:03:30.498Z",
+  "apps": [
+    {
+      "name": "Blueprint",
+      "dir": "hld-lld-academy",
+      "url": "http://127.0.0.1:8780/hld-lld-academy/index.html",
+      "tracks": [
+        {
+          "id": "hld",
+          "name": "High-Level Design",
+          "lessons": 70,
+          "modules": 14
+        },
+        {
+          "id": "lld",
+          "name": "Low-Level Design",
+          "lessons": 31,
+          "modules": 7
+        },
+        {
+          "id": "deepdives",
+          "name": "Technology Deep Dives",
+          "lessons": 14,
+          "modules": 3
+        },
+        {
+          "id": "sdpatterns",
+          "name": "System Design Patterns",
+          "lessons": 7,
+          "modules": 3
+        },
+        {
+          "id": "breakdowns",
+          "name": "Problem Breakdowns",
+          "lessons": 36,
+          "modules": 4
+        }
+      ],
+      "routes": 174,
+      "checked": 174,
+      "failures": [],
+      "warnings": [
+        {
+          "route": "#/hld/scaling/load-balancing",
+          "symptom": "widget \"loadbalancer\" needed a second navigation before its mount existed",
+          "detail": "rendering race in the crawl, not a content defect"
+        }
+      ],
+      "widgetIds": [
+        "loadbalancer",
+        "lru",
+        "consistenthash",
+        "cap",
+        "tokenbucket",
+        "bloom",
+        "cachewrite",
+        "cellrouter",
+        "capacitycalc",
+        "deepBloomLab",
+        "sdpatFanout",
+        "bdCapacityLab",
+        "bdRateLab",
+        "bdWindowLab",
+        "lldContentionLab"
+      ],
+      "quizIds": [
+        "hld-foundations",
+        "hld-caching",
+        "hld-databases",
+        "hld-cap",
+        "hld-messaging",
+        "lld-oop",
+        "lld-solid",
+        "lld-patterns",
+        "hld-scaling",
+        "hld-networking",
+        "hld-reliability",
+        "hld-fault-isolation",
+        "hld-architecture",
+        "hld-production-readiness",
+        "hld-rag-llmops",
+        "hld-ai",
+        "hld-protocols",
+        "hld-data-migrations",
+        "hld-offline-sync",
+        "lld-principles",
+        "lld-practice",
+        "deepdives-stores",
+        "deepdives-streams",
+        "deepdives-specialized",
+        "sdpatterns-delivery",
+        "sdpatterns-scaling",
+        "sdpatterns-coordination",
+        "breakdowns-foundations",
+        "breakdowns-scale",
+        "breakdowns-hard",
+        "lld-concurrency-deep",
+        "lld-lldcases",
+        "breakdowns-wild"
+      ],
+      "quizzesPlayed": 33,
+      "widgetsPoked": 15,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 158
+    },
+    {
+      "name": "Codex",
+      "dir": "dsa-patterns-academy",
+      "url": "http://127.0.0.1:8780/dsa-patterns-academy/index.html",
+      "tracks": [
+        {
+          "id": "dsa",
+          "name": "Data Structures & Algorithms",
+          "lessons": 22,
+          "modules": 7
+        },
+        {
+          "id": "patterns",
+          "name": "DSA Interview Patterns",
+          "lessons": 17,
+          "modules": 7
+        },
+        {
+          "id": "cpat",
+          "name": "Advanced Coding Patterns",
+          "lessons": 16,
+          "modules": 4
+        },
+        {
+          "id": "aiec",
+          "name": "AI-Enabled Coding",
+          "lessons": 26,
+          "modules": 5
+        }
+      ],
+      "routes": 96,
+      "checked": 96,
+      "failures": [],
+      "warnings": [],
+      "widgetIds": [
+        "graphtraversal",
+        "sortviz",
+        "heap",
+        "trie",
+        "twopointer",
+        "prefixsum",
+        "backtracking",
+        "bigo",
+        "unionfind",
+        "slidingwindow",
+        "fastslow",
+        "listreversal",
+        "monotonicstack",
+        "mergeintervals",
+        "binarysearch",
+        "treetraversal",
+        "matrixtraversal",
+        "dptable",
+        "bitwise",
+        "cpatBudget",
+        "cpatSieveLab",
+        "cpatPathLab",
+        "cpatRangeLab",
+        "aiecGranularity",
+        "aiecVerifyDrill",
+        "aiecPatternPicker",
+        "aiecBenchLab"
+      ],
+      "quizIds": [
+        "dsa-foundations",
+        "dsa-linear",
+        "dsa-sorting",
+        "dsa-trees",
+        "dsa-graphs",
+        "dsa-backtracking",
+        "pat-arrays",
+        "pat-linkedlist",
+        "pat-stackheap",
+        "pat-search",
+        "pat-treesgraphs",
+        "pat-recursiondp",
+        "dsa-interview",
+        "pat-mastery",
+        "cpat-craft",
+        "cpat-arrays",
+        "cpat-graphs",
+        "cpat-structures",
+        "aiec-overview",
+        "aiec-fundamentals",
+        "aiec-aipatterns",
+        "aiec-aibreakdowns",
+        "aiec-aiecreview"
+      ],
+      "quizzesPlayed": 23,
+      "widgetsPoked": 27,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 81
+    },
+    {
+      "name": "Citadel",
+      "dir": "cyber-academy",
+      "url": "http://127.0.0.1:8780/cyber-academy/index.html",
+      "tracks": [
+        {
+          "id": "core",
+          "name": "Security Foundations",
+          "lessons": 10,
+          "modules": 3
+        },
+        {
+          "id": "crypto",
+          "name": "Cryptography",
+          "lessons": 9,
+          "modules": 3
+        },
+        {
+          "id": "appsec",
+          "name": "Web & App Security",
+          "lessons": 17,
+          "modules": 5
+        },
+        {
+          "id": "defense",
+          "name": "Network Defense & Ops",
+          "lessons": 11,
+          "modules": 3
+        },
+        {
+          "id": "offensive",
+          "name": "Offensive Security",
+          "lessons": 9,
+          "modules": 3
+        },
+        {
+          "id": "threats",
+          "name": "Threats, Malware & Forensics",
+          "lessons": 23,
+          "modules": 4
+        },
+        {
+          "id": "domains",
+          "name": "Domains & Practice",
+          "lessons": 14,
+          "modules": 3
+        },
+        {
+          "id": "reversing",
+          "name": "Reverse Engineering",
+          "lessons": 9,
+          "modules": 3
+        }
+      ],
+      "routes": 122,
+      "checked": 122,
+      "failures": [],
+      "warnings": [
+        {
+          "route": "#/crypto/primitives/hashing",
+          "symptom": "widget \"avalanche\" has no controls",
+          "detail": "render-only widget"
+        },
+        {
+          "route": "#/crypto/applied/password-storage",
+          "symptom": "widget \"entropy\" has no controls",
+          "detail": "render-only widget"
+        }
+      ],
+      "widgetIds": [
+        "ciaclassifier",
+        "rbac",
+        "xss",
+        "firewall",
+        "phish",
+        "entropy",
+        "caesar",
+        "avalanche",
+        "diffie",
+        "tlsflow",
+        "pentest",
+        "osint",
+        "cvss",
+        "attack",
+        "pyramid",
+        "analysis",
+        "volatility",
+        "subnet",
+        "permissions",
+        "wifi",
+        "aiagent",
+        "airedblue",
+        "detectioncard",
+        "securecode",
+        "memorylayout",
+        "endianness",
+        "mitigations",
+        "attackmatrix"
+      ],
+      "quizIds": [
+        "core-foundations",
+        "core-threat-modeling",
+        "core-access",
+        "crypto-primitives",
+        "crypto-keys",
+        "crypto-applied",
+        "appsec-web-attacks",
+        "appsec-sessions",
+        "appsec-building",
+        "defense-network",
+        "defense-detect",
+        "defense-respond",
+        "core-federated-identity",
+        "appsec-api-security",
+        "appsec-ai",
+        "appsec-secure-coding",
+        "offensive-methodology",
+        "offensive-findingflaws",
+        "offensive-webhacking",
+        "threats-intel",
+        "threats-malware",
+        "threats-forensics",
+        "threats-detection",
+        "threats-architecture",
+        "domains-infra",
+        "domains-modern",
+        "domains-path",
+        "domains-cloud-native",
+        "domains-data-privacy",
+        "domains-mobile",
+        "domains-ot-product",
+        "domains-grc",
+        "defense-resilience",
+        "reversing-internals",
+        "reversing-re",
+        "reversing-pwn"
+      ],
+      "quizzesPlayed": 36,
+      "widgetsPoked": 28,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 102
+    },
+    {
+      "name": "Cascade",
+      "dir": "data-eng-academy",
+      "url": "http://127.0.0.1:8780/data-eng-academy/index.html",
+      "tracks": [
+        {
+          "id": "storage",
+          "name": "Storage & File Formats",
+          "lessons": 19,
+          "modules": 4
+        },
+        {
+          "id": "modeling",
+          "name": "Data Modeling & Warehousing",
+          "lessons": 17,
+          "modules": 4
+        },
+        {
+          "id": "batch",
+          "name": "Batch Processing & Spark",
+          "lessons": 16,
+          "modules": 4
+        },
+        {
+          "id": "streaming",
+          "name": "Streaming & Real-time",
+          "lessons": 14,
+          "modules": 4
+        },
+        {
+          "id": "orchestration",
+          "name": "Orchestration & DataOps",
+          "lessons": 30,
+          "modules": 5
+        },
+        {
+          "id": "sql",
+          "name": "SQL & Query Engines",
+          "lessons": 14,
+          "modules": 4
+        },
+        {
+          "id": "sparksql",
+          "name": "Spark SQL",
+          "lessons": 15,
+          "modules": 6
+        }
+      ],
+      "routes": 143,
+      "checked": 143,
+      "failures": [],
+      "warnings": [],
+      "widgetIds": [
+        "de-store-columnar",
+        "de-store-parquet",
+        "de-store-timetravel",
+        "de-store-iceberg-maint",
+        "de-store-partition",
+        "de-store-lakehouse-evolution",
+        "de-store-cdc-lakehouse",
+        "de-model-normalize",
+        "de-model-star",
+        "de-model-scd2",
+        "scd",
+        "de-batch-mapreduce",
+        "de-batch-exchange",
+        "de-batch-dbt-dag",
+        "de-batch-semantic-yaml",
+        "de-stream-log",
+        "de-stream-consumers",
+        "de-stream-window",
+        "de-stream-flink-state",
+        "de-ops-dag",
+        "de-ops-quality",
+        "de-ops-lineage",
+        "de-ops-assets",
+        "de-ops-metadata-plane",
+        "de-ops-privacy-delete",
+        "de-ops-cost-lab",
+        "de-sql-joins",
+        "de-sql-window",
+        "de-sql-plan",
+        "de-spark-api",
+        "de-spark-join",
+        "de-spark-tuning"
+      ],
+      "quizIds": [
+        "de-storage-foundations",
+        "de-storage-formats",
+        "de-storage-lakehouse",
+        "de-storage-lakehouse-evolution",
+        "de-storage-lakehouse-ops",
+        "de-storage-ingestion",
+        "de-storage-cdc-lakehouse",
+        "de-modeling-relational",
+        "de-modeling-dimensional",
+        "de-modeling-scd",
+        "de-modeling-methodology",
+        "de-modeling-governance",
+        "de-batch-compute",
+        "de-batch-shuffle",
+        "de-batch-elt",
+        "de-batch-dbt-prod",
+        "de-batch-perf",
+        "de-streaming-fundamentals",
+        "de-streaming-kafka",
+        "de-streaming-processing",
+        "de-streaming-flink-state",
+        "de-streaming-architecture",
+        "de-ops-orchestration",
+        "de-ops-assets",
+        "de-ops-quality",
+        "de-ops-metadata",
+        "de-ops-privacy-delete",
+        "de-ops-capstone",
+        "de-ops-observability",
+        "de-ops-governance",
+        "de-sql-core",
+        "de-sql-analytics",
+        "de-sql-engines",
+        "de-sql-performance",
+        "sparksql-foundations",
+        "sparksql-operations",
+        "sparksql-data",
+        "sparksql-performance",
+        "sparksql-etl",
+        "sparksql-interview"
+      ],
+      "quizzesPlayed": 40,
+      "widgetsPoked": 32,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 125
+    },
+    {
+      "name": "TechLead",
+      "dir": "techno-managerial-academy",
+      "url": "http://127.0.0.1:8780/techno-managerial-academy/index.html",
+      "tracks": [
+        {
+          "id": "hld",
+          "name": "HLD Leadership",
+          "lessons": 10,
+          "modules": 3
+        },
+        {
+          "id": "lld",
+          "name": "LLD Leadership",
+          "lessons": 10,
+          "modules": 3
+        },
+        {
+          "id": "data",
+          "name": "Data Engineering Leadership",
+          "lessons": 10,
+          "modules": 3
+        }
+      ],
+      "routes": 44,
+      "checked": 44,
+      "failures": [],
+      "warnings": [],
+      "widgetIds": [
+        "tm-story-scorer",
+        "tm-stakeholder-map",
+        "tm-adr-builder",
+        "tm-blast-radius",
+        "tm-severity-triage",
+        "tm-retry-safety",
+        "tm-reconciliation"
+      ],
+      "quizIds": [
+        "hld-framing",
+        "hld-execution",
+        "hld-operations",
+        "lld-modeling",
+        "lld-quality",
+        "lld-leadership",
+        "data-trust",
+        "data-platform",
+        "data-governance"
+      ],
+      "quizzesPlayed": 9,
+      "widgetsPoked": 7,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 30
+    },
+    {
+      "name": "Synapse",
+      "dir": "ml-ai-academy",
+      "url": "http://127.0.0.1:8780/ml-ai-academy/index.html",
+      "tracks": [
+        {
+          "id": "mlsd",
+          "name": "ML System Design",
+          "lessons": 19,
+          "modules": 3
+        },
+        {
+          "id": "mlcase",
+          "name": "ML Problem Breakdowns",
+          "lessons": 7,
+          "modules": 3
+        }
+      ],
+      "routes": 39,
+      "checked": 39,
+      "failures": [],
+      "warnings": [],
+      "widgetIds": [
+        "mlsdBudget",
+        "mlsdFeatureLab",
+        "mlcaseThreshold"
+      ],
+      "quizIds": [
+        "mlsd-framework",
+        "mlsd-concepts",
+        "mlsd-serving",
+        "mlcase-recsys",
+        "mlcase-trust",
+        "mlcase-retrieval"
+      ],
+      "quizzesPlayed": 6,
+      "widgetsPoked": 3,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 26
+    },
+    {
+      "name": "Compass",
+      "dir": "behavioral-academy",
+      "url": "http://127.0.0.1:8780/behavioral-academy/index.html",
+      "tracks": [
+        {
+          "id": "beh",
+          "name": "Behavioral Course",
+          "lessons": 10,
+          "modules": 3
+        },
+        {
+          "id": "story",
+          "name": "Story Bank & Playbooks",
+          "lessons": 11,
+          "modules": 2
+        },
+        {
+          "id": "loops",
+          "name": "Company & Level Playbooks",
+          "lessons": 18,
+          "modules": 4
+        },
+        {
+          "id": "offer",
+          "name": "Offers & Negotiation",
+          "lessons": 7,
+          "modules": 3
+        }
+      ],
+      "routes": 61,
+      "checked": 61,
+      "failures": [],
+      "warnings": [],
+      "widgetIds": [
+        "behSelector",
+        "behSaltTimer",
+        "storyMatrix",
+        "storyDrill",
+        "loopsDepthDrill",
+        "loopsGateMap",
+        "offerCompLab"
+      ],
+      "quizIds": [
+        "beh-foundation",
+        "beh-delivery",
+        "beh-advanced",
+        "story-catalog",
+        "story-playbooks",
+        "loops-meta",
+        "loops-amazon",
+        "loops-google",
+        "loops-others",
+        "offer-anatomy",
+        "offer-execution",
+        "offer-close"
+      ],
+      "quizzesPlayed": 12,
+      "widgetsPoked": 7,
+      "examOk": true,
+      "flashOk": true,
+      "skipped": null,
+      "lessonRoutes": 46
+    }
+  ],
+  "totals": {
+    "routesChecked": 679,
+    "routesWithProblems": 0,
+    "failures": 0,
+    "warnings": 3,
+    "skipped": []
+  },
+  "finishedAt": "2026-08-29T18:04:10.622Z"
+}

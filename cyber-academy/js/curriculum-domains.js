@@ -49,8 +49,9 @@ window.TRACKS.domains = {
                 "<strong>NAT</strong> \u2014 many private hosts behind one public IP; not a security control by itself."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Segmentation is applied subnetting.</strong> Put the database in its own subnet that only the app subnet can reach, and a foothold on a laptop can't talk to it. The CIDR math above is literally how you write that boundary." },
-            { t: "note", variant: "trap", html: "NAT and private IPs are not a firewall. Hosts behind NAT can still be reached through port forwards, SSRF, and outbound-initiated tunnels. \u201cIt's on a private IP\u201d is not the same as \u201cit's protected.\u201d" }
+            { t: "note", variant: "tip", html: "<strong>Segmentation is applied subnetting.</strong> Put the database in its own subnet that only the app subnet can reach, and a foothold on a laptop can't talk to it. The CIDR math above is literally how you write that boundary." },
+            { t: "note", variant: "trap", html: "NAT and private IPs are not a firewall. Hosts behind NAT can still be reached through port forwards, SSRF, and outbound-initiated tunnels. \u201cIt's on a private IP\u201d is not the same as \u201cit's protected.\u201d" },
+            { t: "note", variant: "key", html: "<strong>Reachability is the security property; the rest is detail.</strong> Before arguing about any network control, answer what can talk to what \u2014 a host nothing can reach survives a bug it never patched, and a host everything can reach is one flaw away from being everyone's problem. Subnets and firewall rules are simply how you write that answer down." }
           ]
         },
         {
@@ -76,8 +77,9 @@ window.TRACKS.domains = {
                 ["Unpatched kernel/pkgs", "Known local exploits", "Patch; minimize installed software"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>The root account is the prize.</strong> Most Linux attacks chain a normal-user foothold into root via one of the rows above. Least privilege, a minimal SUID set, and patching close the common paths \u2014 the same principles, made concrete." },
-            { t: "note", variant: "tip", html: "Hardening baselines (like the CIS Benchmarks) turn this into a checklist: disable root SSH login, enforce key-based auth, remove unused packages and services, enable the firewall, and ship logs off the box. Boring, and hugely effective." }
+            { t: "note", variant: "warn", html: "<strong>The root account is the prize.</strong> Most Linux attacks chain a normal-user foothold into root via one of the rows above. Least privilege, a minimal SUID set, and patching close the common paths \u2014 the same principles, made concrete." },
+            { t: "note", variant: "tip", html: "Hardening baselines (like the CIS Benchmarks) turn this into a checklist: disable root SSH login, enforce key-based auth, remove unused packages and services, enable the firewall, and ship logs off the box. Boring, and hugely effective." },
+            { t: "note", variant: "key", html: "<strong>Most root compromise is granted, not exploited.</strong> A sudo rule written for convenience, an inherited SUID bit, a world-writable script on a privileged path \u2014 each is a working configuration that quietly hands out authority. Auditing what you already permit uncovers more escalation paths than hunting for kernel bugs, and it is the half you actually control." }
           ]
         },
         {
@@ -178,7 +180,7 @@ window.TRACKS.domains = {
                 ["<strong>SaaS</strong>", "+ the application", "Your data & who can access it"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Almost every cloud breach is a customer-side misconfiguration</strong> \u2014 a public storage bucket, an over-permissive IAM role, an open security group. The provider's data center is rarely the problem; your settings are." },
+            { t: "note", variant: "warn", html: "<strong>Almost every cloud breach is a customer-side misconfiguration</strong> \u2014 a public storage bucket, an over-permissive IAM role, an open security group. The provider's data center is rarely the problem; your settings are." },
             { t: "h", text: "Where cloud breaches actually come from" },
             {
               t: "ul", items: [
@@ -190,7 +192,8 @@ window.TRACKS.domains = {
               ]
             },
             { t: "note", variant: "tip", html: "Identity is the new perimeter in cloud. <strong>Least-privilege IAM, MFA everywhere, short-lived credentials</strong>, and automated config checks (CSPM) prevent the large majority of incidents. The principles are familiar; the surface is new." },
-            { t: "note", variant: "trap", html: "\u201cThe cloud is automatically secure\u201d is the costliest myth in the field. The provider gives you secure <em>building blocks</em>; stacking them safely \u2014 and not leaving the door open \u2014 is still entirely your job." }
+            { t: "note", variant: "trap", html: "\u201cThe cloud is automatically secure\u201d is the costliest myth in the field. The provider gives you secure <em>building blocks</em>; stacking them safely \u2014 and not leaving the door open \u2014 is still entirely your job." },
+            { t: "note", variant: "key", html: "<strong>Read the responsibility line as a list of things nobody is watching for you.</strong> Everything on your side of it defaults to whatever the console last left it at, and defaults are chosen for convenience rather than for your threat model. Continuous configuration checking therefore matters more here than in a data center: a single API call can make a store world-readable, and it will never look like an incident." }
           ]
         },
         {
@@ -230,8 +233,9 @@ window.TRACKS.domains = {
                 "Watch event-source policies: who can invoke the function can decide what code path runs."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Telemetry is a guardrail, not an afterthought.</strong> Cloud audit logs, identity events, configuration-change streams, container runtime alerts and function invocation metrics are how you see abuse in systems that may only live for seconds." },
+            { t: "note", variant: "trap", html: "<strong>Telemetry is a guardrail, not an afterthought.</strong> Cloud audit logs, identity events, configuration-change streams, container runtime alerts and function invocation metrics are how you see abuse in systems that may only live for seconds." },
             { t: "note", variant: "tip", html: "Use preventive guardrails for what should never happen: block public storage by default, require approved regions, deny privileged pods, require encryption, and alert on role changes. Cloud scale rewards policies that run continuously." },
+            { t: "note", variant: "key", html: "<strong>In cloud-native systems the permission outlives the workload.</strong> Pods and functions disappear in seconds, but the role attached to them persists and is precisely what an attacker inherits on the way through. Scope every workload identity to a single job, because the network path you spent the design review worrying about is rarely the one that gets used." },
             { t: "quiz", id: "domains-cloud-native" }
           ]
         },
@@ -253,7 +257,7 @@ window.TRACKS.domains = {
                 "<strong>Runtime</strong> \u2014 watch for containers doing things their image never should."
               ]
             },
-            { t: "note", variant: "key", html: "<strong>A container is isolation, not a security boundary as strong as a VM.</strong> They share the host kernel, so a kernel exploit or a misconfigured privileged container can break out. Keep hosts patched and containers unprivileged." },
+            { t: "note", variant: "trap", html: "<strong>A container is isolation, not a security boundary as strong as a VM.</strong> They share the host kernel, so a kernel exploit or a misconfigured privileged container can break out. Keep hosts patched and containers unprivileged." },
             { t: "h", text: "Pipeline & infrastructure as code" },
             {
               t: "ul", items: [
@@ -262,7 +266,8 @@ window.TRACKS.domains = {
                 "<strong>Locked pipelines</strong> \u2014 a poisoned build step ships to everyone, so guard CI/CD like production."
               ]
             },
-            { t: "note", variant: "trap", html: "The pipeline is a high-value target precisely because it's trusted to deploy. Supply-chain attacks aim at the build system, not the app \u2014 so least privilege, signed artifacts, and integrity checks apply to your tooling too." }
+            { t: "note", variant: "trap", html: "The pipeline is a high-value target precisely because it's trusted to deploy. Supply-chain attacks aim at the build system, not the app \u2014 so least privilege, signed artifacts, and integrity checks apply to your tooling too." },
+            { t: "note", variant: "key", html: "<strong>Whatever can deploy to production is production.</strong> Shifting security left moves decisions into images, manifests and pipeline steps, which hands the pipeline the credentials and the reach that used to live on a server. Scan the artifacts by all means, but protect the thing that signs and ships them as seriously as the systems it deploys to." }
           ]
         },
         {
@@ -359,8 +364,9 @@ window.TRACKS.domains = {
                 ["Packet analyzers", "Inspect network traffic", "Everyone"]
               ]
             },
-            { t: "note", variant: "key", html: "<strong>Tools don't make you a defender or a tester \u2014 methodology does.</strong> A scanner in untrained hands produces noise; in skilled hands it confirms a hypothesis. Learn the concepts first; the tools are just faster ways to apply them." },
+            { t: "note", variant: "trap", html: "<strong>Tools don't make you a defender or a tester \u2014 methodology does.</strong> A scanner in untrained hands produces noise; in skilled hands it confirms a hypothesis. Learn the concepts first; the tools are just faster ways to apply them." },
             { t: "note", variant: "tip", html: "A whole family of security-focused operating systems bundles these categories together so you don't assemble them by hand. The value is the curated toolset and a safe, disposable environment to learn in \u2014 ideally inside a VM you can snapshot and revert." },
+            { t: "note", variant: "key", html: "<strong>Learn the category, distrust the output.</strong> Products churn, but the job each class of tool does is stable \u2014 and every one of them reports what it managed to observe rather than what is true. Treat a finding as a hypothesis until you have confirmed it by hand, or you will end up defending a scanner's guess in a meeting." },
             { t: "quiz", id: "domains-modern" }
           ]
         }
@@ -400,8 +406,9 @@ window.TRACKS.domains = {
                 "<strong>OSINT</strong> \u2014 find what's hidden in plain sight."
               ]
             },
-            { t: "note", variant: "key", html: "Notice the categories <em>are</em> this atlas: web, crypto, forensics, reversing, OSINT. A CTF is where the separate tracks you've studied combine into one problem \u2014 which is exactly how real security works." },
-            { t: "note", variant: "tip", html: "Don't fear getting stuck \u2014 that's the training. Read write-ups <em>after</em> you've struggled, keep notes of techniques, and revisit. Struggle-then-explanation is the loop that actually builds skill." }
+            { t: "note", variant: "tip", html: "Notice the categories <em>are</em> this atlas: web, crypto, forensics, reversing, OSINT. A CTF is where the separate tracks you've studied combine into one problem \u2014 which is exactly how real security works." },
+            { t: "note", variant: "tip", html: "Don't fear getting stuck \u2014 that's the training. Read write-ups <em>after</em> you've struggled, keep notes of techniques, and revisit. Struggle-then-explanation is the loop that actually builds skill." },
+            { t: "note", variant: "key", html: "<strong>What transfers out of a CTF is the method, not the puzzle.</strong> Real systems have no flag telling you when to stop, so the habit worth keeping is the one a scored challenge forces on you: enumerate before guessing, write down what you tried, and read the target instead of reaching for a technique. The scoreboard is only the feedback signal." }
           ]
         },
         {
@@ -454,8 +461,9 @@ window.TRACKS.domains = {
               ]
             },
             { t: "note", variant: "warn", html: "<strong>Isolate the lab.</strong> Vulnerable-by-design machines must never sit on a network that can reach the internet or your real devices \u2014 they're magnets for actual malware. A host-only network with snapshots is the safe default." },
-            { t: "note", variant: "key", html: "The home lab makes the ethics lesson real: you get unlimited, consequence-free practice on systems you own. There is never a need to point real tools at someone else's property to learn \u2014 the lab gives you everything." },
-            { t: "note", variant: "tip", html: "Build both sides. Don't just attack the target \u2014 turn on its logging and watch your own attack light up the SIEM. Seeing offense and defense from both chairs is the fastest way to internalize either." }
+            { t: "note", variant: "tip", html: "The home lab makes the ethics lesson real: you get unlimited, consequence-free practice on systems you own. There is never a need to point real tools at someone else's property to learn \u2014 the lab gives you everything." },
+            { t: "note", variant: "tip", html: "Build both sides. Don't just attack the target \u2014 turn on its logging and watch your own attack light up the SIEM. Seeing offense and defense from both chairs is the fastest way to internalize either." },
+            { t: "note", variant: "key", html: "<strong>A lab is only a lab while it is isolated.</strong> Machines built to be broken will be found by something other than you the moment they can route outward, so host-only networking and a snapshot you can revert are the point of the exercise rather than setup overhead. That same reset is what lets you break things fast enough to learn from them." }
           ]
         },
         {
@@ -480,7 +488,7 @@ window.TRACKS.domains = {
             },
             { t: "h", text: "Certifications, in plain terms" },
             { t: "p", html: "Certs are <em>signals</em>, not substitutes for skill. Foundational ones (like Security+) prove breadth; hands-on ones (like the OSCP) prove you can actually do the work; management ones (like the CISSP) signal experience and governance knowledge. Pick the one that matches the door you're knocking on." },
-            { t: "note", variant: "key", html: "Skills first, certs as proof. A home lab, CTF results, and a portfolio of write-ups often speak louder than an acronym \u2014 and they're what make the cert exam easy when you do take it." },
+            { t: "note", variant: "tip", html: "Skills first, certs as proof. A home lab, CTF results, and a portfolio of write-ups often speak louder than an acronym \u2014 and they're what make the cert exam easy when you do take it." },
             { t: "h", text: "Grow with the community \u2014 and keep the ethics" },
             {
               t: "ul", items: [
@@ -491,6 +499,7 @@ window.TRACKS.domains = {
               ]
             },
             { t: "note", variant: "tip", html: "You've now toured the whole atlas \u2014 foundations, crypto, application security, defense, offense, threats and forensics, and the wider domains. The field rewards the curious and the principled. Keep building, keep defending, and always get permission first." },
+            { t: "note", variant: "key", html: "<strong>Reputation is the one credential that cannot be re-issued.</strong> Roles, tools and certifications will all change around you, but the record of how you behaved with access \u2014 who trusted you, and what you did with permission you were given \u2014 follows you into every specialty on that map. Guard it as carefully as you would a production key." },
             { t: "quiz", id: "domains-path" }
           ]
         }

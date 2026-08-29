@@ -25,7 +25,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
   function codeCard(lang, code) {
     return h("div", { class: "code-card", style: "margin:0" },
@@ -69,10 +69,10 @@
       stage.innerHTML = "";
       var two = h("div", { style: "display:flex;gap:14px;flex-wrap:wrap" });
       var left = h("div", { style: "flex:1;min-width:230px" });
-      left.appendChild(h("p", { style: "font-family:var(--font-mono);font-size:.62rem;color:var(--accent);margin-bottom:6px" }, "DataFrame API (PySpark)"));
+      left.appendChild(h("p", { style: "font-family:var(--font-mono);font-size:.62rem;color:var(--accent-ink);margin-bottom:6px" }, "DataFrame API (PySpark)"));
       left.appendChild(codeCard("python", ops[cur].df));
       var right = h("div", { style: "flex:1;min-width:230px" });
-      right.appendChild(h("p", { style: "font-family:var(--font-mono);font-size:.62rem;color:var(--cyan);margin-bottom:6px" }, "Spark SQL"));
+      right.appendChild(h("p", { style: "font-family:var(--font-mono);font-size:.62rem;color:var(--cyan-ink);margin-bottom:6px" }, "Spark SQL"));
       right.appendChild(codeCard("sql", ops[cur].sql));
       two.appendChild(left); two.appendChild(right);
       stage.appendChild(two);
@@ -111,10 +111,10 @@
           h("div", { style: "font-family:var(--font-mono);font-size:.62rem;color:var(--text-faint);margin-top:5px" }, fmt(mb)));
       }
       row.appendChild(tbl("left", l));
-      row.appendChild(h("div", { style: "font-family:var(--font-mono);color:var(--accent);font-size:.8rem" }, "\u2A1D join"));
+      row.appendChild(h("div", { style: "font-family:var(--font-mono);color:var(--accent-ink);font-size:.8rem" }, "\u2A1D join"));
       row.appendChild(tbl("right", r));
       stage.appendChild(row);
-      stage.appendChild(h("div", { style: "text-align:center;margin-top:12px;font-family:var(--font-mono);font-weight:700;color:var(--accent)" },
+      stage.appendChild(h("div", { style: "text-align:center;margin-top:12px;font-family:var(--font-mono);font-weight:700;color:var(--accent-ink)" },
         broadcast ? "Broadcast Hash Join" : "Sort-Merge Join"));
       readout.innerHTML = "";
       readout.appendChild(ro("strategy", broadcast ? "broadcast" : "sort-merge", true));
@@ -141,15 +141,15 @@
     function paint() {
       var avgMB = Math.round(dataGB * 1024 / parts);
       var verdict, vcolor;
-      if (avgMB > 256) { verdict = "too few partitions \u2014 risk of spill / OOM"; vcolor = "var(--rose)"; }
-      else if (avgMB < 8) { verdict = "too many tiny partitions \u2014 scheduler overhead"; vcolor = "var(--amber)"; }
-      else { verdict = "healthy (near the ~128 MB target)"; vcolor = "var(--lime)"; }
+      if (avgMB > 256) { verdict = "too few partitions \u2014 risk of spill / OOM"; vcolor = "var(--rose-ink)"; }
+      else if (avgMB < 8) { verdict = "too many tiny partitions \u2014 scheduler overhead"; vcolor = "var(--amber-ink)"; }
+      else { verdict = "healthy (near the ~128 MB target)"; vcolor = "var(--lime-ink)"; }
       stage.innerHTML = "";
       stage.appendChild(h("div", { style: "text-align:center;padding:10px 0" },
         h("div", { style: "font-family:var(--font-display);font-weight:800;font-size:2rem;color:" + vcolor }, avgMB + " MB"),
         h("div", { style: "font-family:var(--font-mono);font-size:.66rem;color:var(--text-faint)" }, "average partition size")));
       stage.appendChild(h("div", { style: "text-align:center;font-family:var(--font-mono);font-size:.78rem;color:" + vcolor }, verdict));
-      if (cached) stage.appendChild(h("div", { style: "text-align:center;margin-top:8px;font-family:var(--font-mono);font-size:.66rem;color:var(--cyan)" }, "cached \u2014 reuse skips recompute (costs executor memory)"));
+      if (cached) stage.appendChild(h("div", { style: "text-align:center;margin-top:8px;font-family:var(--font-mono);font-size:.66rem;color:var(--cyan-ink)" }, "cached \u2014 reuse skips recompute (costs executor memory)"));
       readout.innerHTML = "";
       readout.appendChild(ro("data", dataGB + " GB"));
       readout.appendChild(ro("tasks", String(parts), true));
@@ -177,20 +177,20 @@
       questions: [
         {
           q: "What is Spark SQL\u2019s relationship to the DataFrame API?",
-          options: ["They are unrelated engines", "Both are front-ends that compile to the same Catalyst logical plan", "SQL is faster because it skips Catalyst", "DataFrames can\u2019t express joins"],
-          answer: 1,
+          options: ["They are unrelated engines", "DataFrames can\u2019t express joins", "SQL is faster because it skips Catalyst", "Both are front-ends that compile to the same Catalyst logical plan"],
+          answer: 3,
           explain: "A SQL string and the equivalent DataFrame calls are parsed into the same logical plan and optimized by Catalyst, so they have identical performance \u2014 use whichever reads better."
         },
         {
           q: "In Spark, a transformation such as filter() or select() is\u2026",
-          options: ["Executed immediately", "Lazy \u2014 it builds the plan until an action triggers execution", "Always a shuffle", "A write to disk"],
-          answer: 1,
+          options: ["Lazy \u2014 it builds the plan until an action triggers execution", "Executed immediately", "Always a shuffle", "A write to disk"],
+          answer: 0,
           explain: "Transformations are lazy; nothing runs until an action (show, count, write) forces the DAG to execute, which lets Catalyst optimize the whole query first."
         },
         {
           q: "Catalyst is Spark SQL\u2019s\u2026",
-          options: ["Storage format", "Cluster manager", "Query optimizer that turns a logical plan into an optimized physical plan", "Streaming engine"],
-          answer: 2,
+          options: ["Storage format", "Query optimizer that turns a logical plan into an optimized physical plan", "Cluster manager", "Streaming engine"],
+          answer: 1,
           explain: "Catalyst parses, analyzes and optimizes the logical plan (predicate pushdown, projection pruning, join reordering) and selects physical operators; Tungsten then executes them efficiently."
         }
       ]
@@ -201,20 +201,20 @@
       questions: [
         {
           q: "A broadcast hash join is chosen when\u2026",
-          options: ["Both tables are huge", "One side is small enough to copy to every executor, avoiding a shuffle of the big side", "There is no join key", "The data is already sorted"],
-          answer: 1,
+          options: ["Both tables are huge", "There is no join key", "One side is small enough to copy to every executor, avoiding a shuffle of the big side", "The data is already sorted"],
+          answer: 2,
           explain: "If a side is under the broadcast threshold (~10 MB by default), Spark ships it to all executors so each joins its big-table partition locally \u2014 no shuffle of the large table."
         },
         {
           q: "Unlike GROUP BY, a window function\u2026",
-          options: ["Collapses each group to one row", "Returns a value per row while computing over a partition/frame", "Cannot use ORDER BY", "Only works on strings"],
-          answer: 1,
+          options: ["Collapses each group to one row", "Only works on strings", "Cannot use ORDER BY", "Returns a value per row while computing over a partition/frame"],
+          answer: 3,
           explain: "Window functions compute across a frame defined by OVER (PARTITION BY \u2026 ORDER BY \u2026) but keep every input row \u2014 so you can show a salary and its rank side by side."
         },
         {
           q: "Which correctly filters before aggregating in Spark SQL?",
-          options: ["HAVING amount > 0 then GROUP BY", "WHERE amount > 0 then GROUP BY product", "GROUP BY then WHERE", "ORDER BY then GROUP BY"],
-          answer: 1,
+          options: ["WHERE amount > 0 then GROUP BY product", "HAVING amount > 0 then GROUP BY", "GROUP BY then WHERE", "ORDER BY then GROUP BY"],
+          answer: 0,
           explain: "WHERE filters rows before grouping (cheaper, aggregates less); HAVING filters the grouped results after aggregation. Filtering early is both correct and faster."
         }
       ]
@@ -231,14 +231,14 @@
         },
         {
           q: "To turn an array column into one row per element in Spark, you use\u2026",
-          options: ["pivot()", "explode()", "collect_list()", "broadcast()"],
-          answer: 1,
+          options: ["pivot()", "collect_list()", "explode()", "broadcast()"],
+          answer: 2,
           explain: "explode() (and posexplode()) flattens an array or map column into multiple rows \u2014 the standard way to normalize nested/semi-structured data."
         },
         {
           q: "Letting Spark infer JSON schema on read is convenient but\u2026",
-          options: ["Always free", "Costs an extra pass over the data and can guess types wrong", "Impossible", "Faster than a fixed schema"],
-          answer: 1,
+          options: ["Always free", "Faster than a fixed schema", "Impossible", "Costs an extra pass over the data and can guess types wrong"],
+          answer: 3,
           explain: "Schema inference scans the data to deduce types, adding a pass and risking wrong/loose types; supplying an explicit schema is faster and safer in production."
         }
       ]
@@ -249,8 +249,8 @@
       questions: [
         {
           q: "The default spark.sql.shuffle.partitions of 200 is\u2026",
-          options: ["Always optimal", "Often wrong \u2014 too many for small data, too few for huge data", "Ignored by Spark", "The number of executors"],
-          answer: 1,
+          options: ["Often wrong \u2014 too many for small data, too few for huge data", "Always optimal", "Ignored by Spark", "The number of executors"],
+          answer: 0,
           explain: "200 shuffle partitions rarely matches your data: it creates tiny tasks on small data and oversized, spill-prone tasks on large data. Tune it or let AQE coalesce."
         },
         {
@@ -261,8 +261,8 @@
         },
         {
           q: "Calling cache() is most worthwhile when a DataFrame is\u2026",
-          options: ["Used exactly once", "Reused across multiple actions", "Tiny and trivial", "Never referenced again"],
-          answer: 1,
+          options: ["Used exactly once", "Tiny and trivial", "Reused across multiple actions", "Never referenced again"],
+          answer: 2,
           explain: "Caching pays off only when an expensive intermediate is reused by several actions; caching a single-use DataFrame just consumes memory and can trigger spill."
         }
       ]
@@ -273,14 +273,14 @@
       questions: [
         {
           q: "An idempotent Spark write is one that\u2026",
-          options: ["Always appends", "Produces the same result even if the job reruns (e.g. partition overwrite or MERGE)", "Never fails", "Skips the shuffle"],
-          answer: 1,
+          options: ["Always appends", "Skips the shuffle", "Never fails", "Produces the same result even if the job reruns (e.g. partition overwrite or MERGE)"],
+          answer: 3,
           explain: "Reruns are normal, so a write must be replay-safe: overwrite the target partition or MERGE on a key so a retry doesn\u2019t duplicate rows."
         },
         {
           q: "An incremental Spark pipeline avoids reprocessing all history by\u2026",
-          options: ["Always doing a full reload", "Reading only data newer than a stored high-watermark", "Disabling Catalyst", "Caching the source"],
-          answer: 1,
+          options: ["Reading only data newer than a stored high-watermark", "Always doing a full reload", "Disabling Catalyst", "Caching the source"],
+          answer: 0,
           explain: "Tracking a high-watermark (max timestamp / offset) lets each run read only new records, the key to keeping a large table fresh without a full rebuild."
         },
         {
@@ -297,20 +297,20 @@
       questions: [
         {
           q: "An interviewer says a Spark job \u201chas one task running far longer than the rest.\u201d The likely cause is\u2026",
-          options: ["Too much memory", "Data skew \u2014 a hot key concentrates rows in one task", "The SQL is too short", "Caching"],
-          answer: 1,
+          options: ["Too much memory", "The SQL is too short", "Data skew \u2014 a hot key concentrates rows in one task", "Caching"],
+          answer: 2,
           explain: "A single straggler task is the classic signature of skew: one key holds most of the rows. Fixes include salting, AQE skew-join handling, or broadcasting the other side."
         },
         {
           q: "Best first answer to \u201chow would you speed up a slow Spark SQL query?\u201d",
-          options: ["Buy a bigger cluster immediately", "Read the plan: scan less (prune columns/partitions, push down filters) and move less (cut shuffles, broadcast small joins)", "Rewrite it in pure Python", "Disable AQE"],
-          answer: 1,
+          options: ["Buy a bigger cluster immediately", "Disable AQE", "Rewrite it in pure Python", "Read the plan: scan less (prune columns/partitions, push down filters) and move less (cut shuffles, broadcast small joins)"],
+          answer: 3,
           explain: "Senior answers start from the plan and the two levers that dominate cost \u2014 scanning less data and moving less data across the shuffle \u2014 before reaching for more hardware."
         },
         {
           q: "Why prefer built-in functions over a Python UDF in Spark SQL?",
-          options: ["UDFs are illegal", "Built-ins stay in the optimized engine and vectorize; Python UDFs serialize rows and block Catalyst", "UDFs can\u2019t take arguments", "There is no difference"],
-          answer: 1,
+          options: ["Built-ins stay in the optimized engine and vectorize; Python UDFs serialize rows and block Catalyst", "UDFs are illegal", "UDFs can\u2019t take arguments", "There is no difference"],
+          answer: 0,
           explain: "A Python UDF ships rows to a Python process and is a black box to Catalyst (no pushdown, no codegen). Built-in/SQL functions run in the JVM engine and vectorize \u2014 much faster."
         }
       ]
@@ -344,8 +344,9 @@
                 ["A logical 'what'", "Catalyst decides the 'how'"],
                 ["A query over a cluster", "Parallel, in-memory execution"]
               ] },
-              { t: "note", variant: "key", html: "The headline idea: <strong>Spark SQL and the DataFrame API are two doors into the same optimizer.</strong> Choose whichever reads more clearly \u2014 the performance is identical because both become the same Catalyst plan." },
-              { t: "note", variant: "tip", html: "Spark SQL also unifies sources: the same query can read Parquet on a lake, a Hive table, a JDBC database, or JSON \u2014 all as DataFrames with a schema." }
+              { t: "note", variant: "tip", html: "The headline idea: <strong>Spark SQL and the DataFrame API are two doors into the same optimizer.</strong> Choose whichever reads more clearly \u2014 the performance is identical because both become the same Catalyst plan." },
+              { t: "note", variant: "tip", html: "Spark SQL also unifies sources: the same query can read Parquet on a lake, a Hive table, a JDBC database, or JSON \u2014 all as DataFrames with a schema." },
+              { t: "note", variant: "key", html: "<strong>Spark is fast for exactly as long as the data stays where it already sits.</strong> Parallelism comes from slicing rows across executors, so the operations that dominate a bill are the ones that rebuild those slices: a scan that opens files and columns the query never needed, and a wide step that has to send every row for a key across the network to one task. Every tuning lesson in this track is one of those two in a different costume." }
             ]
           },
           {
@@ -366,8 +367,9 @@
                 "a = spark.sql(\"SELECT product, SUM(amount) r FROM sales GROUP BY product\")\n" +
                 "b = df.groupBy(\"product\").agg(sum(\"amount\").alias(\"r\"))\n" +
                 "# a and b have identical logical plans" },
-              { t: "note", variant: "key", html: "Because everything is lazy, Spark sees the <em>whole</em> pipeline before running it \u2014 that\u2019s what lets Catalyst push filters down, prune columns, and pick join strategies across the entire query." },
-              { t: "note", variant: "trap", html: "Calling an <strong>action</strong> (" + tok("show()") + ", " + tok("count()") + ", " + tok("write") + ") triggers execution. A pipeline that 'looks instant' is just deferring work \u2014 the cost lands on the first action." }
+              { t: "note", variant: "tip", html: "Because everything is lazy, Spark sees the <em>whole</em> pipeline before running it \u2014 that\u2019s what lets Catalyst push filters down, prune columns, and pick join strategies across the entire query." },
+              { t: "note", variant: "trap", html: "Calling an <strong>action</strong> (" + tok("show()") + ", " + tok("count()") + ", " + tok("write") + ") triggers execution. A pipeline that 'looks instant' is just deferring work \u2014 the cost lands on the first action." },
+              { t: "note", variant: "key", html: "<strong>A DataFrame is a recipe, not a result.</strong> That is what lets Catalyst optimize the chain as a whole \u2014 and it is also why handing the same DataFrame to three actions runs its entire lineage three times, re-reading the source on each one, unless you deliberately persist it. When a job is mysteriously slow, count the actions before you blame the transformations." }
             ]
           },
           {
@@ -383,8 +385,9 @@
                 "<strong>Code generation</strong> \u2014 Tungsten compiles tight JVM bytecode."
               ] },
               { t: "p", html: "You can see all of this with " + tok("df.explain(True)") + " or " + tok("EXPLAIN") + " in SQL \u2014 reading the physical plan is the single most useful debugging skill in Spark SQL." },
-              { t: "note", variant: "key", html: "The big optimizations are the same three levers as any analytical engine: <strong>predicate pushdown</strong> (filter early/low), <strong>projection pruning</strong> (read only needed columns), and <strong>partition pruning</strong> (skip irrelevant files). Catalyst applies them for you \u2014 if your data layout allows it." },
+              { t: "note", variant: "tip", html: "The big optimizations are the same three levers as any analytical engine: <strong>predicate pushdown</strong> (filter early/low), <strong>projection pruning</strong> (read only needed columns), and <strong>partition pruning</strong> (skip irrelevant files). Catalyst applies them for you \u2014 if your data layout allows it." },
               { t: "note", variant: "tip", html: "Catalyst can only push a filter down to the scan if the predicate is on a real column \u2014 wrapping it in a Python UDF hides it, forcing a full scan. Prefer built-in functions." },
+              { t: "note", variant: "key", html: "<strong>Catalyst can only skip the data your layout lets it skip.</strong> Pushdown and pruning are resolved against directory structure and file statistics, so a filter on a column the table was never organized by still reads every file \u2014 the optimizer removes work the plan makes removable, and the rest was decided when somebody chose the partition columns and write order. Read the physical plan first: if the scan node shows no pushed filters, the fix is upstream of the query." },
               { t: "quiz", id: "sparksql-foundations" }
             ]
           }
@@ -406,8 +409,9 @@
                 "  .withColumn(\"amount_eur\", col(\"amount\") * 0.92)  # derived col\n" +
                 "  .withColumnRenamed(\"order_id\", \"id\"))" },
               { t: "p", html: "The SQL equivalents are exactly what you\u2019d expect \u2014 " + tok("SELECT") + ", " + tok("WHERE") + ", and expressions in the select list \u2014 because both compile to the same plan." },
-              { t: "note", variant: "key", html: "Project columns early. Selecting only what you need lets Catalyst prune the rest at the scan, so less data is read and shuffled through the whole query." },
-              { t: "note", variant: "trap", html: "Spark functions are null-aware in specific ways: " + tok("col == None") + " never matches \u2014 use " + tok("isNull()") + " / " + tok("isNotNull()") + ". And " + tok("filter") + " keeps only rows where the predicate is strictly true." }
+              { t: "note", variant: "tip", html: "Project columns early. Selecting only what you need lets Catalyst prune the rest at the scan, so less data is read and shuffled through the whole query." },
+              { t: "note", variant: "trap", html: "Spark functions are null-aware in specific ways: " + tok("col == None") + " never matches \u2014 use " + tok("isNull()") + " / " + tok("isNotNull()") + ". And " + tok("filter") + " keeps only rows where the predicate is strictly true." },
+              { t: "note", variant: "key", html: "<strong>These verbs are narrow, and that is exactly why they are cheap.</strong> A projection, a filter and a derived column each run inside the partition a task already holds: one pass over local rows, no network. The bill arrives at the first operator that has to regroup rows across the cluster, so the whole discipline is to do every narrowing step you can before that point \u2014 every row and column you drop early is one the shuffle never has to carry." }
             ]
           },
           {
@@ -426,8 +430,9 @@
                 "from pyspark.sql.functions import broadcast\n" +
                 "# Force-broadcast a known-small dimension to skip the big shuffle\n" +
                 "orders.join(broadcast(dim_product), \"product_id\")" },
-              { t: "note", variant: "key", html: "The cheapest join avoids shuffling the big table. If one side fits in memory, Spark (or you, with " + tok("broadcast()") + ") broadcasts it; otherwise sort-merge is the robust default for two large tables. For the mechanics of the exchange itself, see the <a class='inline' href='#/batch/shuffle/shuffle'>batch shuffle lesson</a>." },
-              { t: "note", variant: "trap", html: "Watch <strong>join fan-out</strong>: joining to a key with multiple matches multiplies rows, so a later " + tok("SUM") + " double-counts. If a join changes your row count unexpectedly, the grain broke \u2014 aggregate the child first or use a semi join." }
+              { t: "note", variant: "tip", html: "The cheapest join avoids shuffling the big table. If one side fits in memory, Spark (or you, with " + tok("broadcast()") + ") broadcasts it; otherwise sort-merge is the robust default for two large tables. For the mechanics of the exchange itself, see the <a class='inline' href='#/batch/shuffle/shuffle'>batch shuffle lesson</a>." },
+              { t: "note", variant: "trap", html: "Watch <strong>join fan-out</strong>: joining to a key with multiple matches multiplies rows, so a later " + tok("SUM") + " double-counts. If a join changes your row count unexpectedly, the grain broke \u2014 aggregate the child first or use a semi join." },
+              { t: "note", variant: "key", html: "<strong>A join costs whatever has to move.</strong> Broadcast wins because only the small side crosses the network and the big table is read in place; sort-merge is the fallback that shuffles <em>and</em> sorts both inputs on the join key. So the question worth asking before any tuning is whether the small side is still small at runtime \u2014 a dimension that quietly grew past the broadcast threshold turns every one of these joins back into a full shuffle, with no code change and no warning." }
             ]
           },
           {
@@ -442,8 +447,9 @@
                 "   .agg(sum(\"amount\").alias(\"revenue\"),\n" +
                 "        countDistinct(\"customer_id\").alias(\"buyers\"))\n" +
                 "   .where(col(\"revenue\") > 10000))            # after (HAVING)" },
-              { t: "note", variant: "key", html: "An aggregation is a <strong>wide</strong> transformation \u2014 it shuffles rows so each group lands together. Filtering early (in " + tok("where") + ", not after) means fewer rows to shuffle and aggregate." },
-              { t: "note", variant: "tip", html: "" + tok("GROUPING SETS") + ", " + tok("ROLLUP") + " and " + tok("CUBE") + " compute several aggregation levels (subtotals, grand totals) in one pass \u2014 handy for reporting without unioning many queries." }
+              { t: "note", variant: "tip", html: "An aggregation is a <strong>wide</strong> transformation \u2014 it shuffles rows so each group lands together. Filtering early (in " + tok("where") + ", not after) means fewer rows to shuffle and aggregate." },
+              { t: "note", variant: "tip", html: "" + tok("GROUPING SETS") + ", " + tok("ROLLUP") + " and " + tok("CUBE") + " compute several aggregation levels (subtotals, grand totals) in one pass \u2014 handy for reporting without unioning many queries." },
+              { t: "note", variant: "key", html: "<strong>What an aggregation costs is decided by the balance of the grouping key, not by the row count.</strong> The shuffle routes every row for a group to a single task, so a few dominant keys leave most of the cluster idle while one task carries the tail \u2014 and a grouping over millions of evenly spread keys can finish sooner than the same query over a handful of lopsided ones. When one straggler task is holding up the stage, look at the key before you look at the cluster." }
             ]
           },
           {
@@ -452,6 +458,7 @@
             minutes: 7, tags: ["window-functions"],
             blocks: [
               { t: "p", html: "A <strong>window function</strong> computes over a set of rows (the window) defined by " + tok("Window.partitionBy(\u2026).orderBy(\u2026)") + " but returns a value for <em>every</em> row \u2014 so you can show a value <em>and</em> its rank, running total, or previous value together." },
+              { t: "note", variant: "tip", html: "The SQL semantics — frames, partitions, and how RANK differs from DENSE_RANK — are covered in <a href='#/sql/analytics/window-functions'>the SQL track</a>. This page assumes them and concentrates on what Spark does underneath: the shuffle a partition boundary forces, and the skew that follows." },
               { t: "code", lang: "python", code:
                 "from pyspark.sql.window import Window\n" +
                 "from pyspark.sql.functions import rank, sum as _sum, lag\n\n" +
@@ -460,8 +467,9 @@
                 "  .withColumn(\"run_total\", _sum(\"salary\").over(w)) \\\n" +
                 "  .withColumn(\"prev\", lag(\"salary\").over(w))" },
               { t: "p", html: "Three families: <strong>ranking</strong> (" + tok("row_number") + ", " + tok("rank") + ", " + tok("dense_rank") + "), <strong>aggregate</strong> windows (" + tok("sum") + "/" + tok("avg") + " over a frame for running totals), and <strong>offset</strong> (" + tok("lag") + ", " + tok("lead") + ")." },
-              { t: "note", variant: "key", html: "The <strong>frame</strong> (" + tok("rowsBetween") + ") controls which rows the function sees \u2014 e.g. a 7-row moving average. PARTITION resets the window per group; ORDER sets the sequence. The <a class='inline' href='#/sql/analytics/window-functions'>SQL window-functions lesson</a> covers the same ideas in pure SQL." },
+              { t: "note", variant: "tip", html: "The <strong>frame</strong> (" + tok("rowsBetween") + ") controls which rows the function sees \u2014 e.g. a 7-row moving average. PARTITION resets the window per group; ORDER sets the sequence. The <a class='inline' href='#/sql/analytics/window-functions'>SQL window-functions lesson</a> covers the same ideas in pure SQL." },
               { t: "note", variant: "trap", html: "A window with an " + tok("orderBy") + " but no explicit frame defaults to a <em>running</em> frame (unbounded preceding to current row). For a whole-partition aggregate, use " + tok("rowsBetween(Window.unboundedPreceding, Window.unboundedFollowing)") + "." },
+              { t: "note", variant: "key", html: "<strong>A window shuffles on " + tok("partitionBy") + " and sorts inside it \u2014 a group-by\u2019s cost profile without the group-by\u2019s reduction.</strong> Every input row survives to the output, so a partition key with few distinct values concentrates that sort into a few tasks. Give it a key with real cardinality, and never omit " + tok("partitionBy") + " on a large table: with no partitioning expression the whole dataset becomes one partition sorted on one executor." },
               { t: "quiz", id: "sparksql-operations" }
             ]
           }
@@ -487,8 +495,9 @@
                 "df = (spark.read.parquet(\"s3://lake/sales\")\n" +
                 "      .select(\"amount\")\n" +
                 "      .where(col(\"amount\") > 100))" },
-              { t: "note", variant: "key", html: "\u201cJust write Parquet\u201d is the highest-leverage storage choice for Spark SQL: columnar pushdown and pruning mean a selective query reads a tiny slice of the data instead of all of it." },
-              { t: "note", variant: "tip", html: "Always prefer an <strong>explicit schema</strong> for production reads. It avoids an inference pass and pins types so a stray value can\u2019t silently widen a column to string." }
+              { t: "note", variant: "tip", html: "\u201cJust write Parquet\u201d is the highest-leverage storage choice for Spark SQL: columnar pushdown and pruning mean a selective query reads a tiny slice of the data instead of all of it." },
+              { t: "note", variant: "tip", html: "Always prefer an <strong>explicit schema</strong> for production reads. It avoids an inference pass and pins types so a stray value can\u2019t silently widen a column to string." },
+              { t: "note", variant: "key", html: "<strong>Columnar skipping is statistical, so the order you wrote the file in decides how much it can skip.</strong> Row groups are eliminated by min/max ranges, which only helps when the filtered column\u2019s values are clustered rather than sprinkled through every file \u2014 the same query over the same bytes reads a sliver or the whole table depending on write order. Thousands of tiny files defeat it from the other direction: each one costs a footer to open and holds too few rows for its statistics to exclude anything." }
             ]
           },
           {
@@ -505,8 +514,9 @@
                 "          explode(\"items\").alias(\"item\"))     # array -> rows\n" +
                 "  .select(\"id\", \"item.sku\", \"item.qty\"))" },
               { t: "p", html: "The key verb is <strong>explode</strong>: it turns an array column into one row per element, normalizing nested data into the flat rows analytics wants. " + tok("from_json") + " parses a JSON string column against a schema." },
-              { t: "note", variant: "key", html: "The usual pattern is <strong>land semi-structured, flatten to structured</strong>: read JSON, explode and project the nested fields into typed columns, then write Parquet for everything downstream." },
+              { t: "note", variant: "tip", html: "The usual pattern is <strong>land semi-structured, flatten to structured</strong>: read JSON, explode and project the nested fields into typed columns, then write Parquet for everything downstream." },
               { t: "note", variant: "trap", html: "Schema inference on JSON costs an extra scan and can guess wrong (e.g. an all-null field becomes string). Supply a schema with " + tok("from_json") + " or " + tok("spark.read.schema(\u2026)") + " when the shape is known." },
+              { t: "note", variant: "key", html: "<strong>Flattening is the moment a stream of nested events acquires a grain, so state it out loud.</strong> Every " + tok("explode") + " multiplies rows by the array length, which means the output is no longer one row per event and any later " + tok("SUM") + " over an event-level measure double-counts once per child. Decide the grain before you explode, and aggregate back to it before you join on the event key \u2014 this is the same fan-out bug as a join, arriving through a different door." },
               { t: "quiz", id: "sparksql-data" }
             ]
           }
@@ -528,9 +538,10 @@
                 "<strong>Avoid Python UDFs</strong> \u2014 they serialize rows and block Catalyst; prefer built-in/SQL functions.",
                 "<strong>Tame skew</strong> \u2014 salt hot keys or rely on AQE skew-join handling."
               ] },
-              { t: "note", variant: "key", html: "The diagnostic loop never changes: read the plan / Spark UI, find the slow stage, and ask <em>shuffle, skew, or spill?</em> \u2014 then apply the matching fix. Most jobs need only two or three of these levers. The <a class='inline' href='#/batch/performance/tuning'>batch tuning lesson</a> drills each lever deeper." },
+              { t: "note", variant: "tip", html: "The diagnostic loop never changes: read the plan / Spark UI, find the slow stage, and ask <em>shuffle, skew, or spill?</em> \u2014 then apply the matching fix. Most jobs need only two or three of these levers. The <a class='inline' href='#/batch/performance/tuning'>batch tuning lesson</a> drills each lever deeper." },
               { t: "note", variant: "trap", html: "Reaching for a bigger cluster first is the junior move. A skewed key or a needless shuffle wastes hardware no matter how big the cluster \u2014 fix the plan, then scale if you still must." },
-              { t: "note", variant: "tip", html: "Keep logic in DataFrame/SQL so Catalyst can see it, keep table statistics fresh, and leave AQE on. Hand-tuning matters most <em>after</em> you\u2019ve removed unnecessary shuffles." }
+              { t: "note", variant: "tip", html: "Keep logic in DataFrame/SQL so Catalyst can see it, keep table statistics fresh, and leave AQE on. Hand-tuning matters most <em>after</em> you\u2019ve removed unnecessary shuffles." },
+              { t: "note", variant: "key", html: "<strong>Skew is the one failure mode that does not respond to more hardware.</strong> Every other lever here reduces total work, but a stage gated on a single oversized key finishes when that one task finishes, however many executors sit idle behind it. So the number worth reading is not cluster size \u2014 it is the spread of task durations within the slow stage, because an even spread means you have a volume problem and a long tail means you have a key problem." }
             ]
           },
           {
@@ -598,8 +609,9 @@
                 "w = Window.partitionBy(\"segment\").orderBy(\"dt\").rowsBetween(-6, 0)\n" +
                 "mart = daily.withColumn(\"rev_7d_avg\", avg(\"revenue\").over(w))\n\n" +
                 "mart.write.mode(\"overwrite\").partitionBy(\"dt\").parquet(\"lake/marts/revenue\")" },
-              { t: "note", variant: "key", html: "Notice every section of this track appears: DataFrame ops, a broadcast join, an aggregation, a window function, columnar I/O, and an idempotent partitioned write. That\u2019s a production Spark SQL pipeline in a dozen lines." },
+              { t: "note", variant: "tip", html: "Notice every section of this track appears: DataFrame ops, a broadcast join, an aggregation, a window function, columnar I/O, and an idempotent partitioned write. That\u2019s a production Spark SQL pipeline in a dozen lines." },
               { t: "note", variant: "tip", html: "In an interview, narrate these steps aloud and name the trade-off at each \u2014 \u201cbroadcast the dimension to skip the shuffle,\u201d \u201coverwrite the partition so reruns are safe.\u201d That reasoning is what they\u2019re listening for." },
+              { t: "note", variant: "key", html: "<strong>Every line above is performance except the write mode, and that one is correctness.</strong> Replacing the run\u2019s own date partition makes a retry produce the same table a first attempt would have; appending makes the second attempt add to the first and the revenue figure quietly doubles. Be explicit about which partitions a rerun is permitted to replace \u2014 wiping a whole table and swapping a single day are both spelled \u201coverwrite,\u201d and the difference only shows up on the day something fails halfway." },
               { t: "quiz", id: "sparksql-etl" }
             ]
           }
@@ -622,9 +634,10 @@
                 ["\u201cDataFrame vs SQL?\u201d", "Same Catalyst plan \u2014 pick for readability"],
                 ["\u201cAvoid double-counting\u201d", "Join fan-out broke the grain; aggregate first"]
               ] },
-              { t: "note", variant: "key", html: "Anchor every answer to two levers: <strong>scan less</strong> and <strong>move less</strong>. Almost every Spark performance question is one of those two in disguise \u2014 say so, then give the specific technique." },
+              { t: "note", variant: "tip", html: "Anchor every answer to two levers: <strong>scan less</strong> and <strong>move less</strong>. Almost every Spark performance question is one of those two in disguise \u2014 say so, then give the specific technique." },
               { t: "note", variant: "trap", html: "Avoid answering \u201cadd more executors\u201d first. Interviewers want to hear that you\u2019d read the physical plan and fix skew or a needless shuffle <em>before</em> scaling hardware." },
-              { t: "note", variant: "tip", html: "Keep a crisp definition ready for the classics: lazy evaluation, narrow vs wide transformations, broadcast vs sort-merge join, " + tok("cache") + " vs " + tok("persist") + ", and why a UDF is slower than a built-in." }
+              { t: "note", variant: "tip", html: "Keep a crisp definition ready for the classics: lazy evaluation, narrow vs wide transformations, broadcast vs sort-merge join, " + tok("cache") + " vs " + tok("persist") + ", and why a UDF is slower than a built-in." },
+              { t: "note", variant: "key", html: "<strong>Name the observation before you name the technique.</strong> Every row in that table collapses to one of three things you can see in the plan and the stage view: the query read data it did not need, it moved data it did not need to move, or one task held far more of a key than its peers. Say which one you are looking at, then give the fix \u2014 a technique offered without the observation behind it sounds memorized, and the follow-up question will find out." }
             ]
           },
           {

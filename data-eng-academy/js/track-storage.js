@@ -23,7 +23,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
 
   /* =====================================================================
@@ -64,7 +64,7 @@
       var nd = need();
       cols.forEach(function (c) {
         var on = nd.indexOf(c.key) !== -1;
-        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.66rem;color:" + (on ? "var(--accent)" : "var(--text-faint)") }, c.label));
+        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.66rem;color:" + (on ? "var(--accent-ink)" : "var(--text-faint)") }, c.label));
       });
       rows.forEach(function (r) {
         cols.forEach(function (c) {
@@ -116,13 +116,13 @@
       board.innerHTML = "";
       board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-size:.62rem;color:var(--text-faint)" }, "row group"));
       columns.forEach(function (c) {
-        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.64rem;color:" + (readCols().indexOf(c) !== -1 ? "var(--accent)" : "var(--text-faint)") }, c));
+        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.64rem;color:" + (readCols().indexOf(c) !== -1 ? "var(--accent-ink)" : "var(--text-faint)") }, c));
       });
       var scanned = 0, chunks = 0, rc = readCols();
       groups.forEach(function (g) {
         var pruned = g.max <= thresh; // no row can satisfy amount > thresh
         if (!pruned) scanned++;
-        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.64rem" + (pruned ? ";opacity:.3" : ";color:var(--accent)") }, g.rg + " [" + g.min + "," + g.max + "]"));
+        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.64rem" + (pruned ? ";opacity:.3" : ";color:var(--accent-ink)") }, g.rg + " [" + g.min + "," + g.max + "]"));
         columns.forEach(function (c) {
           var read = !pruned && rc.indexOf(c) !== -1;
           if (read) chunks++;
@@ -168,7 +168,7 @@
       var col = h("div", { class: "mstack", style: "min-height:auto" });
       col.appendChild(h("div", { class: "mstack-lbl" }, "snapshots"));
       snaps.forEach(function (s, i) {
-        var c = h("div", { class: "mstack-cell", style: i === cur ? "border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--surface-solid));color:var(--accent)" : "" }, s.v);
+        var c = h("div", { class: "mstack-cell", style: i === cur ? "border-color:var(--accent);background:color-mix(in srgb,var(--accent) 22%,var(--surface-solid));color:var(--accent-ink)" : "" }, s.v);
         c.addEventListener("click", function () { cur = i; paint(); });
         col.appendChild(c);
       });
@@ -221,7 +221,7 @@
     function metric(label, value, accent) {
       return h("div", { class: "grid-cell" + (accent ? " dp-cur" : ""), style: "width:auto;height:auto;padding:10px 6px" },
         h("div", { style: "font-family:var(--font-mono);font-size:.58rem;color:var(--text-faint);text-transform:uppercase" }, label),
-        h("div", { style: "font-size:1.05rem;font-weight:800;margin-top:3px;color:" + (accent ? "var(--accent)" : "var(--text)") }, value));
+        h("div", { style: "font-size:1.05rem;font-weight:800;margin-top:3px;color:" + (accent ? "var(--accent-ink)" : "var(--text)") }, value));
     }
     function addLog(kind, msg) {
       log.insertBefore(h("div", { class: kind }, msg), log.firstChild);
@@ -341,20 +341,20 @@
     var cases = [
       {
         prompt: "A BI tool needs to find the table, its owner, schema, current snapshot and location without knowing object-storage paths.",
-        options: ["Catalog", "Parquet footer only", "Equality delete", "Compaction job"],
-        answer: 0,
+        options: ["Parquet footer only", "Catalog", "Equality delete", "Compaction job"],
+        answer: 1,
         reason: "The catalog maps a table name to table metadata and policies. The table format then interprets snapshots, manifests and files."
       },
       {
         prompt: "A producer adds nullable column loyalty_tier to future rows. Old files do not contain it.",
-        options: ["Schema evolution", "Position delete", "Snapshot tag", "Random repartition"],
-        answer: 0,
+        options: ["Snapshot tag", "Position delete", "Schema evolution", "Random repartition"],
+        answer: 2,
         reason: "Table formats track column identity and schema versions, so readers can project old files with null/default values for newly added columns."
       },
       {
         prompt: "The team needs to delete all rows where customer_id = 42 without rewriting every matching data file immediately.",
-        options: ["Equality delete", "Sort-order evolution", "Catalog rename", "Checkpoint"],
-        answer: 0,
+        options: ["Checkpoint", "Sort-order evolution", "Catalog rename", "Equality delete"],
+        answer: 3,
         reason: "Equality deletes describe rows by key predicates. Position deletes identify exact file positions and are usually produced by engines that already know the row locations."
       },
       {
@@ -365,8 +365,8 @@
       },
       {
         prompt: "Two writers both plan from snapshot 100. One rewrites files the other also read.",
-        options: ["Concurrent write conflict", "Watermark delay", "CDC tombstone", "Column projection"],
-        answer: 0,
+        options: ["Watermark delay", "Concurrent write conflict", "CDC tombstone", "Column projection"],
+        answer: 1,
         reason: "Optimistic concurrency validates that files read or rewritten by a commit are still current. Conflicting writers retry from the latest snapshot."
       }
     ];
@@ -441,7 +441,7 @@
       var ids = Object.keys(rows).sort();
       var cols = schema.slice();
       var board = h("div", { class: "grid-board", style: "grid-template-columns:repeat(" + cols.length + ",minmax(54px,1fr));gap:4px" });
-      cols.forEach(function (c) { board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.62rem;color:var(--accent)" }, c)); });
+      cols.forEach(function (c) { board.appendChild(h("div", { class: "grid-cell", style: "width:auto;font-family:var(--font-mono);font-size:.62rem;color:var(--accent-ink)" }, c)); });
       ids.forEach(function (id) {
         cols.forEach(function (c) {
           var val = c === "id" ? id : (rows[id][c] == null ? "null" : rows[id][c]);
@@ -478,20 +478,20 @@
       questions: [
         {
           q: "Which workload profile is a columnar format like Parquet optimized for?",
-          options: ["Many tiny point lookups and updates by primary key", "Large scans that read a few columns over many rows", "Low-latency single-row inserts", "Enforcing foreign-key constraints"],
-          answer: 1,
+          options: ["Many tiny point lookups and updates by primary key", "Low-latency single-row inserts", "Large scans that read a few columns over many rows", "Enforcing foreign-key constraints"],
+          answer: 2,
           explain: "Columnar layouts store each column together, so analytical scans read only the needed columns and compress them well \u2014 ideal for OLAP, not for OLTP point access."
         },
         {
           q: "\u201cData gravity\u201d argues that you should usually\u2026",
-          options: ["Copy all data to your laptop first", "Move compute to where the data already lives", "Always replicate data across every region", "Avoid object storage"],
-          answer: 1,
+          options: ["Copy all data to your laptop first", "Avoid object storage", "Always replicate data across every region", "Move compute to where the data already lives"],
+          answer: 3,
           explain: "Large datasets are expensive and slow to move (and egress costs money), so it is cheaper to run compute next to the data than to ship the data to the compute."
         },
         {
           q: "For an analytical query, the dominant cost is most often\u2026",
-          options: ["The number of columns in the table", "The volume of data scanned off storage", "The length of the SQL text", "The number of joins written"],
-          answer: 1,
+          options: ["The volume of data scanned off storage", "The number of columns in the table", "The length of the SQL text", "The number of joins written"],
+          answer: 0,
           explain: "Scan size drives I/O and therefore time and cost; pruning columns and partitions to scan less data is the highest-leverage optimization in analytics."
         }
       ]
@@ -514,14 +514,14 @@
         },
         {
           q: "A gzip-compressed CSV is awkward for distributed processing mainly because it is\u2026",
-          options: ["Too small", "Not splittable, so one worker must read the whole file", "Encrypted", "Columnar"],
-          answer: 1,
+          options: ["Too small", "Columnar", "Encrypted", "Not splittable, so one worker must read the whole file"],
+          answer: 3,
           explain: "Gzip is not splittable, so an engine cannot assign different byte ranges to different workers \u2014 you lose parallelism. Splittable codecs (or Parquet row groups) avoid this."
         },
         {
           q: "Snappy is usually preferred over Gzip inside Parquet because it offers\u2026",
-          options: ["A higher compression ratio at any cost", "Much faster compress/decompress at a modest ratio", "Encryption", "Row-level indexes"],
-          answer: 1,
+          options: ["Much faster compress/decompress at a modest ratio", "A higher compression ratio at any cost", "Encryption", "Row-level indexes"],
+          answer: 0,
           explain: "Snappy trades a little ratio for speed, which keeps CPU from bottlenecking scans; Zstd is a popular middle ground when you want a better ratio without Gzip\u2019s slowness."
         }
       ]
@@ -538,14 +538,14 @@
         },
         {
           q: "Which shard/partition key choice most invites a 'hot partition'?",
-          options: ["High-cardinality hash of user_id", "Today\u2019s date for an append-only event table", "A composite (region, day) key", "A random UUID"],
-          answer: 1,
+          options: ["High-cardinality hash of user_id", "A composite (region, day) key", "Today\u2019s date for an append-only event table", "A random UUID"],
+          answer: 2,
           explain: "Partitioning by current date sends all of today\u2019s writes (and 'recent' reads) to one partition, creating a hotspot; spread load with a higher-cardinality or composite key."
         },
         {
           q: "The 'small files problem' hurts because\u2026",
-          options: ["Small files cannot be compressed", "Per-file overhead and metadata dominate, killing scan throughput", "Engines refuse to read files under 1 KB", "It violates ACID"],
-          answer: 1,
+          options: ["Small files cannot be compressed", "It violates ACID", "Engines refuse to read files under 1 KB", "Per-file overhead and metadata dominate, killing scan throughput"],
+          answer: 3,
           explain: "Thousands of tiny files mean huge listing/open overhead and poor I/O batching; compaction rewrites them into right-sized files (~128 MB\u20131 GB) to restore throughput."
         }
       ]
@@ -568,14 +568,14 @@
         },
         {
           q: "An equality delete differs from a position delete because it\u2026",
-          options: ["Deletes rows matching key values rather than exact file row positions", "Can only delete complete partitions", "Changes the catalog owner", "Is the same as compaction"],
-          answer: 0,
+          options: ["Changes the catalog owner", "Can only delete complete partitions", "Deletes rows matching key values rather than exact file row positions", "Is the same as compaction"],
+          answer: 2,
           explain: "Equality deletes describe rows by values such as id = 42; position deletes identify exact file path and row position pairs."
         },
         {
           q: "Snapshot branches and tags are useful because they\u2026",
-          options: ["Pin named references to snapshots for experiments, audits or controlled promotion", "Remove the need for object storage", "Force all writers to serialize through one process", "Convert Parquet to JSON"],
-          answer: 0,
+          options: ["Convert Parquet to JSON", "Remove the need for object storage", "Force all writers to serialize through one process", "Pin named references to snapshots for experiments, audits or controlled promotion"],
+          answer: 3,
           explain: "Named snapshot references let teams isolate experiments or keep audit points while the main branch continues to receive commits."
         },
         {
@@ -598,14 +598,14 @@
         },
         {
           q: "Why must orphan-file cleanup use a conservative retention window?",
-          options: ["To make files smaller", "To avoid deleting files still being written or read by in-flight jobs", "To keep dashboards colorful", "To force a full table scan"],
-          answer: 1,
+          options: ["To make files smaller", "To keep dashboards colorful", "To avoid deleting files still being written or read by in-flight jobs", "To force a full table scan"],
+          answer: 2,
           explain: "An orphan file is safe to delete only after you are sure no active writer, compaction job or long query can still reference it. Retention should exceed maximum job and query duration."
         },
         {
           q: "Snapshot expiration is different from data-file deletion because it\u2026",
-          options: ["Only removes current table rows", "Drops old metadata first; data files are removable only when no retained snapshot references them", "Always deletes every old Parquet file immediately", "Disables time travel forever"],
-          answer: 1,
+          options: ["Only removes current table rows", "Disables time travel forever", "Always deletes every old Parquet file immediately", "Drops old metadata first; data files are removable only when no retained snapshot references them"],
+          answer: 3,
           explain: "Expiring snapshots trims the metadata timeline. A data file can be physically deleted only after it is not referenced by any retained snapshot, so current table data remains safe."
         }
       ]
@@ -616,20 +616,20 @@
       questions: [
         {
           q: "Log-based CDC captures changes by\u2026",
-          options: ["Polling the table with SELECT * every minute", "Reading the database\u2019s transaction log (e.g. WAL/binlog)", "Asking users to export CSVs", "Truncating and reloading nightly"],
-          answer: 1,
+          options: ["Reading the database\u2019s transaction log (e.g. WAL/binlog)", "Polling the table with SELECT * every minute", "Asking users to export CSVs", "Truncating and reloading nightly"],
+          answer: 0,
           explain: "Log-based CDC tails the write-ahead log/binlog, so it captures every insert/update/delete with low overhead and no missed changes \u2014 unlike query-based polling."
         },
         {
           q: "An idempotent load guarantees that\u2026",
-          options: ["Each row is loaded exactly once even if the job reruns", "The job never fails", "Data is encrypted at rest", "Loads are always faster"],
-          answer: 0,
+          options: ["The job never fails", "Each row is loaded exactly once even if the job reruns", "Data is encrypted at rest", "Loads are always faster"],
+          answer: 1,
           explain: "Idempotency means re-running the load (after a retry or replay) produces the same result \u2014 typically via MERGE/upsert on a key or partition-overwrite \u2014 so duplicates can\u2019t accumulate."
         },
         {
           q: "A 'high-watermark' is used in incremental loads to\u2026",
-          options: ["Cap the warehouse size", "Remember the latest processed point so you only pull new rows", "Encrypt the source", "Force a full reload"],
-          answer: 1,
+          options: ["Cap the warehouse size", "Encrypt the source", "Remember the latest processed point so you only pull new rows", "Force a full reload"],
+          answer: 2,
           explain: "The high-watermark (e.g. a max updated_at or LSN) records how far you\u2019ve consumed, so the next run reads only records newer than it \u2014 the heart of incremental ingestion."
         }
       ]
@@ -640,8 +640,8 @@
       questions: [
         {
           q: "A reliable CDC bootstrap uses an initial snapshot plus a log boundary so that\u2026",
-          options: ["Rows changed during the snapshot are still captured exactly once from the log", "The source database can stop writing", "Deletes are ignored", "The sink can use plain append forever"],
-          answer: 0,
+          options: ["The sink can use plain append forever", "The source database can stop writing", "Deletes are ignored", "Rows changed during the snapshot are still captured exactly once from the log"],
+          answer: 3,
           explain: "The connector records the log position associated with the snapshot, then streams changes after that boundary so the target is complete and continuous."
         },
         {
@@ -652,20 +652,20 @@
         },
         {
           q: "A delete in CDC should generally be represented downstream as\u2026",
-          options: ["A tombstone or delete marker keyed by the primary key", "A duplicate insert", "A schema rename", "A checkpoint timeout"],
-          answer: 0,
+          options: ["A duplicate insert", "A tombstone or delete marker keyed by the primary key", "A schema rename", "A checkpoint timeout"],
+          answer: 1,
           explain: "Deletes are data changes, not missing rows. Lakehouse sinks apply them as delete files, tombstones or merges keyed by the source primary key."
         },
         {
           q: "Why do CDC-to-lakehouse pipelines need compaction?",
-          options: ["Streaming writes create many small data and delete files", "Compaction captures the source transaction log", "Compaction replaces the catalog", "It guarantees every source update is valid"],
-          answer: 0,
+          options: ["Compaction replaces the catalog", "Compaction captures the source transaction log", "Streaming writes create many small data and delete files", "It guarantees every source update is valid"],
+          answer: 2,
           explain: "Frequent micro-batch or streaming commits produce small files and delete files. Compaction rewrites them into efficient files while preserving table semantics."
         },
         {
           q: "Schema drift in CDC is safest when\u2026",
-          options: ["The pipeline validates allowed changes and evolves the table schema deliberately", "Every new field is silently dropped", "All old files are deleted first", "The consumer guesses types from one record"],
-          answer: 0,
+          options: ["The consumer guesses types from one record", "Every new field is silently dropped", "All old files are deleted first", "The pipeline validates allowed changes and evolves the table schema deliberately"],
+          answer: 3,
           explain: "CDC streams can carry DDL-like changes. A production pipeline treats schema changes as contracts: validate, evolve compatible changes, and fail loudly on breaking ones."
         }
       ]
@@ -700,13 +700,14 @@
                 "<strong>Serve</strong> \u2014 expose tables, metrics and APIs to BI, ML and applications.",
                 "<strong>Govern</strong> \u2014 test, monitor, document, secure and control the cost of it all."
               ] },
-              { t: "note", variant: "key", html: "The engineer is judged on <strong>reliability, scale and cost</strong>, not cleverness. A pipeline that is correct, on time, and cheap to run beats a clever one that breaks at 3am." },
+              { t: "note", variant: "tip", html: "The engineer is judged on <strong>reliability, scale and cost</strong>, not cleverness. A pipeline that is correct, on time, and cheap to run beats a clever one that breaks at 3am." },
               { t: "table", headers: ["Role", "Owns", "Optimizes for"], rows: [
                 ["Data engineer", "Pipelines, storage, models", "Reliability, freshness, cost"],
                 ["Analytics engineer", "Transformations, metrics (dbt)", "Trust & clarity of models"],
                 ["Data scientist / analyst", "Models, dashboards, insight", "Answering the question"]
               ] },
-              { t: "note", variant: "tip", html: "Across this atlas you\u2019ll meet every layer: storage and formats here, then modeling, batch (Spark), streaming, orchestration & DataOps, and the SQL engines underneath. Start here \u2014 everything sits on storage." }
+              { t: "note", variant: "tip", html: "Across this atlas you\u2019ll meet every layer: storage and formats here, then modeling, batch (Spark), streaming, orchestration & DataOps, and the SQL engines underneath. Start here \u2014 everything sits on storage." },
+              { t: "note", variant: "key", html: "<strong>Everything ahead is one question asked in different places: what are you willing to pay, and how quickly will you find out when you chose wrong?</strong> A file format trades write cost against scan cost, a model trades flexibility against clarity, a schedule trades freshness against spend \u2014 and none of those choices announces itself as a mistake. What makes this discipline hard is that its failures are quiet: a pipeline that has silently gone stale still returns a number, and somebody acts on it. Every technique in this atlas exists to make the wrong answer loud." }
             ]
           },
           {
@@ -735,8 +736,8 @@
               { t: "p", html: "Disk and network are slow; CPU is fast. The whole game in analytics is <strong>reading fewer bytes</strong>. Columnar storage wins three ways: <em>projection</em> (read only the columns you ask for), <em>compression</em> (a column of similar values compresses far better than mixed rows), and <em>vectorization</em> (process a column in tight CPU loops)." },
               { t: "p", html: "In a row store, the six fields of one record sit together, so " + tok("SELECT SUM(amount)") + " still drags every other column off disk. In a column store, " + tok("amount") + " lives in its own contiguous run \u2014 read it, skip the rest." },
               { t: "widget", id: "de-store-columnar" },
-              { t: "note", variant: "key", html: "Columnar storage turns a wide table into many narrow, independently-readable, highly-compressible columns. That is the foundation of Parquet, ORC, and every analytical warehouse." },
-              { t: "note", variant: "tip", html: "Watch the readout above: " + tok("SELECT country") + " on a columnar layout reads a fraction of the file, while the row layout always reads everything. That ratio, multiplied by terabytes, is the difference between a 3-second and a 3-minute query." }
+              { t: "note", variant: "tip", html: "Watch the readout above: " + tok("SELECT country") + " on a columnar layout reads a fraction of the file, while the row layout always reads everything. That ratio, multiplied by terabytes, is the difference between a 3-second and a 3-minute query." },
+              { t: "note", variant: "key", html: "<strong>Columnar layout is a bet that you will read few columns of many rows \u2014 and it charges you whenever you do the opposite.</strong> Rebuilding one whole record means touching every column\u2019s run, and changing one field means rewriting an encoded, compressed block rather than a single value. Choose columnar when the unit of work is a scan; choose rows when the unit of work is a record." }
             ]
           },
           {
@@ -771,7 +772,8 @@
                 good: { title: "When text is fine", items: ["Small config / lookup files", "Interchange with external partners", "Quick human inspection / debugging", "Landing raw data before conversion"] }
               },
               { t: "note", variant: "tip", html: "A common pattern: land raw CSV/JSON in a <em>bronze</em> zone for fidelity, then convert to Parquet for everything downstream. You keep the original and get fast analytics." },
-              { t: "note", variant: "warn", html: "JSON\u2019s flexibility is a trap at scale: nested, irregular records are slow to scan and hard to evolve. Flatten and type them into columnar tables as early as you can." }
+              { t: "note", variant: "warn", html: "JSON\u2019s flexibility is a trap at scale: nested, irregular records are slow to scan and hard to evolve. Flatten and type them into columnar tables as early as you can." },
+              { t: "note", variant: "key", html: "<strong>Text formats move work from the one writer to every future reader.</strong> With no types, no statistics and no column boundaries, an engine has to open and parse the whole file to answer any question about it \u2014 a cost paid once by the producer and then again on every query, every day, forever. Keep the text as evidence of what actually arrived; convert it before anything downstream is allowed to depend on it." }
             ]
           },
           {
@@ -787,7 +789,7 @@
                 "<strong>Splittable</strong> \u2014 row groups let many workers read one file in parallel."
               ] },
               { t: "widget", id: "de-store-parquet" },
-              { t: "note", variant: "key", html: "Pushdown + projection mean a well-laid-out Parquet table can answer a selective query by reading a tiny slice of the file. That is why \u201cjust write Parquet\u201d is the single highest-leverage storage decision in most pipelines." },
+              { t: "note", variant: "tip", html: "Pushdown + projection mean a well-laid-out Parquet table can answer a selective query by reading a tiny slice of the file. That is why \u201cjust write Parquet\u201d is the single highest-leverage storage decision in most pipelines." },
               { t: "code", lang: "python", code:
                 "import pyarrow.parquet as pq\n\n" +
                 "# Only the 'amount' column chunks are read, and row groups whose\n" +
@@ -796,7 +798,8 @@
                 "    \"events.parquet\",\n" +
                 "    columns=[\"amount\"],\n" +
                 "    filters=[(\"amount\", \">\", 100)],\n" +
-                ")" }
+                ")" },
+              { t: "note", variant: "key", html: "<strong>Parquet rewards selective reads of sorted, well-sized files and punishes anything that behaves like a row.</strong> Skipping depends on each row group\u2019s min/max range being narrow, so data written in random order makes every row group look like a possible match and the file gets read in full anyway \u2014 the format is fine, the layout defeated it. And because the file is immutable, changing one value means rewriting whatever file holds it, which is the gap the lakehouse table formats were built to close." }
             ]
           },
           {
@@ -827,6 +830,7 @@
               ] },
               { t: "note", variant: "tip", html: "Inside Parquet, <strong>Snappy</strong> is the safe default and <strong>Zstd</strong> is the go-to when you want a better ratio without paying Gzip\u2019s CPU. The big win, though, is usually <em>encoding</em>: a dictionary-encoded low-cardinality column can shrink 10\u00d7 before compression even runs." },
               { t: "note", variant: "warn", html: "Beware compressing raw CSV with Gzip for big-data jobs: it isn\u2019t splittable, so one worker reads the whole file. Prefer columnar files (already block-compressed and splittable) or a splittable codec." },
+              { t: "note", variant: "key", html: "<strong>The codec is a dial between CPU and bytes; splittability is a gate that is either open or shut.</strong> You can trade ratio against decompression cost all afternoon and move the query a little, but a file that cannot be split hands the whole thing to one worker and no cluster size rescues it. Settle splittability first, let encoding do most of the shrinking, and pick the codec last." },
               { t: "quiz", id: "de-storage-formats" }
             ]
           }
@@ -842,12 +846,12 @@
             blocks: [
               { t: "p", html: "A <strong>data warehouse</strong> is a system built for analytics: columnar storage, a cost-based SQL engine, and <strong>MPP</strong> (massively parallel processing) that splits a query across many workers. Snowflake, BigQuery and Redshift are the headline cloud warehouses." },
               { t: "p", html: "The cloud-era breakthrough was <strong>separating storage from compute</strong>. Data lives once in cheap object storage; you spin compute up and down independently. Ten analysts can each get their own warehouse against the same data, and you pay only for compute you use." },
-              { t: "note", variant: "key", html: "Separation of storage and compute is why modern warehouses scale elastically and bill per-second. It also blurred the line with data lakes \u2014 setting up the lakehouse two lessons from now." },
               { t: "stat", items: [
                 { v: "Columnar", k: "physical storage" },
                 { v: "MPP", k: "parallel execution" },
                 { v: "Elastic", k: "compute, billed per-use" }
-              ] }
+              ] },
+              { t: "note", variant: "key", html: "<strong>Separating storage from compute converts a capacity problem into a spending problem.</strong> Nobody queues for the cluster any more because anyone can start their own \u2014 so the constraint that used to appear as a slow query now appears on an invoice, weeks later, attached to nobody. The engineering work shifts from provisioning hardware to bounding how much data each query is permitted to touch." }
             ]
           },
           {
@@ -861,7 +865,8 @@
                 good: { title: "Healthy lake", items: ["Bronze/silver/gold zones", "Catalog + ownership for every dataset", "Parquet + an open table format", "Tests and contracts at the edges"] }
               },
               { t: "note", variant: "warn", html: "Without governance, a lake degrades into a <strong>data swamp</strong>: a dumping ground nobody trusts. The table formats in the next lesson exist largely to add the structure and guarantees a raw lake lacks." },
-              { t: "note", variant: "tip", html: "Object storage gives durability and scale but only eventual list consistency and no transactions on its own \u2014 which is exactly the gap Iceberg/Delta/Hudi fill." }
+              { t: "note", variant: "tip", html: "Object storage gives durability and scale but only eventual list consistency and no transactions on its own \u2014 which is exactly the gap Iceberg/Delta/Hudi fill." },
+              { t: "note", variant: "key", html: "<strong>Object storage gives you durability and scale, and nothing else.</strong> A bucket has no schema, no transaction, no meaning and no owner, which is precisely why a lake is so cheap to build and so expensive to trust. Every property that makes it usable \u2014 a catalog, a table format, a contract, someone\u2019s name on it \u2014 is something you have to add on purpose, and the swamp is just the version where nobody did." }
             ]
           },
           {
@@ -877,12 +882,13 @@
                 "<strong>Hidden partitioning</strong> \u2014 (Iceberg) partition without leaking it into queries."
               ] },
               { t: "widget", id: "de-store-timetravel" },
-              { t: "note", variant: "key", html: "The useful mental model is indirection: immutable data files stay put, while each commit publishes new metadata that points to the current files. Time travel reads an older pointer; atomic commit swaps the pointer." },
+              { t: "note", variant: "tip", html: "The useful mental model is indirection: immutable data files stay put, while each commit publishes new metadata that points to the current files. Time travel reads an older pointer; atomic commit swaps the pointer." },
               { t: "code", lang: "sql", code:
                 "-- Read the table as it looked at an earlier snapshot\n" +
                 "SELECT * FROM sales VERSION AS OF 42;\n\n" +
                 "-- ...or as of a timestamp\n" +
-                "SELECT * FROM sales TIMESTAMP AS OF '2024-01-02 00:00:00';" }
+                "SELECT * FROM sales TIMESTAMP AS OF '2024-01-02 00:00:00';" },
+              { t: "note", variant: "key", html: "<strong>A table format buys transactions over immutable files by making the metadata <em>be</em> the table.</strong> A commit becomes a pointer swap, so a reader is never half-updated and an old pointer is still a valid query \u2014 but you have just taken on a second dataset that grows with every write. Snapshots, manifests and the small files behind them need expiry and compaction, or query planning starts to cost as much as the scan it was meant to shrink." }
             ]
           },
           {
@@ -901,8 +907,9 @@
               { t: "widget", id: "de-store-lakehouse-evolution" },
               { t: "p", html: "Row-level changes are represented as metadata plus new files, not in-place edits. An <strong>equality delete</strong> marks rows by key/value; a <strong>position delete</strong> marks exact file positions. Reads merge data and delete files until compaction rewrites a cleaner layout." },
               { t: "p", html: "Concurrent writers use optimistic commits. Each writer plans from a snapshot, writes new files, then attempts an atomic metadata commit. If another writer changed files this commit depends on, validation fails and the writer retries from the newest snapshot instead of corrupting the table." },
-              { t: "note", variant: "key", html: "Think in layers: the <strong>catalog finds the table</strong>; the <strong>table format defines table history and correctness</strong>; Parquet/ORC hold the bytes. Mixing those layers leads to brittle lakes." },
+              { t: "note", variant: "tip", html: "Think in layers: the <strong>catalog finds the table</strong>; the <strong>table format defines table history and correctness</strong>; Parquet/ORC hold the bytes. Mixing those layers leads to brittle lakes." },
               { t: "note", variant: "trap", html: "Schema evolution does not make every change safe. Adding a nullable field is easy; changing business meaning, deleting a required field, or narrowing a type still needs contract review." },
+              { t: "note", variant: "key", html: "<strong>On immutable files, a row-level change is always deferred work \u2014 never avoided work.</strong> An update or delete lands as a new file plus a marker, so the write stays fast and every subsequent reader pays to merge the difference, a cost that grows with each commit until compaction settles it. Concurrency follows the same bargain: writers assume they will win, and the one that loses retries instead of the table corrupting." },
               { t: "quiz", id: "de-storage-lakehouse-evolution" }
             ]
           },
@@ -1003,8 +1010,8 @@
                 ["Delete", "Write a tombstone/delete marker", "Consumers must not treat missing after-image as data loss"],
                 ["Schema drift", "Validate and evolve compatible schema changes", "Breaking changes should fail loudly"]
               ] },
-              { t: "note", variant: "key", html: "CDC lakehouse serving is a stateful apply problem: order by source position, merge by primary key, preserve deletes, and commit atomically into the table format." },
               { t: "note", variant: "tip", html: "Plan maintenance from day one. Streaming writes create small data files and delete files; compaction and snapshot expiration keep the table fast without changing logical results." },
+              { t: "note", variant: "key", html: "<strong>CDC hands you a stream, not a copy \u2014 the table is only ever whatever your apply logic reconstructs from it.</strong> Correctness rests on three details: order by source log position, treat a delete as data rather than as an absence, and make every commit safe to retry. Break one of them and nothing errors; you simply get a row that is quietly one version behind, which is the hardest kind of wrong to find." },
               { t: "quiz", id: "de-storage-cdc-lakehouse" }
             ]
           },

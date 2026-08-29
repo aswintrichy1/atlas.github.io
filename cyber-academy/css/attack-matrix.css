@@ -14,7 +14,7 @@
   overflow-wrap: anywhere;
 }
 .am-intro b {
-  color: var(--accent);
+  color: var(--accent-ink);
   font-weight: 600;
 }
 
@@ -32,7 +32,7 @@
 }
 /* "no blind spots" success state — accent reads well in both themes */
 .am-blindspots b.am-ok {
-  color: var(--accent);
+  color: var(--accent-ink);
 }
 
 /* --- matrix grid: auto-fit columns, single column on phones --------- */

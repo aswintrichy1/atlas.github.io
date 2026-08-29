@@ -20,7 +20,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
   var KEYCOLOR = { A: "var(--accent)", B: "var(--cyan)", C: "var(--violet)", the: "var(--accent)", cat: "var(--cyan)", ran: "var(--violet)", dog: "var(--rose)", sat: "var(--lime)" };
 
@@ -40,7 +40,7 @@
     var readout = h("div", { class: "w-readout" });
     function tokens() { var t = []; lines.forEach(function (l) { l.split(" ").forEach(function (w) { t.push(w); }); }); return t; }
     function groups() { var g = {}; tokens().forEach(function (w) { (g[w] = g[w] || []).push(1); }); return g; }
-    function chip(label, color) { return h("span", { class: "mstack-cell", style: "padding:5px 9px;border-color:" + (color || "var(--line-strong)") + ";color:" + (color || "var(--text)") }, label); }
+    function chip(label, color) { return h("span", { class: "mstack-cell", style: "padding:5px 9px;border-color:" + (color || "var(--line-strong)") + ";color:" + (color ? "oklch(from " + color + " var(--ink-l) c h)" : "var(--text)") }, label); }
     function row(label, kids) {
       var r = h("div", { style: "display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:5px 0" });
       r.appendChild(h("span", { style: "font-family:var(--font-mono);font-size:.6rem;color:var(--text-faint);min-width:74px" }, label));
@@ -82,7 +82,7 @@
     var shuffled = false;
     var stage = h("div", { class: "w-stage" });
     var readout = h("div", { class: "w-readout" });
-    function cell(k) { return h("div", { class: "dsa-cell", style: "min-width:30px;border-color:" + KEYCOLOR[k] + ";color:" + KEYCOLOR[k] }, k); }
+    function cell(k) { return h("div", { class: "dsa-cell", style: "min-width:30px;border-color:" + KEYCOLOR[k] + ";color:oklch(from " + KEYCOLOR[k] + " var(--ink-l) c h)" }, k); }
     function partRow(label, parts) {
       var wrap = h("div", { style: "margin:6px 0" });
       wrap.appendChild(h("p", { style: "font-family:var(--font-mono);font-size:.6rem;color:var(--text-faint);margin-bottom:4px" }, label));
@@ -270,14 +270,14 @@
         },
         {
           q: "Why is Spark generally faster than classic MapReduce?",
-          options: ["It avoids the network entirely", "It keeps intermediate data in memory instead of writing to disk between every stage", "It doesn\u2019t shuffle", "It uses fewer machines"],
-          answer: 1,
+          options: ["It avoids the network entirely", "It doesn\u2019t shuffle", "It keeps intermediate data in memory instead of writing to disk between every stage", "It uses fewer machines"],
+          answer: 2,
           explain: "MapReduce materializes to disk between map and reduce stages; Spark pipelines stages and caches in memory, cutting the heavy disk I/O \u2014 especially for iterative jobs."
         },
         {
           q: "Which is an ACTION (not a transformation)?",
-          options: ["select()", "filter()", "count()", "withColumn()"],
-          answer: 2,
+          options: ["select()", "filter()", "withColumn()", "count()"],
+          answer: 3,
           explain: "count() forces the DAG to execute and returns a value to the driver; select/filter/withColumn are lazy transformations that only extend the plan."
         }
       ]
@@ -288,8 +288,8 @@
       questions: [
         {
           q: "A 'wide' transformation is one that\u2026",
-          options: ["Adds a column", "Requires a shuffle because output partitions depend on data across input partitions", "Reads a file", "Runs on one machine"],
-          answer: 1,
+          options: ["Requires a shuffle because output partitions depend on data across input partitions", "Adds a column", "Reads a file", "Runs on one machine"],
+          answer: 0,
           explain: "Wide transformations (groupByKey, join, repartition) need records with the same key together, forcing a shuffle/exchange across the network \u2014 the expensive operations."
         },
         {
@@ -300,8 +300,8 @@
         },
         {
           q: "A broadcast hash join is the right choice when\u2026",
-          options: ["Both tables are huge", "One side is small enough to copy to every executor, avoiding a shuffle of the big side", "There is no join key", "You want to sort the data"],
-          answer: 1,
+          options: ["Both tables are huge", "There is no join key", "One side is small enough to copy to every executor, avoiding a shuffle of the big side", "You want to sort the data"],
+          answer: 2,
           explain: "Broadcasting the small table to all executors lets each join its big-table partition locally \u2014 no shuffle of the large table. Sort-merge or shuffle-hash joins handle two large tables."
         }
       ]
@@ -312,14 +312,14 @@
       questions: [
         {
           q: "The key difference in ELT (vs ETL) is that transformations run\u2026",
-          options: ["Before loading, on a separate cluster", "Inside the warehouse after loading raw data", "On the source database", "In the BI tool"],
-          answer: 1,
+          options: ["Before loading, on a separate cluster", "In the BI tool", "On the source database", "Inside the warehouse after loading raw data"],
+          answer: 3,
           explain: "ELT loads raw data into the warehouse first, then transforms it there with SQL \u2014 leveraging the warehouse\u2019s elastic compute. It\u2019s why dbt and cloud warehouses rose together."
         },
         {
           q: "In dbt, ref('stg_orders') is used to\u2026",
-          options: ["Hardcode a table name", "Declare a dependency so dbt builds models in the right order", "Run a Python script", "Create an index"],
-          answer: 1,
+          options: ["Declare a dependency so dbt builds models in the right order", "Hardcode a table name", "Run a Python script", "Create an index"],
+          answer: 0,
           explain: "ref() both inserts the correct (environment-aware) table name and registers an edge in dbt\u2019s DAG, so dbt knows to build stg_orders before anything that refs it."
         },
         {
@@ -336,20 +336,20 @@
       questions: [
         {
           q: "A common production dbt layer stack is\u2026",
-          options: ["raw snapshots only", "sources \u2192 staging \u2192 intermediate \u2192 marts \u2192 semantic metrics", "dashboards \u2192 raw tables \u2192 staging", "one model per dashboard with no shared refs"],
-          answer: 1,
+          options: ["raw snapshots only", "dashboards \u2192 raw tables \u2192 staging", "sources \u2192 staging \u2192 intermediate \u2192 marts \u2192 semantic metrics", "one model per dashboard with no shared refs"],
+          answer: 2,
           explain: "Sources define external inputs; staging cleans one source at a time; intermediate models compose reusable logic; marts expose business-ready facts/dimensions; semantic metrics sit on top of stable marts."
         },
         {
           q: "In dbt CI, state selection is useful because it lets you\u2026",
-          options: ["ignore changed models", "build only modified nodes and their impacted children from the prior production manifest", "skip tests on pull requests", "hardcode production table names"],
-          answer: 1,
+          options: ["ignore changed models", "hardcode production table names", "skip tests on pull requests", "build only modified nodes and their impacted children from the prior production manifest"],
+          answer: 3,
           explain: "Slim CI compares the branch manifest with the production manifest and runs selectors like state:modified+ so the pull request validates only changed resources and downstream dependents."
         },
         {
           q: "Which materialization is usually best for a large fact that receives daily changes?",
-          options: ["ephemeral", "incremental with a reliable unique key and lookback window", "view over raw JSON forever", "seed"],
-          answer: 1,
+          options: ["incremental with a reliable unique key and lookback window", "ephemeral", "view over raw JSON forever", "seed"],
+          answer: 0,
           explain: "Incremental models merge or append only new/changed rows. Large mutable facts need a unique key, late-arrival lookback and periodic full-refresh/backfill path to stay correct."
         },
         {
@@ -360,8 +360,8 @@
         },
         {
           q: "An exposure in dbt documents\u2026",
-          options: ["a downstream consumer such as a dashboard, notebook, ML job or report", "a private temp table only", "warehouse CPU usage", "a source password"],
-          answer: 0,
+          options: ["warehouse CPU usage", "a private temp table only", "a downstream consumer such as a dashboard, notebook, ML job or report", "a source password"],
+          answer: 2,
           explain: "Exposures make downstream dependencies visible in lineage. If a mart changes, owners can see which dashboards, notebooks or jobs depend on it before they break consumers."
         }
       ]
@@ -372,14 +372,14 @@
       questions: [
         {
           q: "The small-file problem is best fixed by\u2026",
-          options: ["Adding more files", "Compaction \u2014 rewriting many tiny files into right-sized ones", "Disabling compression", "Increasing partitions"],
-          answer: 1,
+          options: ["Adding more files", "Increasing partitions", "Disabling compression", "Compaction \u2014 rewriting many tiny files into right-sized ones"],
+          answer: 3,
           explain: "Thousands of tiny files create huge per-file overhead; compaction (or repartition/coalesce on write) produces ~128 MB\u20131 GB files that scan efficiently."
         },
         {
           q: "Spark's Adaptive Query Execution (AQE) helps by\u2026",
-          options: ["Compiling to C", "Re-optimizing the plan at runtime using actual partition sizes (e.g. coalescing or handling skew)", "Removing the shuffle", "Caching everything"],
-          answer: 1,
+          options: ["Re-optimizing the plan at runtime using actual partition sizes (e.g. coalescing or handling skew)", "Compiling to C", "Removing the shuffle", "Caching everything"],
+          answer: 0,
           explain: "AQE uses real runtime statistics to coalesce shuffle partitions, switch join strategies, and split skewed partitions \u2014 fixing plans the optimizer couldn\u2019t cost accurately upfront."
         },
         {
@@ -428,8 +428,9 @@
                 "      .filter(\"country = 'EU'\")        # transformation (lazy)\n" +
                 "      .groupBy(\"product\").sum(\"amount\")) # transformation (lazy)\n" +
                 "df.write.parquet(\"out\")                # ACTION -> runs the DAG" },
-              { t: "note", variant: "key", html: "Spark separates <em>describing</em> the computation (transformations on DataFrames) from <em>running</em> it (an action). That gap is what lets Catalyst optimize the whole pipeline before a single byte moves." },
-              { t: "note", variant: "tip", html: "Prefer DataFrame/SQL over raw RDDs: Catalyst can push down filters, prune columns, and choose join strategies for you. Dropping to RDDs or Python UDFs hides the data from the optimizer." }
+              { t: "note", variant: "tip", html: "Spark separates <em>describing</em> the computation (transformations on DataFrames) from <em>running</em> it (an action). That gap is what lets Catalyst optimize the whole pipeline before a single byte moves." },
+              { t: "note", variant: "tip", html: "Prefer DataFrame/SQL over raw RDDs: Catalyst can push down filters, prune columns, and choose join strategies for you. Dropping to RDDs or Python UDFs hides the data from the optimizer." },
+              { t: "note", variant: "key", html: "<strong>You are not running code \u2014 you are describing a plan for the driver to schedule.</strong> Nothing is measured until an action, so cost and failure both surface at the action rather than at the line that caused them, and any step that pulls results back into the driver quietly leaves the distributed model altogether. That is why a job that sails through a sample can die on the real dataset without a single line changing." }
             ]
           },
           {
@@ -474,8 +475,9 @@
             blocks: [
               { t: "p", html: "A <strong>shuffle</strong> (or exchange) repartitions data so records sharing a key land together. It writes intermediate files, transfers them over the network, and reads them back \u2014 the single most expensive thing Spark does, and a stage boundary in the DAG." },
               { t: "widget", id: "de-batch-exchange" },
-              { t: "note", variant: "key", html: "Narrow transformations are free movement-wise; wide ones pay the shuffle tax. Cut shuffles by filtering early, broadcasting small tables, and pre-partitioning data by the join/group key. See the <a class='inline' href='#/sparksql/operations/joins'>Spark SQL join-strategy lab</a> for how a broadcast join skips the big-side shuffle entirely." },
-              { t: "note", variant: "tip", html: "Read a Spark plan for " + tok("Exchange") + " nodes \u2014 each is a shuffle. Fewer exchanges almost always means a faster job." }
+              { t: "note", variant: "tip", html: "Narrow transformations are free movement-wise; wide ones pay the shuffle tax. Cut shuffles by filtering early, broadcasting small tables, and pre-partitioning data by the join/group key. See the <a class='inline' href='#/sparksql/operations/joins'>Spark SQL join-strategy lab</a> for how a broadcast join skips the big-side shuffle entirely." },
+              { t: "note", variant: "tip", html: "Read a Spark plan for " + tok("Exchange") + " nodes \u2014 each is a shuffle. Fewer exchanges almost always means a faster job." },
+              { t: "note", variant: "key", html: "<strong>Map work scales with the cluster; the shuffle scales with the data.</strong> Doubling executors halves the scanning and leaves the bytes crossing the network exactly where they were, so as volume climbs the exchange takes over the runtime and then starts failing outright \u2014 spill, fetch timeouts, one straggler holding the stage open. The only shuffle that never fails is the one you removed by filtering, broadcasting or pre-partitioning first." }
             ]
           },
           {
@@ -528,8 +530,9 @@
                 bad: { title: "Classic ETL", items: ["Transform on a separate cluster", "Only modeled data lands", "Reprocessing means re-extracting", "Heavier engineering"] },
                 good: { title: "Modern ELT", items: ["Raw data preserved in the warehouse", "Transform with SQL at warehouse scale", "Re-transform anytime from raw", "Analysts can own transforms (dbt)"] }
               },
-              { t: "note", variant: "key", html: "ELT keeps the raw data, so you can always re-derive models when requirements change \u2014 you don\u2019t have to re-extract from the source. That flexibility is why the modern stack is ELT-first." },
-              { t: "note", variant: "tip", html: "ETL still wins when you must transform before landing for compliance (e.g. strip PII) or when the source can\u2019t dump raw volume economically." }
+              { t: "note", variant: "tip", html: "ELT keeps the raw data, so you can always re-derive models when requirements change \u2014 you don\u2019t have to re-extract from the source. That flexibility is why the modern stack is ELT-first." },
+              { t: "note", variant: "tip", html: "ETL still wins when you must transform before landing for compliance (e.g. strip PII) or when the source can\u2019t dump raw volume economically." },
+              { t: "note", variant: "key", html: "<strong>ELT buys you the right to change your mind, and bills you for it every month.</strong> Keeping the raw layer means any model can be rebuilt without touching the source system again \u2014 but you are now storing, securing and re-scanning data nobody has modelled yet, and the transform cost has moved onto a metered engine. Choose ELT when requirements move faster than volume, and ETL when the reverse is true." }
             ]
           },
           {
@@ -595,8 +598,9 @@
                 "# Nightly confidence run for high-value marts\n" +
                 "dbt source freshness\n" +
                 "dbt build --select tag:gold+" },
-              { t: "note", variant: "key", html: "<strong>Slim CI</strong> compares the branch to the last production manifest, builds modified nodes and their children, and defers unchanged parents to production objects. Fast feedback, realistic dependencies." },
-              { t: "note", variant: "trap", html: "Materialization is a contract. Views are cheap and fresh but can push cost to every reader; tables are fast but need rebuilds; incremental models are economical but require a unique key, late-arrival lookback and full-refresh plan." }
+              { t: "note", variant: "tip", html: "<strong>Slim CI</strong> compares the branch to the last production manifest, builds modified nodes and their children, and defers unchanged parents to production objects. Fast feedback, realistic dependencies." },
+              { t: "note", variant: "trap", html: "Materialization is a contract. Views are cheap and fresh but can push cost to every reader; tables are fast but need rebuilds; incremental models are economical but require a unique key, late-arrival lookback and full-refresh plan." },
+              { t: "note", variant: "key", html: "<strong>In a mature project the SQL is the easy part; the graph is the product.</strong> Tests, exposures and state-aware builds all exist to answer one question before you merge \u2014 who breaks if this column changes? A project that cannot answer it still builds green, still passes review, and still takes a dashboard down on a Monday morning." }
             ]
           },
           {
@@ -677,8 +681,9 @@
                 bad: { title: "Not idempotent", items: ["INSERT appends \u2014 retries duplicate rows", "Counters incremented in place", "Order-dependent side effects"] },
                 good: { title: "Idempotent", items: ["Overwrite the target partition", "MERGE on a business key", "Deterministic, input-only output"] }
               },
-              { t: "note", variant: "key", html: "Design for replay: assume any run may happen twice. If the output depends only on the input (not on how many times it ran), you can retry and backfill fearlessly." },
+              { t: "note", variant: "tip", html: "Design for replay: assume any run may happen twice. If the output depends only on the input (not on how many times it ran), you can retry and backfill fearlessly." },
               { t: "note", variant: "tip", html: "Idempotency pairs with the ingestion track\u2019s exactly-once goal: at-least-once delivery + idempotent processing = effectively-once results, the practical standard." },
+              { t: "note", variant: "key", html: "<strong>Idempotency is not a property of the job \u2014 it is a property of the write.</strong> To make a rerun harmless you have to name the unit you are allowed to replace, a business key or a partition, and that choice then constrains the table layout for as long as the table lives. Pipelines without one never fail loudly; they accumulate duplicates until someone questions a total." },
               { t: "quiz", id: "de-batch-elt" }
             ]
           }
@@ -723,8 +728,9 @@
                 "<strong>Pushdown</strong> \u2014 read Parquet with column projection and predicate pushdown.",
                 "<strong>Avoid Python UDFs</strong> \u2014 they break vectorization; prefer built-in/SQL functions."
               ] },
-              { t: "note", variant: "key", html: "The diagnostic loop is always the same: read the Spark UI, find the slow stage, ask <em>shuffle, skew, or spill?</em> \u2014 then apply the matching fix. Most jobs need only two or three of these knobs." },
+              { t: "note", variant: "tip", html: "The diagnostic loop is always the same: read the Spark UI, find the slow stage, ask <em>shuffle, skew, or spill?</em> \u2014 then apply the matching fix. Most jobs need only two or three of these knobs." },
               { t: "note", variant: "tip", html: "Let the optimizer help you: keep logic in DataFrame/SQL, keep stats fresh, and enable AQE. Hand-tuning matters most after you\u2019ve removed unnecessary shuffles." },
+              { t: "note", variant: "key", html: "<strong>Tune in order: remove work, then redistribute it, then resize it.</strong> A filter that runs earlier and a shuffle that never happens beat any configuration value, because every knob on this page only divides up the work you failed to eliminate. Reach for settings once the plan is as small as you can make it \u2014 otherwise you spend the afternoon making the wrong query beautifully parallel." },
               { t: "quiz", id: "de-batch-perf" }
             ]
           }

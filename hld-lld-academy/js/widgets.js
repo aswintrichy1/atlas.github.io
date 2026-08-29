@@ -204,7 +204,7 @@
 
     mount.appendChild(
       h("div", { class: "widget-controls" },
-        h("span", { class: "w-field" }, "capacity ", h("b", { html: "&nbsp;" + CAP, style: "color:var(--accent);font-family:var(--font-mono)" })),
+        h("span", { class: "w-field" }, "capacity ", h("b", { html: "&nbsp;" + CAP, style: "color:var(--accent-ink);font-family:var(--font-mono)" })),
         h("label", { class: "w-field" }, "access key ", input),
         h("button", { class: "w-btn primary", onclick: () => { access(input.value); input.value = ""; } }, "Access"),
         h("button", { class: "w-btn", onclick: () => access("ABCD"[Math.floor(Math.random() * 6)] || "A") }, "Random A–D"),
@@ -414,7 +414,7 @@
         h("button", { class: "w-btn primary", onclick: () => request(1) }, "1 request"),
         h("button", { class: "w-btn", onclick: () => request(6) }, "Burst ×6"),
         h("button", { class: "w-btn", onclick: () => request(15) }, "Flood ×15"),
-        h("span", { class: "w-field" }, "refill", h("b", { style: "color:var(--accent);font-family:var(--font-mono)" }, "\u00a0" + refillPerSec + "/s"))
+        h("span", { class: "w-field" }, "refill", h("b", { style: "color:var(--accent-ink);font-family:var(--font-mono)" }, "\u00a0" + refillPerSec + "/s"))
       )
     );
     mount.appendChild(h("div", { class: "w-stage" }, h("div", { class: "tb-wrap" }, bucket, log)));
@@ -449,7 +449,7 @@
       word = String(word).trim().toLowerCase(); if (!word) return;
       const idx = hashes(word); idx.forEach((i) => (bits[i] = 1));
       if (!added.includes(word)) added.push(word);
-      status.innerHTML = `Added <b style="color:var(--accent)">${word}</b> → set bits [${idx.join(", ")}].`;
+      status.innerHTML = `Added <b style="color:var(--accent-ink)">${word}</b> → set bits [${idx.join(", ")}].`;
       paint(idx);
     }
     function test(word) {
@@ -500,15 +500,15 @@
         flow.appendChild(h("div", {
           class: "lru-cell",
           style: "width:auto;height:auto;padding:10px 14px;font-size:0.82rem;font-family:var(--font-mono)" +
-            (step.startsWith("✓") ? ";border-color:var(--cyan);color:var(--cyan)" : "")
+            (step.startsWith("✓") ? ";border-color:var(--cyan);color:var(--cyan-ink)" : "")
         }, step));
       });
       stage.appendChild(flow);
       stage.appendChild(h("div", { class: "w-readout" },
-        h("span", { class: "ro" }, h("b", { style: "color:var(--cyan)" }, "✓ Pro "), d.pro),
+        h("span", { class: "ro" }, h("b", { style: "color:var(--cyan-ink)" }, "✓ Pro "), d.pro),
       ));
       stage.appendChild(h("div", { class: "w-readout", style: "margin-top:8px" },
-        h("span", { class: "ro" }, h("b", { style: "color:var(--rose)" }, "✗ Con "), d.con)
+        h("span", { class: "ro" }, h("b", { style: "color:var(--rose-ink)" }, "✗ Con "), d.con)
       ));
     }
     const seg = h("div", { class: "w-seg" });
@@ -593,7 +593,7 @@
         style: "width:min(100%, 190px);height:auto;min-height:104px;padding:14px;text-align:left;display:block;border-color:" + accent
       },
         h("div", { class: "srv-name", style: "margin-bottom:8px" }, title),
-        h("div", { class: "srv-count", style: "color:" + accent + ";font-size:1.5rem" }, value),
+        h("div", { class: "srv-count", style: "color:oklch(from " + accent + " var(--ink-l) c h);font-size:1.5rem" }, value),
         h("div", { class: "srv-weight", style: "margin-top:8px;line-height:1.35" }, detail)
       );
     }
@@ -695,7 +695,7 @@
         style: "width:min(100%, 190px);height:auto;min-height:116px;padding:14px;text-align:left;display:block;border-color:" + accent
       },
         h("div", { class: "srv-name", style: "margin-bottom:8px" }, title),
-        h("div", { class: "srv-count", style: "color:" + accent + ";font-size:1.45rem" }, value),
+        h("div", { class: "srv-count", style: "color:oklch(from " + accent + " var(--ink-l) c h);font-size:1.45rem" }, value),
         h("div", { class: "srv-weight", style: "margin-top:8px;line-height:1.35" }, detail)
       );
     }
@@ -755,5 +755,5 @@
     paint();
   };
 
-  window.Widgets = Widgets;
+  window.Widgets = Object.assign(window.Widgets || {}, Widgets);
 })();

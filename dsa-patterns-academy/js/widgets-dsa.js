@@ -486,11 +486,11 @@
           i === f.lo ? h("span", { class: "ptr" }, "L") : (i === f.hi ? h("span", { class: "ptr" }, "R") : null));
         cells.appendChild(c);
       });
-      if (f.status === "none") { sumRO.innerHTML = ""; sumRO.appendChild(h("b", { style: "color:var(--rose)" }, "no pair sums to " + target)); }
+      if (f.status === "none") { sumRO.innerHTML = ""; sumRO.appendChild(h("b", { style: "color:var(--rose-ink)" }, "no pair sums to " + target)); }
       else {
         sumRO.innerHTML = "";
         sumRO.appendChild(document.createTextNode("arr[L] + arr[R] = " + arr[f.lo] + " + " + arr[f.hi] + " = "));
-        sumRO.appendChild(h("b", { style: "color:" + (f.status === "hit" ? "var(--lime)" : "var(--accent)") }, String(f.sum)));
+        sumRO.appendChild(h("b", { style: "color:" + (f.status === "hit" ? "var(--lime-ink)" : "var(--accent-ink)") }, String(f.sum)));
         sumRO.appendChild(document.createTextNode(" " + (f.status === "hit" ? "= target ✓" : (f.status === "low" ? "< " + target + " → move L right" : "> " + target + " → move R left"))));
       }
       if (appendLog && f.status !== "none") {
@@ -558,7 +558,7 @@
       const brute = arr.slice(lo, hi + 1).reduce((a, b) => a + b, 0);
       formula.innerHTML = "";
       formula.appendChild(document.createTextNode("sum(" + lo + ".." + hi + ") = P[" + (hi + 1) + "] − P[" + lo + "] = " + P[hi + 1] + " − " + P[lo] + " = "));
-      formula.appendChild(h("b", { style: "color:var(--lime)" }, String(P[hi + 1] - P[lo])));
+      formula.appendChild(h("b", { style: "color:var(--lime-ink)" }, String(P[hi + 1] - P[lo])));
       formula.appendChild(document.createTextNode("  (brute-force check: " + brute + ")"));
     }
 
@@ -571,11 +571,10 @@
     const loSel = mkSel(lo, (v) => { lo = v; if (hi < lo) hi = lo; rebuild(); }, arr.length);
     const hiSel = mkSel(hi, (v) => { hi = v; if (lo > hi) lo = hi; rebuild(); }, arr.length);
     function rebuild() {
-      const c = mount.querySelector(".widget-controls");
-      const nl = mkSel(lo, (v) => { lo = v; if (hi < lo) hi = lo; rebuild(); }, arr.length);
-      const nh = mkSel(hi, (v) => { hi = v; if (lo > hi) lo = hi; rebuild(); }, arr.length);
-      c.replaceChild(nl, c.querySelector(".js-lo")); nl.className = "js-lo";
-      c.replaceChild(nh, c.querySelector(".js-hi")); nh.className = "js-hi";
+      // The selects live inside their .w-field labels, so they are not direct
+      // children of .widget-controls; syncing selectedIndex avoids swapping nodes.
+      loSel.selectedIndex = lo;
+      hiSel.selectedIndex = hi;
       paint();
     }
     loSel.className = "js-lo"; hiSel.className = "js-hi";
@@ -826,5 +825,5 @@
     reset();
   };
 
-  window.Widgets = Widgets;
+  window.Widgets = Object.assign(window.Widgets || {}, Widgets);
 })();

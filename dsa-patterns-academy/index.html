@@ -106,11 +106,17 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- Scripts: order matters -->
+  <!-- quizzes.js assigns window.QUIZZES wholesale, so track files load after it. -->
   <script src="js/widgets-dsa.js" defer></script>
   <script src="js/widgets-patterns.js" defer></script>
   <script src="js/quizzes.js" defer></script>
   <script src="js/curriculum-dsa.js" defer></script>
   <script src="js/curriculum-patterns.js" defer></script>
+  <script src="js/track-cpat-linear.js" defer></script>
+  <script src="js/track-cpat-nonlinear.js" defer></script>
+  <script src="js/track-aiec-core.js" defer></script>
+  <script src="js/track-aiec-patterns.js" defer></script>
+  <script src="js/track-aiec-breakdowns.js" defer></script>
   <script src="js/practice-content.js" defer></script>
   <script src="js/exam.js" defer></script>
   <script src="js/pwa.js" defer></script>

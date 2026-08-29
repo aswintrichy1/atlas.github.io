@@ -61,11 +61,13 @@
   // Quiz ids in Codex use these prefixes: dsa-, pat-.
   // The "pat" prefix maps to the window.TRACKS id "patterns".
   var PREFIX_ALIAS = { pat: "patterns" };
-  var ACTIVE_QUIZ_PREFIXES = ["dsa", "pat"];
+  var ACTIVE_QUIZ_PREFIXES = ["dsa", "pat", "cpat", "aiec"];
   var TRACK_NAMES = {
     dsa: "Data Structures & Algorithms",
     pat: "DSA Interview Patterns",
-    patterns: "DSA Interview Patterns"
+    patterns: "DSA Interview Patterns",
+    cpat: "Advanced Coding Patterns",
+    aiec: "AI-Enabled Coding",
   };
   function trackOf(quizId) { return String(quizId).split("-")[0]; }
   function isActiveQuiz(quizId) { return ACTIVE_QUIZ_PREFIXES.indexOf(trackOf(quizId)) !== -1; }

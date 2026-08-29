@@ -60,9 +60,12 @@
   /* ---------------- track helpers ---------------- */
   // Quiz ids in Blueprint use these prefixes: hld-, lld-.
   var PREFIX_ALIAS = {};
-  var ACTIVE_QUIZ_PREFIXES = ["hld", "lld"];
+  var ACTIVE_QUIZ_PREFIXES = ["hld", "deepdives", "sdpatterns", "breakdowns", "lld"];
   var TRACK_NAMES = {
     hld: "High-Level Design",
+    deepdives: "Technology Deep Dives",
+    sdpatterns: "System Design Patterns",
+    breakdowns: "Problem Breakdowns",
     lld: "Low-Level Design",
   };
   function trackOf(quizId) { return String(quizId).split("-")[0]; }

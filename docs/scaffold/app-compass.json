@@ -1,0 +1,84 @@
+{
+  "dir": "behavioral-academy",
+  "name": "Compass",
+  "subtitle": "The Behavioral Interview Atlas",
+  "tracks": [
+    { "id": "beh", "short": "COURSE", "name": "Behavioral Course" },
+    { "id": "story", "short": "STORIES", "name": "Story Bank & Playbooks" }
+  ],
+  "heroTag": "Interactive behavioral-interview atlas",
+  "heroH1": "Tell stories<br>that <span class=\"grad\">land</span> &amp; show<br>scope that <span class=\"grad\">scales</span>.",
+  "heroLede": "Treat the behavioral round like the engineering problem it is \\u2014 name the signal behind the question, pick the story that proves it, and land it so the interviewer can score you. Then build a reusable story bank that covers every signal area you will be asked about.",
+  "ctaPrimary": { "route": "#/beh/foundation/why-it-matters", "label": "Start the course" },
+  "ctaSecondary": { "route": "#/story/catalog/journaling", "label": "Build a story bank" },
+  "featLabs": "Grade a story against the signal rubric, drill the story shortlist on a live prompt, run a SALT timer, map your catalog onto a coverage matrix, and spot the missing \"I\" in a transcript.",
+  "pathBanner": "Pick Course Foundations, Delivery Craft, Story Bank, or Company Playbooks and copy the path as Markdown study notes.",
+  "paths": [
+    {
+      "id": "beh-foundations",
+      "title": "Course Foundations",
+      "label": "Foundations",
+      "color": "#fb7185",
+      "desc": "Why the round exists, the eight signal areas behind it, and how to name the signal and pick the story before you say a word.",
+      "routes": [
+        "#/beh/foundation/why-it-matters",
+        "#/beh/foundation/how-evaluated",
+        "#/beh/foundation/decode",
+        "#/beh/foundation/select"
+      ]
+    },
+    {
+      "id": "beh-delivery",
+      "title": "Delivery Craft",
+      "label": "Delivery",
+      "color": "#fbbf24",
+      "desc": "SALT, the three questions you will always be asked, and the pitfalls that quietly cost the offer.",
+      "routes": [
+        "#/beh/delivery/deliver-salt",
+        "#/beh/delivery/big-three",
+        "#/beh/delivery/pitfalls"
+      ]
+    },
+    {
+      "id": "beh-advanced",
+      "title": "Advanced Rounds",
+      "label": "Advanced",
+      "color": "#38bdf8",
+      "desc": "Special interview types, the new questions about working with AI, and how to actually practise.",
+      "routes": [
+        "#/beh/advanced/special-types",
+        "#/beh/advanced/ai-questions",
+        "#/beh/advanced/practicing"
+      ]
+    },
+    {
+      "id": "story-bank",
+      "title": "Story Bank",
+      "label": "Stories",
+      "color": "#34d399",
+      "desc": "Engineer a catalog bottom-up, prove scope, and map every story onto the signals interviewers score.",
+      "routes": [
+        "#/story/catalog/journaling",
+        "#/story/catalog/story-anatomy",
+        "#/story/catalog/scope-signal",
+        "#/story/catalog/ownership-ambiguity",
+        "#/story/catalog/conflict-growth",
+        "#/story/catalog/coverage-matrix"
+      ]
+    },
+    {
+      "id": "story-playbooks",
+      "title": "Company Playbooks",
+      "label": "Playbooks",
+      "color": "#a78bfa",
+      "desc": "Adapt the same catalog to big-tech loops, principle-based rubrics, startups, and the manager track.",
+      "routes": [
+        "#/story/playbooks/big-tech",
+        "#/story/playbooks/principle-based",
+        "#/story/playbooks/startup-vs-scale",
+        "#/story/playbooks/manager-track",
+        "#/story/playbooks/mock-drills"
+      ]
+    }
+  ]
+}

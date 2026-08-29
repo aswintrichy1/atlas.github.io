@@ -106,10 +106,18 @@
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
 
   <!-- Scripts: order matters -->
+  <!-- widgets.js and quizzes.js assign window.Widgets / window.QUIZZES wholesale,
+       so every track file below must load after them and merge instead. -->
   <script src="js/widgets.js" defer></script>
   <script src="js/quizzes.js" defer></script>
   <script src="js/curriculum-hld.js" defer></script>
   <script src="js/curriculum-lld.js" defer></script>
+  <script src="js/track-deepdives.js" defer></script>
+  <script src="js/track-sdpatterns.js" defer></script>
+  <script src="js/track-bd-foundations.js" defer></script>
+  <script src="js/track-bd-scale.js" defer></script>
+  <script src="js/track-bd-hard.js" defer></script>
+  <script src="js/track-wild-lld.js" defer></script>
   <script src="js/practice-content.js" defer></script>
   <script src="js/exam.js" defer></script>
   <script src="js/pwa.js" defer></script>

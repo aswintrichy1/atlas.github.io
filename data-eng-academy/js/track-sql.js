@@ -20,7 +20,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
 
   /* =====================================================================
@@ -129,7 +129,7 @@
       var rows = compute();
       stage.innerHTML = "";
       var b = h("div", { class: "grid-board", style: "grid-template-columns:repeat(4,minmax(56px,1fr));gap:3px" });
-      ["dept", "name", "salary", "result"].forEach(function (c) { b.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:5px;font-family:var(--font-mono);font-size:.58rem;color:" + (c === "result" ? "var(--accent)" : "var(--text-dim)") }, c)); });
+      ["dept", "name", "salary", "result"].forEach(function (c) { b.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:5px;font-family:var(--font-mono);font-size:.58rem;color:" + (c === "result" ? "var(--accent-ink)" : "var(--text-dim)") }, c)); });
       rows.forEach(function (r) {
         [r.dept, r.name, r.salary, r.val].forEach(function (v, ci) {
           b.appendChild(h("div", { class: "grid-cell" + (ci === 3 ? " dp-cur" : ""), style: "width:auto;height:auto;padding:6px 4px;font-size:.68rem" }, String(v)));
@@ -137,7 +137,7 @@
       });
       stage.appendChild(b);
       readout.innerHTML = "";
-      readout.appendChild(h("span", { class: "ro" }, h("b", { style: "color:var(--accent);font-family:var(--font-mono)" }, overClause())));
+      readout.appendChild(h("span", { class: "ro" }, h("b", { style: "color:var(--accent-ink);font-family:var(--font-mono)" }, overClause())));
     }
     mount.appendChild(h("div", { class: "widget-controls" },
       seg([{ v: "row_number", label: "ROW_NUMBER" }, { v: "rank", label: "RANK" }, { v: "sum_run", label: "running SUM" }, { v: "lag", label: "LAG" }], function () { return fn; }, function (v) { fn = v; paint(); }),
@@ -213,14 +213,14 @@
         },
         {
           q: "The difference between WHERE and HAVING is that HAVING\u2026",
-          options: ["Runs before grouping", "Filters after aggregation (on grouped results)", "Is faster", "Only works on text"],
-          answer: 1,
+          options: ["Runs before grouping", "Is faster", "Filters after aggregation (on grouped results)", "Only works on text"],
+          answer: 2,
           explain: "WHERE filters rows before grouping; HAVING filters the grouped/aggregated results (e.g. HAVING SUM(amount) > 1000)."
         },
         {
           q: "UNION (without ALL) differs from UNION ALL by\u2026",
-          options: ["Being slower for no reason", "Removing duplicate rows", "Keeping only the first table", "Sorting the output"],
-          answer: 1,
+          options: ["Being slower for no reason", "Sorting the output", "Keeping only the first table", "Removing duplicate rows"],
+          answer: 3,
           explain: "UNION de-duplicates the combined result (an extra sort/hash step); UNION ALL concatenates without dedup and is cheaper when you know there are no duplicates."
         }
       ]
@@ -231,8 +231,8 @@
       questions: [
         {
           q: "Unlike GROUP BY, a window function\u2026",
-          options: ["Collapses rows into one per group", "Computes across a set of rows but returns a value per row", "Can\u2019t use ORDER BY", "Only works on numbers"],
-          answer: 1,
+          options: ["Computes across a set of rows but returns a value per row", "Collapses rows into one per group", "Can\u2019t use ORDER BY", "Only works on numbers"],
+          answer: 0,
           explain: "Window functions compute over a frame (PARTITION/ORDER) while keeping every input row \u2014 so you can show each employee\u2019s salary AND their rank in one result set."
         },
         {
@@ -243,8 +243,8 @@
         },
         {
           q: "RANK() differs from DENSE_RANK() in that RANK()\u2026",
-          options: ["Never ties", "Leaves gaps after ties (1,1,3)", "Is the same as ROW_NUMBER", "Ignores ORDER BY"],
-          answer: 1,
+          options: ["Never ties", "Is the same as ROW_NUMBER", "Leaves gaps after ties (1,1,3)", "Ignores ORDER BY"],
+          answer: 2,
           explain: "On a tie, RANK() assigns the same rank then skips (1,1,3), while DENSE_RANK() doesn\u2019t skip (1,1,2). ROW_NUMBER() always gives distinct numbers."
         }
       ]
@@ -255,14 +255,14 @@
       questions: [
         {
           q: "A cost-based optimizer chooses a plan using\u2026",
-          options: ["The order you wrote the joins", "Table/column statistics to estimate cardinalities and costs", "The alphabetical order of tables", "Random selection"],
-          answer: 1,
+          options: ["The order you wrote the joins", "Random selection", "The alphabetical order of tables", "Table/column statistics to estimate cardinalities and costs"],
+          answer: 3,
           explain: "The CBO uses statistics (row counts, distinct values, histograms) to estimate how many rows each operator produces and picks the cheapest join order and algorithm \u2014 stale stats lead to bad plans."
         },
         {
           q: "In an MPP engine, a broadcast join is preferred when\u2026",
-          options: ["Both tables are huge", "One table is small enough to copy to every worker, avoiding a big shuffle", "There is no join key", "The data is sorted"],
-          answer: 1,
+          options: ["One table is small enough to copy to every worker, avoiding a big shuffle", "Both tables are huge", "There is no join key", "The data is sorted"],
+          answer: 0,
           explain: "Broadcasting a small table to all workers lets each join its local partition of the big table without shuffling the big one \u2014 the same idea as Spark\u2019s broadcast join."
         },
         {
@@ -279,20 +279,20 @@
       questions: [
         {
           q: "Wrapping an indexed column in a function, e.g. WHERE DATE(created_at) = '2024-01-01', usually\u2026",
-          options: ["Speeds it up", "Prevents the index from being used (a full scan)", "Has no effect", "Creates an index"],
-          answer: 1,
+          options: ["Speeds it up", "Has no effect", "Prevents the index from being used (a full scan)", "Creates an index"],
+          answer: 2,
           explain: "A function on the column makes it non-sargable, so the engine can\u2019t use the index and scans the table. Rewrite as a range: created_at >= '2024-01-01' AND created_at < '2024-01-02'."
         },
         {
           q: "In an EXPLAIN plan, a large gap between estimated and actual rows signals\u2026",
-          options: ["A perfect plan", "Stale or missing statistics misleading the optimizer", "An index is present", "The query is cached"],
-          answer: 1,
+          options: ["A perfect plan", "The query is cached", "An index is present", "Stale or missing statistics misleading the optimizer"],
+          answer: 3,
           explain: "When estimates are far off actuals, the optimizer is working from bad stats and likely chose a poor join order/algorithm \u2014 refreshing statistics often fixes the plan."
         },
         {
           q: "Why do analytical (columnar) engines rarely rely on B-tree indexes?",
-          options: ["Indexes are illegal there", "They scan large ranges and use column pruning, min/max stats and partitioning instead", "They never filter", "Indexes don\u2019t exist"],
-          answer: 1,
+          options: ["They scan large ranges and use column pruning, min/max stats and partitioning instead", "Indexes are illegal there", "They never filter", "Indexes don\u2019t exist"],
+          answer: 0,
           explain: "OLAP queries touch large fractions of data; columnar projection, zone maps (min/max) and partition pruning serve them better than per-row B-trees, which shine for OLTP point lookups."
         }
       ]
@@ -337,8 +337,9 @@
                 "WHERE order_date >= '2024-01-01'   -- filter rows first\n" +
                 "GROUP BY product\n" +
                 "HAVING SUM(amount) > 10000;        -- then filter groups" },
-              { t: "note", variant: "key", html: "Order of operations: WHERE \u2192 GROUP BY \u2192 HAVING \u2192 SELECT \u2192 ORDER BY. Filtering rows in WHERE (not HAVING) is both correct and faster \u2014 you aggregate less." },
-              { t: "note", variant: "tip", html: "<strong>GROUPING SETS</strong>, <strong>ROLLUP</strong> and <strong>CUBE</strong> compute multiple aggregation levels (subtotals, grand totals) in one pass \u2014 handy for reporting cubes." }
+              { t: "note", variant: "tip", html: "Order of operations: WHERE \u2192 GROUP BY \u2192 HAVING \u2192 SELECT \u2192 ORDER BY. Filtering rows in WHERE (not HAVING) is both correct and faster \u2014 you aggregate less." },
+              { t: "note", variant: "tip", html: "<strong>GROUPING SETS</strong>, <strong>ROLLUP</strong> and <strong>CUBE</strong> compute multiple aggregation levels (subtotals, grand totals) in one pass \u2014 handy for reporting cubes." },
+              { t: "note", variant: "key", html: "<strong>The GROUP BY list <em>is</em> the grain of the result.</strong> Every number you emit is only true at that level, so a measure that looks safe to re-sum one grain up \u2014 an average, a rate, a distinct count \u2014 usually is not. Decide what one output row means before you decide what to aggregate." }
             ]
           },
           {
@@ -385,6 +386,7 @@
             minutes: 8, tags: ["window-functions"],
             blocks: [
               { t: "p", html: "A <strong>window function</strong> computes over a set of rows (the <em>window</em>) defined by " + tok("OVER (PARTITION BY \u2026 ORDER BY \u2026)") + " \u2014 but unlike " + tok("GROUP BY") + ", it returns a value for <em>every</em> row. That\u2019s how you show a value <em>and</em> its rank, running total, or the previous row\u2019s value side by side." },
+              { t: "note", variant: "tip", html: "This is the engine-agnostic treatment. <a href='#/sparksql/operations/window-functions'>The Spark SQL version</a> revisits the same operators from the execution side, where partitioning decides how much data moves." },
               { t: "widget", id: "de-sql-window" },
               { t: "p", html: "Three families: <strong>ranking</strong> (" + tok("ROW_NUMBER") + ", " + tok("RANK") + ", " + tok("DENSE_RANK") + "), <strong>aggregate</strong> windows (" + tok("SUM") + "/" + tok("AVG") + " " + tok("OVER") + " for running totals), and <strong>offset</strong> (" + tok("LAG") + ", " + tok("LEAD") + " for previous/next)." },
               { t: "note", variant: "key", html: "The <strong>frame</strong> (" + tok("ROWS BETWEEN \u2026") + ") controls which rows the function sees \u2014 e.g. a moving average over the last 7 rows. PARTITION resets the window per group; ORDER defines the sequence. The same syntax carries straight into the <a class='inline' href='#/sparksql/operations/window-functions'>Spark SQL window-functions lesson</a>." }
@@ -401,8 +403,9 @@
                 "<strong>Period-over-period</strong> \u2014 " + tok("LAG(x) OVER (ORDER BY month)") + " to compare to last month."
               ] },
               { t: "p", html: "<strong>Gaps-and-islands</strong> is the classic trick: to collapse consecutive runs (streaks of active days, contiguous ID ranges), subtract a " + tok("ROW_NUMBER()") + " from the value \u2014 rows in the same run share a constant, which you then group on." },
-              { t: "note", variant: "key", html: "ROW_NUMBER vs RANK vs DENSE_RANK differ only on ties: distinct numbering, gapped (1,1,3), and gapless (1,1,2). Pick by whether ties should share a position and whether gaps matter." },
-              { t: "note", variant: "tip", html: "Most 'I need a loop' SQL problems are really a window function. Reach for " + tok("OVER") + " before writing a self-join or a procedural cursor." }
+              { t: "note", variant: "tip", html: "ROW_NUMBER vs RANK vs DENSE_RANK differ only on ties: distinct numbering, gapped (1,1,3), and gapless (1,1,2). Pick by whether ties should share a position and whether gaps matter." },
+              { t: "note", variant: "tip", html: "Most 'I need a loop' SQL problems are really a window function. Reach for " + tok("OVER") + " before writing a self-join or a procedural cursor." },
+              { t: "note", variant: "key", html: "<strong>Every window function is a sort you are paying for, and " + tok("PARTITION BY") + " is what keeps that sort parallel.</strong> Partitioned windows split across workers; an " + tok("OVER") + " clause with no partition funnels the whole table through a single ordered stream, which is the first thing to stop scaling as volume grows. Partition on the coarsest column that still gives the right answer." }
             ]
           },
           {
@@ -444,8 +447,9 @@
             blocks: [
               { t: "p", html: "A <strong>cost-based optimizer</strong> (CBO) uses <strong>statistics</strong> \u2014 row counts, distinct values, histograms \u2014 to estimate how many rows each operator emits (its <strong>cardinality</strong>), then picks the join order and algorithm with the lowest estimated cost." },
               { t: "note", variant: "trap", html: "Garbage in, garbage out: <strong>stale statistics</strong> are the #1 cause of bad plans. If the CBO thinks a table has 1,000 rows but it has 1 billion, it may pick a disastrous join. Keep stats fresh (" + tok("ANALYZE") + ")." },
-              { t: "note", variant: "key", html: "You can\u2019t usually pick the plan, but you can feed the optimizer better inputs: fresh stats, selective predicates it can push down, and partitioning/clustering it can prune on." },
-              { t: "note", variant: "tip", html: "When a plan is wrong, check the estimated-vs-actual row counts in " + tok("EXPLAIN ANALYZE") + " first \u2014 a big mismatch points straight at the bad estimate to fix." }
+              { t: "note", variant: "tip", html: "You can\u2019t usually pick the plan, but you can feed the optimizer better inputs: fresh stats, selective predicates it can push down, and partitioning/clustering it can prune on." },
+              { t: "note", variant: "tip", html: "When a plan is wrong, check the estimated-vs-actual row counts in " + tok("EXPLAIN ANALYZE") + " first \u2014 a big mismatch points straight at the bad estimate to fix." },
+              { t: "note", variant: "key", html: "<strong>A bad plan is almost always a bad estimate, and estimates compound upward.</strong> Whatever the optimizer gets wrong about the first join is carried into every operator above it, so the plan degrades faster than the data grows \u2014 which is why a query that was fine last quarter can fall off a cliff without anyone changing it. You do not choose the plan; you choose how honest its inputs are." }
             ]
           },
           {
@@ -455,8 +459,9 @@
             blocks: [
               { t: "p", html: "<strong>MPP</strong> (massively parallel processing) engines \u2014 <strong>Trino</strong>, <strong>BigQuery</strong>, <strong>Snowflake</strong>, <strong>Redshift</strong> \u2014 split a query across many <strong>workers</strong>, each handling a slice of data, coordinated by a leader. The cost center is the <strong>exchange</strong>: moving data between workers (just like Spark\u2019s shuffle)." },
               { t: "p", html: "Join distribution mirrors the batch track: <strong>broadcast</strong> a small table to every worker, or <strong>partition</strong> (hash-distribute) both sides of a big\u2013big join on the key so matching rows meet on the same worker." },
-              { t: "note", variant: "key", html: "Same physics as Spark: parallel scans are cheap, cross-worker data movement is expensive. Fewer/smaller exchanges \u2014 via broadcast, co-located partitioning, and pruning \u2014 mean faster distributed queries." },
-              { t: "note", variant: "tip", html: "Snowflake/BigQuery separate storage from compute, so you scale workers up for a heavy query and down after \u2014 the warehouse idea from the storage track, applied per-query." }
+              { t: "note", variant: "tip", html: "Same physics as Spark: parallel scans are cheap, cross-worker data movement is expensive. Fewer/smaller exchanges \u2014 via broadcast, co-located partitioning, and pruning \u2014 mean faster distributed queries." },
+              { t: "note", variant: "tip", html: "Snowflake/BigQuery separate storage from compute, so you scale workers up for a heavy query and down after \u2014 the warehouse idea from the storage track, applied per-query." },
+              { t: "note", variant: "key", html: "<strong>Adding workers buys scan speed; it never buys exchange speed.</strong> A scan divides cleanly, but an exchange has every worker talking to every other one, so the expensive half of the query does not shrink when the cluster grows. When a bigger warehouse stops helping, stop resizing and start removing exchanges." }
             ]
           },
           {
@@ -465,8 +470,9 @@
             minutes: 6, tags: ["pruning", "clustering"],
             blocks: [
               { t: "p", html: "The fastest scan is the one you don\u2019t do. <strong>Partition pruning</strong> skips partitions a " + tok("WHERE") + " can\u2019t match; <strong>clustering / Z-ordering</strong> sorts data so <strong>min/max zone maps</strong> let the engine skip blocks even <em>within</em> a partition." },
-              { t: "note", variant: "key", html: "Partitioning prunes at the folder level; clustering + zone maps prune at the file/block level. Together they turn a table scan into a few targeted reads \u2014 the storage track\u2019s layout lessons paying off at query time." },
+              { t: "note", variant: "tip", html: "Partitioning prunes at the folder level; clustering + zone maps prune at the file/block level. Together they turn a table scan into a few targeted reads \u2014 the storage track\u2019s layout lessons paying off at query time." },
               { t: "note", variant: "tip", html: "Cluster on the columns you filter and join on most. A well-clustered table can answer a selective query by reading a fraction of one partition." },
+              { t: "note", variant: "key", html: "<strong>Pruning is a contract between the layout and the predicate, and it breaks silently.</strong> Cast the partition column, wrap it in a function, or filter on something you never clustered by, and the engine quietly reads the whole table \u2014 identical answer, whole-table bill, no error anywhere. Layout only pays off for the filters people actually write, so choose it from the queries you see, not the ones you imagine." },
               { t: "quiz", id: "de-sql-engines" }
             ]
           }

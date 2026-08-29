@@ -20,7 +20,7 @@
     return s;
   }
   function ro(label, value, accent) {
-    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent)" } : {}, value));
+    return h("span", { class: "ro" }, label + " ", h("b", accent ? { style: "color:var(--accent-ink)" } : {}, value));
   }
   var CCOLOR = ["var(--accent)", "var(--cyan)", "var(--violet)", "var(--lime)", "var(--amber)", "var(--pink)"];
 
@@ -45,7 +45,7 @@
         if (offs.B === i) tags.push("B");
         var cell = h("div", { class: "dsa-cell" + (tags.length ? " cur" : "") },
           h("span", { class: "idx" }, String(i)), rec,
-          tags.length ? h("span", { class: "ptr", style: "color:var(--accent)" }, tags.join("/")) : null);
+          tags.length ? h("span", { class: "ptr", style: "color:var(--accent-ink)" }, tags.join("/")) : null);
         track.appendChild(cell);
       });
       // end marker
@@ -78,7 +78,7 @@
       board.innerHTML = "";
       for (var i = 0; i < P; i++) {
         var o = owner(i);
-        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:8px 4px;font-family:var(--font-mono);font-size:.58rem;border-color:" + CCOLOR[o] + ";color:" + CCOLOR[o] },
+        board.appendChild(h("div", { class: "grid-cell", style: "width:auto;height:auto;padding:8px 4px;font-family:var(--font-mono);font-size:.58rem;border-color:" + CCOLOR[o] + ";color:oklch(from " + CCOLOR[o] + " var(--ink-l) c h)" },
           h("div", {}, "P" + i), h("div", { style: "color:var(--text-dim)" }, "c" + o)));
       }
       var counts = [];
@@ -173,14 +173,14 @@
       },
       {
         prompt: "A dedupe set grows forever because old order ids are never useful after 24 hours.",
-        options: ["Add state TTL and cleanup", "Increase heap forever", "Turn off keyBy", "Use processing time only"],
-        answer: 0,
+        options: ["Turn off keyBy", "Increase heap forever", "Add state TTL and cleanup", "Use processing time only"],
+        answer: 2,
         reason: "State TTL bounds remembered keys and lets the backend clean expired entries instead of turning correctness state into a memory leak."
       },
       {
         prompt: "The sink supports transactions. A crash can happen after records are written but before the source offset is committed.",
-        options: ["Use a transactional exactly-once sink with checkpoints", "Commit offsets before writing", "Use at-most-once mode", "Ignore duplicate writes"],
-        answer: 0,
+        options: ["Ignore duplicate writes", "Commit offsets before writing", "Use at-most-once mode", "Use a transactional exactly-once sink with checkpoints"],
+        answer: 3,
         reason: "Flink coordinates checkpoint completion with transactional sinks so output becomes visible only when the matching checkpoint succeeds."
       },
       {
@@ -246,14 +246,14 @@
         },
         {
           q: "'Exactly-once' processing in practice is usually achieved by\u2026",
-          options: ["A magic delivery guarantee with no extra work", "At-least-once delivery plus idempotent or transactional writes", "At-most-once delivery", "Disabling retries"],
-          answer: 1,
+          options: ["A magic delivery guarantee with no extra work", "At-most-once delivery", "At-least-once delivery plus idempotent or transactional writes", "Disabling retries"],
+          answer: 2,
           explain: "True exactly-once delivery is nearly impossible end-to-end; systems combine at-least-once delivery with idempotent/transactional sinks to get effectively-once results."
         },
         {
           q: "At-least-once delivery means a consumer must be prepared to\u2026",
-          options: ["Lose messages", "Handle duplicate messages", "Receive messages out of the log", "Never commit offsets"],
-          answer: 1,
+          options: ["Lose messages", "Never commit offsets", "Receive messages out of the log", "Handle duplicate messages"],
+          answer: 3,
           explain: "At-least-once can redeliver a message after a failure before the offset was committed, so handlers must be idempotent (e.g. dedupe by a key) to avoid double effects."
         }
       ]
@@ -264,8 +264,8 @@
       questions: [
         {
           q: "Within a Kafka consumer group, a single partition is consumed by\u2026",
-          options: ["Every consumer in the group", "Exactly one consumer in the group", "No consumer", "The broker"],
-          answer: 1,
+          options: ["Exactly one consumer in the group", "Every consumer in the group", "No consumer", "The broker"],
+          answer: 0,
           explain: "Each partition is owned by exactly one consumer in a group, which is how Kafka spreads load and preserves per-partition order; extra consumers beyond the partition count sit idle."
         },
         {
@@ -276,8 +276,8 @@
         },
         {
           q: "A message key in Kafka primarily determines\u2026",
-          options: ["The retention period", "Which partition the message lands in (key hash)", "The compression codec", "The replication factor"],
-          answer: 1,
+          options: ["The retention period", "The compression codec", "Which partition the message lands in (key hash)", "The replication factor"],
+          answer: 2,
           explain: "The producer hashes the key to choose a partition, so all messages with the same key share a partition \u2014 giving them ordering and co-location for stateful processing."
         }
       ]
@@ -288,14 +288,14 @@
       questions: [
         {
           q: "A tumbling window is\u2026",
-          options: ["Overlapping fixed windows", "Fixed-size, non-overlapping windows", "Activity-based windows separated by gaps", "Infinite"],
-          answer: 1,
+          options: ["Overlapping fixed windows", "Infinite", "Activity-based windows separated by gaps", "Fixed-size, non-overlapping windows"],
+          answer: 3,
           explain: "Tumbling windows are fixed-size and non-overlapping (e.g. each 5-minute bucket); sliding windows overlap, and session windows group bursts of activity separated by an inactivity gap."
         },
         {
           q: "A watermark in stream processing is\u2026",
-          options: ["A security feature", "A heuristic asserting that no more events older than time T should arrive", "A type of partition", "A compression scheme"],
-          answer: 1,
+          options: ["A heuristic asserting that no more events older than time T should arrive", "A security feature", "A type of partition", "A compression scheme"],
+          answer: 0,
           explain: "Watermarks track event-time progress so the engine knows when a window is 'complete enough' to emit, balancing latency against waiting for late events."
         },
         {
@@ -312,20 +312,20 @@
       questions: [
         {
           q: "In Flink, keyed state is stored and recovered according to\u2026",
-          options: ["The event's key and the subtask that owns that key range", "The order records appear in the source file", "A single global coordinator map", "The sink partition only"],
-          answer: 0,
+          options: ["A single global coordinator map", "The order records appear in the source file", "The event's key and the subtask that owns that key range", "The sink partition only"],
+          answer: 2,
           explain: "Keyed state is partitioned by key group and assigned to subtasks. On rescale or recovery, key groups move with their state so each key remains consistent."
         },
         {
           q: "What is the practical difference between a checkpoint and a savepoint?",
-          options: ["They are identical names for the same file", "Checkpoints are automatic failure recovery points; savepoints are manually triggered durable points for upgrades and migrations", "Savepoints are faster but unsafe", "Checkpoints store only source offsets"],
-          answer: 1,
+          options: ["They are identical names for the same file", "Checkpoints store only source offsets", "Savepoints are faster but unsafe", "Checkpoints are automatic failure recovery points; savepoints are manually triggered durable points for upgrades and migrations"],
+          answer: 3,
           explain: "Checkpoints are frequent, system-managed recovery snapshots. Savepoints are user-controlled and kept for planned job changes, rollback, and stateful upgrades."
         },
         {
           q: "State TTL is mainly used to\u2026",
-          options: ["Guarantee network delivery", "Bound old keyed state and allow cleanup after it is no longer useful", "Disable exactly-once sinks", "Force every key into one partition"],
-          answer: 1,
+          options: ["Bound old keyed state and allow cleanup after it is no longer useful", "Guarantee network delivery", "Disable exactly-once sinks", "Force every key into one partition"],
+          answer: 0,
           explain: "TTL prevents unbounded state growth by expiring entries such as old dedupe keys, stale sessions, or reference values after the correctness window has passed."
         },
         {
@@ -336,8 +336,8 @@
         },
         {
           q: "Rising checkpoint duration, input lag and busy downstream tasks are a signal of\u2026",
-          options: ["Backpressure", "A savepoint completing successfully", "Schema evolution", "A partition overwrite"],
-          answer: 0,
+          options: ["Schema evolution", "A savepoint completing successfully", "Backpressure", "A partition overwrite"],
+          answer: 2,
           explain: "Backpressure from a slow sink or hot operator propagates upstream, increasing lag and making checkpoint alignment and completion slower."
         }
       ]
@@ -348,14 +348,14 @@
       questions: [
         {
           q: "The Kappa architecture differs from Lambda by\u2026",
-          options: ["Adding a third layer", "Using a single streaming pipeline and reprocessing from the log instead of a separate batch layer", "Removing the log", "Only supporting batch"],
-          answer: 1,
+          options: ["Adding a third layer", "Only supporting batch", "Removing the log", "Using a single streaming pipeline and reprocessing from the log instead of a separate batch layer"],
+          answer: 3,
           explain: "Kappa drops Lambda\u2019s separate batch layer: it treats the log as the source of truth and reprocesses history by replaying the stream, avoiding maintaining two codebases."
         },
         {
           q: "Lambda architecture\u2019s main drawback is\u2026",
-          options: ["It can\u2019t handle real-time data", "Maintaining two code paths (batch and speed) that must stay in sync", "It has no batch layer", "It cannot store data"],
-          answer: 1,
+          options: ["Maintaining two code paths (batch and speed) that must stay in sync", "It can\u2019t handle real-time data", "It has no batch layer", "It cannot store data"],
+          answer: 0,
           explain: "Lambda runs a batch layer and a speed layer in parallel, so the same logic is implemented twice and must agree \u2014 the duplication Kappa tries to eliminate."
         },
         {
@@ -394,8 +394,9 @@
                 ["State", "Recomputed each run", "Continuously maintained"],
                 ["Hard parts", "Scale", "Time, order, failures, state"]
               ] },
-              { t: "note", variant: "key", html: "Streaming isn\u2019t 'better batch' \u2014 it\u2019s a different model where <strong>time, ordering and state</strong> become first-class problems. Choose it when the business genuinely needs seconds-fresh data." },
-              { t: "note", variant: "tip", html: "Many 'streaming' needs are met by <strong>micro-batch</strong> (Spark Structured Streaming) \u2014 tiny batches every few seconds \u2014 which keeps much of batch\u2019s simplicity with near-real-time latency." }
+              { t: "note", variant: "tip", html: "Streaming isn\u2019t 'better batch' \u2014 it\u2019s a different model where <strong>time, ordering and state</strong> become first-class problems. Choose it when the business genuinely needs seconds-fresh data." },
+              { t: "note", variant: "tip", html: "Many 'streaming' needs are met by <strong>micro-batch</strong> (Spark Structured Streaming) \u2014 tiny batches every few seconds \u2014 which keeps much of batch\u2019s simplicity with near-real-time latency." },
+              { t: "note", variant: "key", html: "<strong>You pay for freshness in state, not in CPU.</strong> A batch run recomputes from a bounded input and then forgets everything; a streaming job has to keep partial results alive between events, so its real operating costs are how large that state grows, how long recovery takes when it is lost, and what an event that arrives out of order does to an answer you already published." }
             ]
           },
           {
@@ -420,8 +421,9 @@
                 ["Exactly-once", "Deliver effectively once", "Hard / costly"]
               ] },
               { t: "p", html: "Most systems default to <strong>at-least-once</strong> (commit the offset only after processing), so duplicates are possible after a crash. The practical path to 'exactly-once' is at-least-once delivery plus <strong>idempotent</strong> or <strong>transactional</strong> writes at the sink." },
-              { t: "note", variant: "key", html: "End-to-end exactly-once isn\u2019t a free flag \u2014 it\u2019s an architecture: at-least-once + dedupe/idempotent sink = <em>effectively-once</em>. Design your sink to absorb duplicates and you\u2019ve solved it pragmatically." },
+              { t: "note", variant: "tip", html: "End-to-end exactly-once isn\u2019t a free flag \u2014 it\u2019s an architecture: at-least-once + dedupe/idempotent sink = <em>effectively-once</em>. Design your sink to absorb duplicates and you\u2019ve solved it pragmatically." },
               { t: "note", variant: "trap", html: "Committing the offset <em>before</em> processing turns at-least-once into at-most-once \u2014 a crash then silently drops the in-flight message. Commit after the side effect is durable." },
+              { t: "note", variant: "key", html: "<strong>The guarantee lives at the sink, not on the wire.</strong> Once retries exist, delivery can only promise <em>at least</em> once, so the thing that decides whether a crash costs you a duplicate, a gap, or nothing at all is the key your sink deduplicates on and whether applying the same record twice changes the stored answer. Name that key before you argue about the delivery mode." },
               { t: "quiz", id: "de-streaming-fundamentals" }
             ]
           }
@@ -442,8 +444,9 @@
                 "<strong>ISR</strong> \u2014 the in-sync replica set; a leader can fail over to any ISR member.",
                 "<strong>Retention</strong> \u2014 records persist for a time/size, enabling replay."
               ] },
-              { t: "note", variant: "key", html: "Partitions give Kafka both <strong>scale</strong> (more partitions = more parallelism) and <strong>ordering</strong> (within a partition). Replication gives <strong>durability</strong>. These three knobs define a topic." },
-              { t: "note", variant: "tip", html: "Choose partition count deliberately: it caps consumer parallelism and is awkward to increase later (it changes key\u2192partition mapping). Plan for peak throughput." }
+              { t: "note", variant: "tip", html: "Partitions give Kafka both <strong>scale</strong> (more partitions = more parallelism) and <strong>ordering</strong> (within a partition). Replication gives <strong>durability</strong>. These three knobs define a topic." },
+              { t: "note", variant: "tip", html: "Choose partition count deliberately: it caps consumer parallelism and is awkward to increase later (it changes key\u2192partition mapping). Plan for peak throughput." },
+              { t: "note", variant: "key", html: "<strong>Durability is decided at acknowledgement time, not by the replication factor.</strong> Extra copies only protect a write that actually reached them before the leader died. A producer that is acknowledged as soon as the leader has the record trades a shorter write path for a tail of records that disappear when failover promotes a follower which never received them \u2014 so the guarantee you have is whatever you required the ISR to confirm, not the number of replicas you configured." }
             ]
           },
           {
@@ -454,8 +457,9 @@
               { t: "p", html: "A <strong>consumer group</strong> shares the work of a topic: each partition is assigned to <em>exactly one</em> consumer in the group. Add consumers to scale out (up to the partition count); when membership changes, Kafka <strong>rebalances</strong> the assignments." },
               { t: "widget", id: "de-stream-consumers" },
               { t: "p", html: "Each consumer commits its <strong>offset</strong> \u2014 how far it has processed \u2014 so on restart it resumes from there. <strong>Consumer lag</strong> (log end offset minus committed offset) is the key health metric: rising lag means you\u2019re falling behind." },
-              { t: "note", variant: "key", html: "Partitions are the unit of parallelism and the cap on it: with 6 partitions, a 7th consumer in the group sits idle. Size partitions for your peak consumer parallelism." },
-              { t: "note", variant: "trap", html: "Rebalances pause consumption while partitions are reassigned ('stop-the-world'). Frequent rebalances (from flapping consumers or long processing) hurt throughput \u2014 tune session timeouts and use cooperative rebalancing." }
+              { t: "note", variant: "tip", html: "Partitions are the unit of parallelism and the cap on it: with 6 partitions, a 7th consumer in the group sits idle. Size partitions for your peak consumer parallelism." },
+              { t: "note", variant: "trap", html: "Rebalances pause consumption while partitions are reassigned ('stop-the-world'). Frequent rebalances (from flapping consumers or long processing) hurt throughput \u2014 tune session timeouts and use cooperative rebalancing." },
+              { t: "note", variant: "key", html: "<strong>Past the partition count, adding consumers does nothing for lag.</strong> Once every partition has an owner the remaining levers are faster per-record work, more partitions, or a different key scheme. Worse, a slow handler feeds both failure modes at once: it grows lag, and it invites the rebalance that reassigns its partitions \u2014 at which point the new owner resumes from the last committed offset and reprocesses everything the old one had already done but not committed." }
             ]
           },
           {
@@ -464,8 +468,9 @@
             minutes: 6, tags: ["ordering", "keys"],
             blocks: [
               { t: "p", html: "Kafka guarantees order <em>within</em> a partition, not across the topic. To keep a stream of related events ordered \u2014 all events for one " + tok("user_id") + " \u2014 give them the same <strong>key</strong>, so the producer hashes them to the same partition." },
-              { t: "note", variant: "key", html: "Key choice is a design decision: it sets both ordering (same key = ordered) and load balance (skewed keys = hot partitions). Pick a key with enough cardinality to spread evenly but that co-locates what must stay ordered." },
+              { t: "note", variant: "tip", html: "Key choice is a design decision: it sets both ordering (same key = ordered) and load balance (skewed keys = hot partitions). Pick a key with enough cardinality to spread evenly but that co-locates what must stay ordered." },
               { t: "note", variant: "trap", html: "Increasing partition count later re-maps keys to partitions, breaking the 'same key \u2192 same partition' history. If ordering by key matters, plan partition count up front." },
+              { t: "note", variant: "key", html: "<strong>Ordering is a property of the key you chose, not of the topic you wrote to.</strong> Two events only stay in sequence if they share a key, that key still lands on the same partition, and the consumer applies that partition serially. Break any one of the three \u2014 repartition the topic, change the key, or fan a partition out across worker threads \u2014 and you have given the guarantee back without any error being raised." },
               { t: "quiz", id: "de-streaming-kafka" }
             ]
           }
@@ -481,8 +486,9 @@
             blocks: [
               { t: "p", html: "You can\u2019t " + tok("SUM") + " an infinite stream \u2014 there\u2019s no end. <strong>Windows</strong> slice the stream into finite chunks you can aggregate. The three shapes: <strong>tumbling</strong> (fixed, non-overlapping), <strong>sliding</strong> (fixed, overlapping), and <strong>session</strong> (bursts of activity separated by a gap)." },
               { t: "widget", id: "de-stream-window" },
-              { t: "note", variant: "key", html: "Tumbling for regular buckets ('hits per minute'), sliding for moving averages ('last 5 min, updated every 1'), session for user activity ('a visit ends after 30 min idle'). The window type encodes the question." },
-              { t: "note", variant: "tip", html: "Windows imply <strong>state</strong>: the engine holds partial aggregates until a window closes. That state, and when to release it, is what the next two lessons are about." }
+              { t: "note", variant: "tip", html: "Tumbling for regular buckets ('hits per minute'), sliding for moving averages ('last 5 min, updated every 1'), session for user activity ('a visit ends after 30 min idle'). The window type encodes the question." },
+              { t: "note", variant: "tip", html: "Windows imply <strong>state</strong>: the engine holds partial aggregates until a window closes. That state, and when to release it, is what the next two lessons are about." },
+              { t: "note", variant: "key", html: "<strong>The window shape you choose sets how many partial aggregates you keep alive per key.</strong> Tumbling holds one open bucket; a sliding window holds every overlapping bucket an event falls into, so shortening the slide multiplies state rather than sharpening the answer; a session window holds a key open until its idle gap elapses, which means a key that never goes quiet never releases. Size the cluster for the state the shape implies, not for the event rate." }
             ]
           },
           {
@@ -492,8 +498,9 @@
             blocks: [
               { t: "p", html: "<strong>Event time</strong> is when an event actually occurred; <strong>processing time</strong> is when your system saw it. They differ because of network delays, retries and offline devices \u2014 a mobile event can arrive hours late." },
               { t: "p", html: "Windowing on <strong>event time</strong> gives correct, reproducible results, but raises a question: how long do you wait for stragglers before closing a window? A <strong>watermark</strong> answers it \u2014 a moving assertion that 'events older than T probably won\u2019t arrive,' after which the window emits." },
-              { t: "note", variant: "key", html: "Watermarks trade <strong>latency</strong> against <strong>completeness</strong>: wait longer (looser watermark) to catch more late data, or emit sooner with a chance of missing stragglers. <em>Allowed lateness</em> lets late events update an already-emitted result." },
-              { t: "note", variant: "trap", html: "Processing-time windows are easy but non-deterministic: replay the same stream and a delayed batch lands in different windows. Prefer event time whenever correctness or reproducibility matters." }
+              { t: "note", variant: "tip", html: "Watermarks trade <strong>latency</strong> against <strong>completeness</strong>: wait longer (looser watermark) to catch more late data, or emit sooner with a chance of missing stragglers. <em>Allowed lateness</em> lets late events update an already-emitted result." },
+              { t: "note", variant: "trap", html: "Processing-time windows are easy but non-deterministic: replay the same stream and a delayed batch lands in different windows. Prefer event time whenever correctness or reproducibility matters." },
+              { t: "note", variant: "key", html: "<strong>A watermark is a promise you make, not a fact the data respects.</strong> When it passes a window\u2019s end the engine is free to emit that window and release its state, so anything older that shows up afterwards is late by definition \u2014 and your only choices are to drop it, divert it to a side output, or let it revise a result someone has already read. Decide which of the three before you tune the delay, because that decision, not the watermark, is what a downstream consumer actually experiences as correctness." }
             ]
           },
           {
@@ -507,8 +514,9 @@
                 "<strong>Stream\u2013table join</strong> \u2014 enrich events with a changing reference table (a 'changelog' stream).",
                 "<strong>Dedup / sessionization</strong> \u2014 remember keys seen, or group events into sessions."
               ] },
-              { t: "note", variant: "key", html: "State is the hard, valuable part of streaming \u2014 and it must survive failures. That\u2019s why state is checkpointed, which is exactly the next lesson." },
-              { t: "note", variant: "trap", html: "Unbounded state is a memory leak: a stream-stream join or dedup must bound its state with time-to-live or a window, or it grows forever." }
+              { t: "note", variant: "tip", html: "State is the hard, valuable part of streaming \u2014 and it must survive failures. That\u2019s why state is checkpointed, which is exactly the next lesson." },
+              { t: "note", variant: "trap", html: "Unbounded state is a memory leak: a stream-stream join or dedup must bound its state with time-to-live or a window, or it grows forever." },
+              { t: "note", variant: "key", html: "<strong>Every stateful operator owes an answer to one question: when may I forget this key?</strong> A stream\u2013stream join has to decide how long to wait for the other side, a dedupe set has to decide when an id can no longer recur, and a stream\u2013table join has to decide which version of the reference row applied at the time of the event. Answer too eagerly and you silently lose matches; answer too late and state grows with the uptime of the job instead of with the size of the working set." }
             ]
           },
           {
@@ -531,8 +539,9 @@
                 bad: { title: "Fragile stateful job", items: ["Global mutable maps", "No TTL on dedupe/join state", "Offsets committed before output", "Restarts without bounded retries", "Blind append sink"] },
                 good: { title: "Recoverable Flink job", items: ["State keyed by business id", "Backend sized for state volume", "Checkpoints to durable storage", "Savepoints before upgrades", "Idempotent or transactional sink"] }
               },
-              { t: "note", variant: "key", html: "Production stateful streaming is a contract: <strong>keyed state + durable checkpoints + bounded state + a cooperative sink</strong>. The engine can restore the computation only if your state and output protocol are designed for recovery." },
+              { t: "note", variant: "tip", html: "Production stateful streaming is a contract: <strong>keyed state + durable checkpoints + bounded state + a cooperative sink</strong>. The engine can restore the computation only if your state and output protocol are designed for recovery." },
               { t: "note", variant: "trap", html: "A restart strategy is not a data guarantee. It decides <em>when</em> to retry; checkpoints and sink commits decide <em>what data state</em> the retry resumes from." },
+              { t: "note", variant: "key", html: "<strong>The checkpoint is the only moment where state, source position and output all agree.</strong> Recovery rewinds sources to the last completed one and replays everything after it, so anything the job already emitted in that interval is emitted again \u2014 which is fine for a sink that commits transactionally on the same boundary or absorbs a repeat idempotently, and silently wrong for anything else. Side effects that sit outside that boundary, such as a call out to an external service or an unversioned append, simply happen twice." },
               { t: "quiz", id: "de-streaming-flink-state" }
             ]
           },
@@ -543,8 +552,9 @@
             blocks: [
               { t: "p", html: "Streaming jobs run forever, so failure is normal. <strong>Checkpointing</strong> periodically snapshots the operator <strong>state</strong> together with the source <strong>offsets</strong>. On restart, the job restores the snapshot and resumes from those offsets \u2014 no gaps, no double-applied state." },
               { t: "p", html: "For end-to-end exactly-once, the <strong>sink</strong> must cooperate: either be <strong>idempotent</strong> (writing the same record twice is harmless) or <strong>transactional</strong> (commit output and offset together via two-phase commit, as Kafka transactions and Flink do)." },
-              { t: "note", variant: "key", html: "Exactly-once = consistent checkpoints (state + offsets) + an idempotent or transactional sink. Miss either half and a crash either loses or duplicates data." },
+              { t: "note", variant: "tip", html: "Exactly-once = consistent checkpoints (state + offsets) + an idempotent or transactional sink. Miss either half and a crash either loses or duplicates data." },
               { t: "note", variant: "tip", html: "Checkpoint frequency trades recovery time against overhead: frequent checkpoints mean less reprocessing after a crash but more steady-state cost. Tune to your latency budget." },
+              { t: "note", variant: "key", html: "<strong>A transactional sink pushes your visibility latency up to the checkpoint interval.</strong> Output stays uncommitted until the snapshot it belongs to completes, so readers see results in checkpoint-sized steps and shortening the interval to publish sooner raises steady-state overhead instead. An idempotent sink sidesteps the trade completely \u2014 which is why an upsert keyed on a natural business id is usually the cheaper route to the same end-to-end guarantee." },
               { t: "quiz", id: "de-streaming-processing" }
             ]
           }
@@ -578,8 +588,9 @@
                 "FROM orders_cdc o\n" +
                 "JOIN customers FOR SYSTEM_TIME AS OF o.proc_time c\n" +
                 "  ON o.customer_id = c.id;" },
-              { t: "note", variant: "key", html: "CDC + stream processing is how you keep a warehouse or search index seconds-fresh from an OLTP source without batch reloads \u2014 the real-time companion to the storage track\u2019s ingestion patterns." },
-              { t: "note", variant: "tip", html: "Mind ordering and idempotency: CDC carries inserts, updates <em>and</em> deletes, so the sink must apply them as upserts/tombstones keyed by primary key." }
+              { t: "note", variant: "tip", html: "CDC + stream processing is how you keep a warehouse or search index seconds-fresh from an OLTP source without batch reloads \u2014 the real-time companion to the storage track\u2019s ingestion patterns." },
+              { t: "note", variant: "tip", html: "Mind ordering and idempotency: CDC carries inserts, updates <em>and</em> deletes, so the sink must apply them as upserts/tombstones keyed by primary key." },
+              { t: "note", variant: "key", html: "<strong>A change stream carries transitions; the sink is the thing that has to reconstruct the row.</strong> Apply two updates in the wrong order, or drop a tombstone, and the target settles into a state the source never held \u2014 with every job still green, because nothing failed. That is the cost of replacing a nightly reload: a batch job is wrong for one run and right on the next, while a continuous pipeline stays wrong until someone reconciles it. Key each write by primary key and a monotonic version so a replay converges instead of accumulating." }
             ]
           },
           {
@@ -588,8 +599,9 @@
             minutes: 6, tags: ["materialized-views"],
             blocks: [
               { t: "p", html: "A <strong>streaming materialized view</strong> keeps the result of a query continuously up to date as new events arrive \u2014 incremental view maintenance. Systems like <strong>Materialize</strong>, <strong>ksqlDB</strong> and <strong>Flink SQL</strong> let you " + tok("CREATE MATERIALIZED VIEW") + " over streams and read instant, current answers." },
-              { t: "note", variant: "key", html: "Instead of re-running an expensive aggregate on every read, the engine updates the result on every <em>write</em>. Reads become trivially fast and always current \u2014 ideal for live dashboards and real-time features." },
+              { t: "note", variant: "tip", html: "Instead of re-running an expensive aggregate on every read, the engine updates the result on every <em>write</em>. Reads become trivially fast and always current \u2014 ideal for live dashboards and real-time features." },
               { t: "note", variant: "trap", html: "The cost moves to the engine: maintaining many complex views incrementally consumes state and CPU continuously. Materialize the views the business actually watches, not everything." },
+              { t: "note", variant: "key", html: "<strong>An incremental view converts an unpredictable read cost into a permanent write cost.</strong> The answer is instant because the engine is paying to maintain it on every input event, whether or not anyone opened the dashboard today \u2014 so a view earns its keep only when reads are frequent and the definition is stable. Every redefinition means rebuilding its state from history, which makes 'just tweak the metric' an operation, not an edit." },
               { t: "quiz", id: "de-streaming-architecture" }
             ]
           }

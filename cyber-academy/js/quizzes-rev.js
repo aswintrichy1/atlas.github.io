@@ -13,33 +13,33 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
         q: "A compiler and linker turn readable source into a runnable program. Why is reverse-engineering a released binary hard?",
         options: [
           "The CPU encrypts all machine code",
-          "Compilation discards names, comments, and most types, leaving only instructions",
           "Binaries delete their own code after running once",
+          "Compilation discards names, comments, and most types, leaving only instructions",
           "Assembly cannot be read by humans at all"
         ],
-        answer: 1,
+        answer: 2,
         explain: "Compilation is lossy: variable names, comments, and most type information are thrown away. Only the machine instructions survive, so analysts must rebuild meaning from structure and behavior."
       },
       {
         q: "In a typical process address space, which direction does the stack usually grow?",
         options: [
           "Upward, toward higher addresses",
-          "Downward, toward lower addresses",
+          "Outward in both directions at once",
           "It never moves once the process starts",
-          "Outward in both directions at once"
+          "Downward, toward lower addresses"
         ],
-        answer: 1,
+        answer: 3,
         explain: "The stack conventionally grows downward (toward lower addresses) as calls nest, while the heap grows upward. They expand toward each other across the address space."
       },
       {
         q: "The .text (code) region is mapped read-and-execute but never writable, and data regions are writable but not executable. Which protection is this?",
         options: [
-          "ASLR",
           "NX / W^X — write XOR execute",
+          "ASLR",
           "TLS encryption",
           "Garbage collection"
         ],
-        answer: 1,
+        answer: 0,
         explain: "Separating code and data so memory is either writable or executable but not both is the W^X (NX) rule. Bytes an attacker writes as data therefore cannot later run as instructions."
       },
       {
@@ -71,33 +71,33 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
         q: "A decompiler differs from a disassembler in that a decompiler",
         options: [
           "outputs raw machine bytes",
-          "reconstructs higher-level pseudo-code as a best-effort guess, not ground truth",
           "encrypts the binary before analysis",
+          "reconstructs higher-level pseudo-code as a best-effort guess, not ground truth",
           "is always 100% accurate"
         ],
-        answer: 1,
+        answer: 2,
         explain: "A disassembler shows faithful assembly; a decompiler goes further and reconstructs C-like pseudo-code. That reconstruction is a best-effort guess that should be cross-checked, not trusted blindly."
       },
       {
         q: "Executables on Linux, Windows, and macOS use which container formats, respectively?",
         options: [
           "PE, ELF, Mach-O",
-          "ELF, PE, Mach-O",
+          "ELF, Mach-O, PE",
           "Mach-O, ELF, PE",
-          "ELF, Mach-O, PE"
+          "ELF, PE, Mach-O"
         ],
-        answer: 1,
+        answer: 3,
         explain: "Linux uses ELF, Windows uses PE, and macOS uses Mach-O. Each header tells the loader the entry point, architecture, sections, and imports."
       },
       {
         q: "Why is a high-entropy section a useful triage signal in an unknown binary?",
         options: [
-          "It proves the file is safe to run",
           "It often indicates packing or encryption, suggesting the real code is hidden until runtime",
+          "It proves the file is safe to run",
           "It means the file is definitely corrupt",
           "High entropy turns off ASLR"
         ],
-        answer: 1,
+        answer: 0,
         explain: "Compressed or encrypted data looks random, so packing raises entropy. A high-entropy section is a fast flag that code may be unpacked in memory at runtime — a signal to analyze dynamically, not a verdict."
       }
     ]
@@ -123,33 +123,33 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
         q: "A stack canary defends against a stack buffer overflow by",
         options: [
           "encrypting the entire stack",
-          "placing a random value before the saved return address and checking it before returning",
           "making the stack executable",
+          "placing a random value before the saved return address and checking it before returning",
           "removing the return address entirely"
         ],
-        answer: 1,
+        answer: 2,
         explain: "The compiler inserts a random canary between local buffers and the saved return address. A linear overflow corrupts the canary first, the check fails, and the program aborts safely instead of returning into attacker-controlled data."
       },
       {
         q: "ASLR raises the cost of exploitation primarily because it",
         options: [
           "fixes every memory bug automatically",
-          "randomizes memory addresses each run, so attackers can't rely on hardcoded locations",
+          "encrypts every function pointer",
           "disables all networking",
-          "encrypts every function pointer"
+          "randomizes memory addresses each run, so attackers can't rely on hardcoded locations"
         ],
-        answer: 1,
+        answer: 3,
         explain: "Address Space Layout Randomization places the stack, heap, libraries, and (with PIE) the executable at random bases each run. Techniques that need fixed addresses now require an information leak first."
       },
       {
         q: "What single thing separates legal binary-exploitation practice from a crime?",
         options: [
-          "Using a debugger",
           "Explicit authorization — your own labs, consenting CTFs, or written permission",
+          "Using a debugger",
           "Only working at night",
           "Wearing a particular colored hat"
         ],
-        answer: 1,
+        answer: 0,
         explain: "Authorization is the bright line. Practice on systems built for it — your own VMs, consenting CTF pwn challenges, crackmes, or targets you have written permission to test — and contain everything in an isolated lab."
       }
     ]

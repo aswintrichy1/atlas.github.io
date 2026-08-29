@@ -36,8 +36,9 @@ window.TRACKS.lld = {
                 "<strong>Reusability</strong> — well-shaped abstractions get reused instead of copy-pasted."
               ]
             },
-            { t: "note", variant: "key", html: "The toolkit is layered: <strong>OOP</strong> gives you the building blocks (objects, abstraction) → <strong>SOLID</strong> gives you principles for arranging them → <strong>design patterns</strong> are proven solutions to recurring arrangement problems. We'll climb that ladder in order." },
-            { t: "note", variant: "tip", html: "Two coupling concepts to carry through everything: keep <strong>cohesion high</strong> (a class's parts truly belong together, doing one job well) and <strong>coupling low</strong> (classes depend on as little of each other as possible, via abstractions). Almost every principle ahead is a way to achieve those two." }
+            { t: "note", variant: "tip", html: "The toolkit is layered: <strong>OOP</strong> gives you the building blocks (objects, abstraction) → <strong>SOLID</strong> gives you principles for arranging them → <strong>design patterns</strong> are proven solutions to recurring arrangement problems. We'll climb that ladder in order." },
+            { t: "note", variant: "tip", html: "Two coupling concepts to carry through everything: keep <strong>cohesion high</strong> (a class's parts truly belong together, doing one job well) and <strong>coupling low</strong> (classes depend on as little of each other as possible, via abstractions). Almost every principle ahead is a way to achieve those two." },
+            { t: "note", variant: "key", html: "<strong>Code is judged by what the next change costs.</strong> Objects, SOLID and patterns are three levels of the same tool for lowering that cost, and they all reduce to the same two dials: keep what belongs together in one place, and make everything else talk through an abstraction." }
           ]
         },
         {
@@ -129,7 +130,8 @@ window.TRACKS.lld = {
             { t: "code", lang: "python", code:
               "# BEFORE: one class, three reasons to change\nclass Report:\n    def calculate(self): ...\n    def format_html(self): ...\n    def send_email(self): ...\n\n# AFTER: separated responsibilities\nclass ReportCalculator: \n    def calculate(self): ...\nclass ReportFormatter:  \n    def format(self, data): ...\nclass ReportMailer:     \n    def send(self, html): ...\n\n# They collaborate, but each evolves independently."
             },
-            { t: "note", variant: "trap", html: "SRP isn't 'one method per class'. It's about <em>cohesion of reasons to change</em>. Ask: 'who would request a change to this class?' If the answer is two different stakeholders (the accountant AND the designer), it's doing two jobs." }
+            { t: "note", variant: "trap", html: "SRP isn't 'one method per class'. It's about <em>cohesion of reasons to change</em>. Ask: 'who would request a change to this class?' If the answer is two different stakeholders (the accountant AND the designer), it's doing two jobs." },
+            { t: "note", variant: "key", html: "<strong>Split by who asks for the change, not by how large the file has grown.</strong> A class with one reason to change can be tested, reused and rewritten on its own; a class serving two stakeholders keeps getting edited for reasons its other half does not care about, and every one of those edits is a chance to break the half nobody was looking at." }
           ]
         },
         {
@@ -187,8 +189,9 @@ window.TRACKS.lld = {
             { t: "code", lang: "python", code:
               "# BEFORE: high-level OrderService nailed to a concrete Stripe class\nclass StripeGateway:\n    def charge(self, amt): ...\nclass OrderService:\n    def __init__(self):\n        self.gateway = StripeGateway()    # hard dependency\n\n# AFTER: depend on an abstraction; inject the concrete one\nclass PaymentGateway:                     # abstraction\n    def charge(self, amt): ...\nclass StripeGateway(PaymentGateway):  \n    def charge(self, amt): ...\nclass PaypalGateway(PaymentGateway):  \n    def charge(self, amt): ...\n\nclass OrderService:\n    def __init__(self, gateway: PaymentGateway):\n        self.gateway = gateway            # injected; swappable\n\nOrderService(StripeGateway())             # prod\nOrderService(FakeGateway())               # tests -- no real charges!"
             },
-            { t: "note", variant: "key", html: "DIP is what makes code <strong>testable</strong> (inject a fake), <strong>swappable</strong> (Stripe → PayPal without touching OrderService), and <strong>decoupled</strong>. It's the backbone of Dependency Injection frameworks and clean architecture's 'dependencies point inward toward abstractions'." },
+            { t: "note", variant: "tip", html: "DIP is what makes code <strong>testable</strong> (inject a fake), <strong>swappable</strong> (Stripe → PayPal without touching OrderService), and <strong>decoupled</strong>. It's the backbone of Dependency Injection frameworks and clean architecture's 'dependencies point inward toward abstractions'." },
             { t: "note", variant: "tip", html: "Mnemonic for the five: <strong>S</strong>ingle responsibility · <strong>O</strong>pen/closed · <strong>L</strong>iskov · <strong>I</strong>nterface segregation · <strong>D</strong>ependency inversion. Together they push you toward small, focused units that depend on abstractions — exactly the soil design patterns grow in." },
+            { t: "note", variant: "key", html: "<strong>Inversion is what turns the other four principles into working code.</strong> Once a high-level module names an interface and receives the implementation from outside, substitution becomes checkable, extension stops meaning edits, and any collaborator can be replaced by a fake in a test. The cost is indirection: one more hop to read, and a wiring layer somebody has to own." },
             { t: "quiz", id: "lld-solid" }
           ]
         }
@@ -252,7 +255,8 @@ window.TRACKS.lld = {
               "  Logger    ◁┄┄─  ILogger          realization (implements)\n" +
               "  OrderSvc  ┄┄►   PaymentGateway   dependency (uses)"
             },
-            { t: "note", variant: "tip", html: "The practical distinction people quiz on: <strong>aggregation vs composition</strong>. Composition = exclusive ownership and shared lifetime (a House <em>owns</em> its Rooms — destroy the house, the rooms go too). Aggregation = a looser 'has-a' where the part can exist on its own (a Team <em>has</em> Players who exist without the team)." }
+            { t: "note", variant: "tip", html: "The practical distinction people quiz on: <strong>aggregation vs composition</strong>. Composition = exclusive ownership and shared lifetime (a House <em>owns</em> its Rooms — destroy the house, the rooms go too). Aggregation = a looser 'has-a' where the part can exist on its own (a Team <em>has</em> Players who exist without the team)." },
+            { t: "note", variant: "key", html: "<strong>The arrow you draw is a claim about ownership and lifetime.</strong> Most design arguments that look like naming disputes are really disagreements about whether a part may outlive its whole, so the six relationships are worth knowing precisely: a filled diamond where a hollow one belongs commits the code to a deletion cascade nobody asked for." }
           ]
         },
         {
@@ -291,7 +295,7 @@ window.TRACKS.lld = {
             },
             { t: "h", text: "Deadlock — and how to avoid it" },
             { t: "p", html: "A <strong>deadlock</strong> is two threads each holding a lock the other needs, so both wait forever. It needs four conditions to occur (mutual exclusion, hold-and-wait, no preemption, circular wait); break any one and you're safe." },
-            { t: "note", variant: "key", html: "The most practical fix is <strong>lock ordering</strong>: if every thread always acquires locks in the same global order, a circular wait is impossible. Also keep critical sections small, and prefer <code class='tok'>tryLock</code> with a timeout over blocking forever." },
+            { t: "note", variant: "tip", html: "The most practical fix is <strong>lock ordering</strong>: if every thread always acquires locks in the same global order, a circular wait is impossible. Also keep critical sections small, and prefer <code class='tok'>tryLock</code> with a timeout over blocking forever." },
             { t: "h", text: "The thread-safe singleton (a favourite)" },
             { t: "code", lang: "java", code:
               "// Double-checked locking: lock only on first creation\n" +
@@ -312,6 +316,7 @@ window.TRACKS.lld = {
             },
             { t: "note", variant: "trap", html: "The <code class='tok'>volatile</code> keyword is not optional here — without it, another thread can see a <em>partially-constructed</em> object due to instruction reordering. (In practice, prefer an eager <code class='tok'>static final</code> field or an enum singleton, which the language makes thread-safe for free.)" },
             { t: "note", variant: "tip", html: "When an interviewer asks you to design a queue, cache, or pool, expect the follow-up: <em>'now make it thread-safe.'</em> Naming the shared mutable state, the critical section, and your locking strategy — and noting the deadlock risk — is exactly what they're listening for." },
+            { t: "note", variant: "key", html: "<strong>Thread safety is a question about shared mutable state, so the strongest answer is to have less of it.</strong> Immutability and confinement delete whole classes of race for free; when a lock is genuinely needed, the bar is naming the critical section, keeping it short, and acquiring locks in one fixed global order so a circular wait cannot form." },
             { t: "quiz", id: "lld-principles" }
           ]
         }
@@ -341,8 +346,9 @@ window.TRACKS.lld = {
                 ["Behavioral", "How objects interact & share responsibility", "Strategy · Observer · Command · State · Template Method · Iterator · Chain of Responsibility · Mediator · Visitor · Memento"]
               ]
             },
-            { t: "note", variant: "key", html: "Patterns are a <strong>vocabulary</strong> first. Saying 'let's use a Strategy here' communicates an entire design in two words. They're proven, they encode SOLID, and they make intent legible to the next engineer." },
-            { t: "note", variant: "trap", html: "<strong>Don't pattern-match for its own sake.</strong> Forcing patterns onto simple problems is a classic over-engineering smell (YAGNI!). Reach for a pattern when you feel the <em>specific pain</em> it solves — not to decorate a résumé. The next three lessons teach the headline patterns of each family by the problem they cure." }
+            { t: "note", variant: "tip", html: "Patterns are a <strong>vocabulary</strong> first. Saying 'let's use a Strategy here' communicates an entire design in two words. They're proven, they encode SOLID, and they make intent legible to the next engineer." },
+            { t: "note", variant: "trap", html: "<strong>Don't pattern-match for its own sake.</strong> Forcing patterns onto simple problems is a classic over-engineering smell (YAGNI!). Reach for a pattern when you feel the <em>specific pain</em> it solves — not to decorate a résumé. The next three lessons teach the headline patterns of each family by the problem they cure." },
+            { t: "note", variant: "key", html: "<strong>A pattern earns its complexity only when you can name the pain it removes.</strong> The three families are worth learning as a shared vocabulary, but the deciding question is always whether the recurring problem has actually shown up — reaching first and justifying later trades a simple structure for a ceremonial one." }
           ]
         },
         {
@@ -441,7 +447,7 @@ window.TRACKS.lld = {
               "news.subscribe({ update: d => console.log(\"sms:\", d) });\n" +
               "news.notify(\"breaking!\");   // both observers fire"
             },
-            { t: "note", variant: "key", html: "Strategy and Observer are the two most common behavioral patterns in real code. If you see 'choose behavior at runtime' → Strategy. If you see 'when X happens, tell everyone interested' → Observer." },
+            { t: "note", variant: "tip", html: "Strategy and Observer are the two most common behavioral patterns in real code. If you see 'choose behavior at runtime' → Strategy. If you see 'when X happens, tell everyone interested' → Observer." },
             { t: "h", text: "Command — turn a request into an object" },
             { t: "p", html: "Wrap a request (action + its arguments) as an object. This enables queuing, logging, and — crucially — <strong>undo/redo</strong>, since each command can implement <code class='tok'>execute()</code> and <code class='tok'>undo()</code>. Used in task queues, transactional menus, and editors." },
             { t: "h", text: "State — behavior that changes with internal state" },
@@ -450,6 +456,7 @@ window.TRACKS.lld = {
             { t: "p", html: "Define the skeleton of an algorithm in a base method, deferring specific steps to subclasses. The overall sequence is fixed; the details are pluggable (e.g., a data-export pipeline whose <code class='tok'>format()</code> step differs for CSV vs JSON)." },
             { t: "note", variant: "trap", html: "<strong>Strategy vs Template Method</strong> both vary parts of an algorithm. Strategy uses <em>composition</em> (inject a whole algorithm object) and swaps at runtime; Template Method uses <em>inheritance</em> (override steps) and is fixed at class time. Prefer Strategy for flexibility." },
             { t: "p", html: "Other behavioral patterns worth knowing by name: <strong>Iterator</strong> (traverse a collection without exposing its internals), <strong>Chain of Responsibility</strong> (pass a request along handlers until one handles it — middleware!), <strong>Mediator</strong> (centralize complex many-to-many communication), <strong>Memento</strong> (capture & restore state — undo), and <strong>Visitor</strong> (add operations to a type hierarchy without modifying it)." },
+            { t: "note", variant: "key", html: "<strong>Every behavioral pattern replaces a conditional with a collaborator.</strong> Whether the varying thing is an algorithm, a lifecycle phase, a queued request or a list of listeners, the move is identical — give the variation its own object so a new case becomes a new class. What you pay is more types to hold in your head and one more hop to follow when reading." },
             { t: "quiz", id: "lld-patterns" }
           ]
         }
@@ -481,7 +488,8 @@ window.TRACKS.lld = {
                 "<strong>Discuss edge cases & extensibility.</strong> Concurrency (two cars, one spot), new vehicle types, new pricing."
               ]
             },
-            { t: "note", variant: "tip", html: "Narrate trade-offs as you go, exactly like HLD. 'I'll use a Strategy for pricing so we can add weekend rates without touching the parking logic (OCP).' That sentence shows you design for <em>change</em>, which is the whole game." }
+            { t: "note", variant: "tip", html: "Narrate trade-offs as you go, exactly like HLD. 'I'll use a Strategy for pricing so we can add weekend rates without touching the parking logic (OCP).' That sentence shows you design for <em>change</em>, which is the whole game." },
+            { t: "note", variant: "key", html: "<strong>Work outward from responsibilities and let the patterns arrive last.</strong> Nouns give you candidate classes and verbs give you methods, but the step that earns credit is spotting what varies — pricing, allocation, lifecycle — and putting an interface exactly there. A design named after patterns before it is named after responsibilities is usually the wrong shape wearing the right words." }
           ]
         },
         {
@@ -522,9 +530,10 @@ window.TRACKS.lld = {
             { t: "code", lang: "python", code:
               "class PricingStrategy:                 # OCP via Strategy\n    def price(self, ticket): ...\nclass HourlyPricing(PricingStrategy):\n    def price(self, ticket):\n        hours = ceil(duration(ticket) / 3600)\n        return hours * RATE[ticket.spot.type]\n\nclass ParkingLotService:\n    def __init__(self, lot, assigner, pricing):\n        self.lot = lot\n        self.assigner = assigner          # DIP: injected strategies\n        self.pricing = pricing\n\n    def park(self, vehicle):\n        spot = self.assigner.find(self.lot, vehicle)   # may raise if full\n        spot.occupy(vehicle)\n        return Ticket(vehicle, spot, now())\n\n    def unpark(self, ticket):\n        fee = self.pricing.price(ticket)\n        ticket.spot.free()\n        return fee"
             },
-            { t: "note", variant: "key", html: "Notice how SOLID drove the shape: each class has one job (SRP), the service depends on <em>strategy interfaces</em> not concretes (DIP), and new pricing/assignment rules are new classes (OCP). That's the difference between a design that ages well and one that calcifies." },
+            { t: "note", variant: "tip", html: "Notice how SOLID drove the shape: each class has one job (SRP), the service depends on <em>strategy interfaces</em> not concretes (DIP), and new pricing/assignment rules are new classes (OCP). That's the difference between a design that ages well and one that calcifies." },
             { t: "note", variant: "trap", html: "Don't forget <strong>concurrency</strong>: two cars must not be assigned the same spot. Mention locking the spot during assignment (or an atomic compare-and-set on spot status). Interviewers love that you remembered the race condition." },
-            { t: "note", variant: "tip", html: "For a timed class-design drill, open <a class='inline' href='#/interview/parking-lot-classes'>Parking lot classes</a> and grade your answer against the <a class='inline' href='#/cheatsheets/lld-class-design'>LLD checklist</a>." }
+            { t: "note", variant: "tip", html: "For a timed class-design drill, open <a class='inline' href='#/interview/parking-lot-classes'>Parking lot classes</a> and grade your answer against the <a class='inline' href='#/cheatsheets/lld-class-design'>LLD checklist</a>." },
+            { t: "note", variant: "key", html: "<strong>The parking lot is easy to model and hard to keep extensible, which is the entire point of the exercise.</strong> Pushing pricing and spot assignment behind injected interfaces is what lets weekend rates and EV bays arrive as new classes; remembering that two cars can race for the same spot is what turns a class diagram into a design that would survive a Saturday afternoon." }
           ]
         },
         {
@@ -546,8 +555,8 @@ window.TRACKS.lld = {
             { t: "code", lang: "python", code:
               "class Node:\n    def __init__(self, k, v):\n        self.k, self.v = k, v\n        self.prev = self.next = None\n\nclass LRUCache:\n    def __init__(self, capacity):\n        self.cap = capacity\n        self.map = {}                      # key -> Node  (O(1) lookup)\n        self.head = Node(0, 0)             # sentinel: most-recent side\n        self.tail = Node(0, 0)             # sentinel: least-recent side\n        self.head.next = self.tail\n        self.tail.prev = self.head\n\n    def _remove(self, node):\n        node.prev.next = node.next\n        node.next.prev = node.prev\n\n    def _add_front(self, node):            # most-recently used\n        node.next = self.head.next\n        node.prev = self.head\n        self.head.next.prev = node\n        self.head.next = node\n\n    def get(self, key):\n        if key not in self.map:\n            return -1\n        node = self.map[key]\n        self._remove(node); self._add_front(node)   # promote\n        return node.v\n\n    def put(self, key, value):\n        if key in self.map:\n            self._remove(self.map[key])\n        node = Node(key, value)\n        self.map[key] = node\n        self._add_front(node)\n        if len(self.map) > self.cap:                 # evict LRU\n            lru = self.tail.prev\n            self._remove(lru)\n            del self.map[lru.k]"
             },
-            { t: "note", variant: "key", html: "Both operations are O(1): the map gives instant access, and the doubly-linked list lets you splice a node out and re-insert at the front in constant time. Sentinel head/tail nodes remove edge-case branching. Replay the HLD <a class='inline' href='#/hld/caching/eviction'>eviction widget</a> with this structure in mind — that animation <em>is</em> this list reordering itself." },
-            { t: "note", variant: "tip", html: "Many languages give you this for free: Python's <code class='tok'>OrderedDict</code> (with <code class='tok'>move_to_end</code>) or Java's <code class='tok'>LinkedHashMap</code> implement exactly this. But knowing how to build it from a hash map + linked list is the point of the exercise — and a frequent interview ask." }
+            { t: "note", variant: "tip", html: "Many languages give you this for free: Python's <code class='tok'>OrderedDict</code> (with <code class='tok'>move_to_end</code>) or Java's <code class='tok'>LinkedHashMap</code> implement exactly this. But knowing how to build it from a hash map + linked list is the point of the exercise — and a frequent interview ask." },
+            { t: "note", variant: "key", html: "<strong>The trick is pairing two structures, not inventing one.</strong> A hash map supplies O(1) access and a doubly-linked list supplies O(1) reordering, and sentinel head and tail nodes delete the edge cases that make hand-written versions buggy. The HLD <a class='inline' href='#/hld/caching/eviction'>eviction widget</a> is this same list rearranging itself; reaching for the standard-library version in production is fine once you can splice it by hand." }
           ]
         },
         {
@@ -624,7 +633,7 @@ window.TRACKS.lld = {
               "        except RetryableNetworkError:\n" +
               "            self.store.schedule_retry(op.op_id, self.retry_policy.next_delay(op))"
             },
-            { t: "note", variant: "key", html: "The queue state is durable, not just an in-memory array. If the app is killed after marking an operation <code class='tok'>SENDING</code>, startup recovery can move stale sending operations back to <code class='tok'>QUEUED</code> because the server dedupes by operation id." },
+            { t: "note", variant: "tip", html: "The queue state is durable, not just an in-memory array. If the app is killed after marking an operation <code class='tok'>SENDING</code>, startup recovery can move stale sending operations back to <code class='tok'>QUEUED</code> because the server dedupes by operation id." },
             { t: "h", text: "Migration steps as objects" },
             { t: "p", html: "The same object shape works for server-side migrations. Model each phase as a small step with <code class='tok'>run()</code>, <code class='tok'>verify()</code>, <code class='tok'>checkpoint()</code> and <code class='tok'>rollback()</code>; the runner persists progress so deploys and pauses are normal." },
             { t: "code", lang: "python", code:
@@ -647,7 +656,8 @@ window.TRACKS.lld = {
               "        if step.verify():\n" +
               "            self.plan.advance()"
             },
-            { t: "note", variant: "trap", html: "Avoid a god-object <code class='tok'>SyncManager</code> that owns local persistence, HTTP, conflict policy, scheduling and UI events. Split by responsibility, inject the policies, and test crash/retry paths with fake stores and fake clocks." }
+            { t: "note", variant: "trap", html: "Avoid a god-object <code class='tok'>SyncManager</code> that owns local persistence, HTTP, conflict policy, scheduling and UI events. Split by responsibility, inject the policies, and test crash/retry paths with fake stores and fake clocks." },
+            { t: "note", variant: "key", html: "<strong>Sync is only testable when every moving part is an object with persisted state.</strong> Durable operations, an explicit state machine, an injected conflict policy and a checkpointed runner let you rehearse crashes, retries and merges with fake clocks and fake stores — and the same shape is what makes a server-side migration resumable instead of a script somebody has to babysit." }
           ]
         },
         {
@@ -708,8 +718,9 @@ window.TRACKS.lld = {
               "<strong>Persist after every transition</strong> so a crash resumes from the latest durable state instead of starting over.",
               "<strong>Expire keys</strong> after the business retry window, but never before downstream side effects are safely settled."
             ] },
-            { t: "note", variant: "key", html: "The key store is not just a cache. It needs atomic insert, a uniqueness constraint, request-hash validation, stored response, status and expiry. For money flows, keep it durable and scoped by tenant." },
-            { t: "note", variant: "trap", html: "Do not put the idempotency key only on the API edge. Every non-idempotent side effect needs its own dedupe boundary: inventory by order id, payment by attempt id, notifications by event id." }
+            { t: "note", variant: "tip", html: "The key store is not just a cache. It needs atomic insert, a uniqueness constraint, request-hash validation, stored response, status and expiry. For money flows, keep it durable and scoped by tenant." },
+            { t: "note", variant: "trap", html: "Do not put the idempotency key only on the API edge. Every non-idempotent side effect needs its own dedupe boundary: inventory by order id, payment by attempt id, notifications by event id." },
+            { t: "note", variant: "key", html: "<strong>Retry safety is a property of each side effect, not of the endpoint.</strong> An idempotency key at the edge only guarantees the same answer comes back; inventory, payment and notification each need their own dedupe boundary and their own durable transition, or one honest retry holds stock twice while charging once." }
           ]
         },
         {
@@ -781,9 +792,10 @@ window.TRACKS.lld = {
               "        self.state = self.idle               # back to start\n" +
               "        print(f'Dispensed {code}, change {change}')"
             },
-            { t: "note", variant: "key", html: "Each state owns its transitions, so adding a new phase (e.g. a 'maintenance' mode) means adding one class \u2014 not editing a giant switch. That's the <strong>Open/Closed Principle</strong> from the SOLID module, made concrete." },
+            { t: "note", variant: "tip", html: "Each state owns its transitions, so adding a new phase (e.g. a 'maintenance' mode) means adding one class \u2014 not editing a giant switch. That's the <strong>Open/Closed Principle</strong> from the SOLID module, made concrete." },
             { t: "note", variant: "tip", html: "Making change is its own sub-problem: greedily returning the largest coins first is the classic approach, but it's a <em>coin-change</em> question underneath \u2014 mention that you'd guard for the 'exact change only' case when the till runs low on small denominations." },
-            { t: "note", variant: "key", html: "To practice extensions like maintenance mode, refunds and exact-change-only behavior, use the <a class='inline' href='#/scenarios/lld-elevator-vending-extension'>LLD elevator/vending extension outline</a>." }
+            { t: "note", variant: "tip", html: "To practice extensions like maintenance mode, refunds and exact-change-only behavior, use the <a class='inline' href='#/scenarios/lld-elevator-vending-extension'>LLD elevator/vending extension outline</a>." },
+            { t: "note", variant: "key", html: "<strong>Modelling a lifecycle as objects turns new requirements from edits into additions.</strong> Because each phase owns its own transitions, maintenance mode or an exact-change rule is another class rather than another branch in a growing conditional. The price is a class per phase and a machine that must always know exactly which one it is in." }
           ]
         },
         {
@@ -855,9 +867,10 @@ window.TRACKS.lld = {
               "            car.add_stop(req.target)\n" +
               "        return car.id"
             },
-            { t: "note", variant: "key", html: "The <strong>Strategy</strong> pattern is the heart of the design: dispatching is a policy that changes (nearest-car, least-busy, energy-saving at night), so it lives behind an interface. Swap the strategy without touching <code class='tok'>ElevatorCar</code> or <code class='tok'>ElevatorSystem</code> \u2014 Open/Closed again." },
+            { t: "note", variant: "tip", html: "The <strong>Strategy</strong> pattern is the heart of the design: dispatching is a policy that changes (nearest-car, least-busy, energy-saving at night), so it lives behind an interface. Swap the strategy without touching <code class='tok'>ElevatorCar</code> or <code class='tok'>ElevatorSystem</code> \u2014 Open/Closed again." },
             { t: "note", variant: "tip", html: "Mention concurrency: real requests arrive from many threads, so the car's pending-stops set needs a lock or a thread-safe queue. Interviewers love when you note that the data structures are touched concurrently and name how you'd guard them." },
-            { t: "note", variant: "key", html: "For a harder follow-up, work through <a class='inline' href='#/scenarios/lld-elevator-vending-extension'>the elevator/vending extension outline</a> and state the machine invariants before adding classes." },
+            { t: "note", variant: "tip", html: "For a harder follow-up, work through <a class='inline' href='#/scenarios/lld-elevator-vending-extension'>the elevator/vending extension outline</a> and state the machine invariants before adding classes." },
+            { t: "note", variant: "key", html: "<strong>Separate the thing that moves from the rule that decides where it goes.</strong> Cars, floors and door states are stable mechanism; dispatch policy is the part that keeps being renegotiated, so it belongs behind an interface. Once several cars and many callers share that state, guarding the pending-stops structure matters as much as choosing the algorithm." },
             { t: "quiz", id: "lld-practice" }
           ]
         }

@@ -23,20 +23,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "A refresh token is high risk because it can",
-        options: ["only display a username", "mint new access tokens over time if stolen", "make TLS optional", "validate CSS"],
-        answer: 1,
+        options: ["only display a username", "make TLS optional", "mint new access tokens over time if stolen", "validate CSS"],
+        answer: 2,
         explain: "A stolen refresh token can keep generating fresh access tokens. Treat it like a long-lived credential: protect it from script access, rotate it, bind it where possible, and revoke it on risk."
       },
       {
         q: "A secure logout or account-risk response should",
-        options: ["only hide the current page", "clear local UI state but leave refresh tokens active", "revoke server-side sessions and tokens that can still be used", "depend on the user closing the browser"],
-        answer: 2,
+        options: ["only hide the current page", "clear local UI state but leave refresh tokens active", "depend on the user closing the browser", "revoke server-side sessions and tokens that can still be used"],
+        answer: 3,
         explain: "Logout and risk events must invalidate usable credentials server-side. Clearing a local page does not stop a stolen token or another active SaaS session."
       },
       {
         q: "Why are helpdesk MFA reset flows a security boundary?",
-        options: ["They are only a convenience feature", "They can bypass strong login if an attacker socially engineers recovery", "They only affect UI themes", "They remove the need for audit logs"],
-        answer: 1,
+        options: ["They can bypass strong login if an attacker socially engineers recovery", "They are only a convenience feature", "They only affect UI themes", "They remove the need for audit logs"],
+        answer: 0,
         explain: "Attackers often target recovery because it can defeat strong MFA. Use verified channels, step-up checks, cooldowns, user alerts and audit logs for reset approvals."
       }
     ]
@@ -55,38 +55,38 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Broken Function Level Authorization (BFLA) asks which missing question?",
-        options: ["May this caller invoke this operation at all?", "Is the response compressed?", "Does the token use Base64?", "Is the endpoint name short enough?"],
-        answer: 0,
+        options: ["Does the token use Base64?", "Is the response compressed?", "May this caller invoke this operation at all?", "Is the endpoint name short enough?"],
+        answer: 2,
         explain: "BFLA occurs when a user can call functions or routes they should not, such as admin actions. The server must authorize methods and operations, not rely on hidden UI controls."
       },
       {
         q: "Broken Object Property Level Authorization (BOPLA) is best prevented by",
-        options: ["returning every database field and trusting the client", "explicit input/output DTOs and field-level read/write allow-lists", "using a single global admin role", "making object ids sequential"],
-        answer: 1,
+        options: ["returning every database field and trusting the client", "making object ids sequential", "using a single global admin role", "explicit input/output DTOs and field-level read/write allow-lists"],
+        answer: 3,
         explain: "BOPLA is about sensitive fields, not just whole objects. Separate DTOs and field-level allow-lists prevent overexposure and unauthorized field updates."
       },
       {
         q: "Why is schema validation alone insufficient for API authorization?",
-        options: ["Schemas cannot parse JSON", "A request can be well-formed and still ask for forbidden data or actions", "Schemas always disable logging", "Authorization only belongs in the browser"],
-        answer: 1,
+        options: ["A request can be well-formed and still ask for forbidden data or actions", "Schemas cannot parse JSON", "Schemas always disable logging", "Authorization only belongs in the browser"],
+        answer: 0,
         explain: "Schemas prove shape and type. Authorization decides permission. A valid REST body, GraphQL query or protobuf message still needs object, property and function checks."
       },
       {
         q: "Mass assignment is dangerous because",
-        options: ["the API may write fields the UI never exposed, such as roles or flags", "it reduces file size", "it prevents validation", "it only affects static images"],
-        answer: 0,
+        options: ["it reduces file size", "the API may write fields the UI never exposed, such as roles or flags", "it prevents validation", "it only affects static images"],
+        answer: 1,
         explain: "Binding an entire request body to a model can let callers set privileged fields directly. Use operation-specific DTOs and explicit writable-field allow-lists."
       },
       {
         q: "Which control best addresses expensive GraphQL queries and business-flow abuse?",
-        options: ["A single per-IP request counter only", "Query complexity limits, action-aware quotas, idempotency and anomaly alerts", "Disabling all logs", "Trusting the mobile app"],
-        answer: 1,
+        options: ["A single per-IP request counter only", "Disabling all logs", "Query complexity limits, action-aware quotas, idempotency and anomaly alerts", "Trusting the mobile app"],
+        answer: 2,
         explain: "Abuse is often about cost or workflow, not just raw request count. Combine complexity limits, per-user/tenant quotas, idempotency keys and monitoring for unusual patterns."
       },
       {
         q: "An API inventory should track",
-        options: ["owner, exposure, auth method, data classification, version and deprecation status", "only the endpoint font", "only successful responses", "nothing once an endpoint is internal"],
-        answer: 0,
+        options: ["nothing once an endpoint is internal", "only the endpoint font", "only successful responses", "owner, exposure, auth method, data classification, version and deprecation status"],
+        answer: 3,
         explain: "Unknown APIs become unpatched APIs. Inventory lets teams find owners, assess exposure and retire old versions that often retain stale authorization behavior."
       }
     ]
@@ -99,32 +99,32 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "Why is prompt injection not solved by telling the model to ignore malicious instructions?",
-        options: ["The model cannot read instructions", "Instructions are guidance, not an enforceable security boundary", "Prompt injection only affects images", "It is fixed by longer prompts"],
-        answer: 1,
+        options: ["Instructions are guidance, not an enforceable security boundary", "The model cannot read instructions", "Prompt injection only affects images", "It is fixed by longer prompts"],
+        answer: 0,
         explain: "A model can be guided by instructions, but untrusted user or retrieved text still enters the same reasoning context. Enforce boundaries in application code: authorization, data filtering, tool allow-lists, and approvals."
       },
       {
         q: "In a RAG system, when should document authorization be enforced?",
-        options: ["Before documents are retrieved or passed to the model", "Only after the model writes an answer", "Only in the browser", "Never, because embeddings are anonymous"],
-        answer: 0,
+        options: ["Only after the model writes an answer", "Before documents are retrieved or passed to the model", "Only in the browser", "Never, because embeddings are anonymous"],
+        answer: 1,
         explain: "Retrieval must be scoped before context assembly. If unauthorized chunks reach the model, the answer may leak them even if the UI later tries to filter the output."
       },
       {
         q: "Excessive agency in an AI agent means the system",
-        options: ["has too few tokens", "lets the model take high-impact actions without deterministic controls or approval", "uses a small model", "stores prompts locally"],
-        answer: 1,
+        options: ["has too few tokens", "uses a small model", "lets the model take high-impact actions without deterministic controls or approval", "stores prompts locally"],
+        answer: 2,
         explain: "Agency becomes risky when model output can directly trigger sensitive actions. Keep tools scoped, use schemas and dry-run previews, and require policy or human approval for high-impact changes."
       },
       {
         q: "The safest way to expose tools or plugins to a support bot is to",
-        options: ["give every tool full admin rights for flexibility", "scope each tool to the task, deny by default, log calls, and gate sensitive actions", "hide tool names in the prompt", "trust the model to refuse dangerous calls"],
-        answer: 1,
+        options: ["give every tool full admin rights for flexibility", "trust the model to refuse dangerous calls", "hide tool names in the prompt", "scope each tool to the task, deny by default, log calls, and gate sensitive actions"],
+        answer: 3,
         explain: "Tools need normal least-privilege engineering: narrow permissions, explicit schemas, audit logs, and approval gates. A hidden prompt is not access control."
       },
       {
         q: "A safe way for defenders to use AI during alert triage is to",
-        options: ["let it silently close alerts", "summarize evidence and suggest first checks for an analyst to verify", "paste raw secrets into the prompt", "turn every suggestion into a blocking rule automatically"],
-        answer: 1,
+        options: ["summarize evidence and suggest first checks for an analyst to verify", "let it silently close alerts", "paste raw secrets into the prompt", "turn every suggestion into a blocking rule automatically"],
+        answer: 0,
         explain: "AI is useful for compressing noisy evidence into a draft. The analyst still verifies with telemetry, and any detection or containment action needs tests and review."
       },
       {
@@ -135,20 +135,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "When discussing attacker use of AI, the defensible training focus is",
-        options: ["step-by-step phishing and malware generation", "high-level misuse patterns and the controls that reduce their impact", "secret prompt templates", "bypassing security tools"],
-        answer: 1,
+        options: ["step-by-step phishing and malware generation", "secret prompt templates", "high-level misuse patterns and the controls that reduce their impact", "bypassing security tools"],
+        answer: 2,
         explain: "Safe security education explains how AI changes attacker scale and deception, then maps those patterns to controls like phishing-resistant MFA, behavior detection, and helpdesk verification."
       },
       {
         q: "In an AI SOC copilot workflow, which action should require analyst or policy approval?",
-        options: ["Summarizing related events", "Drafting a timeline", "Isolating a host or disabling an account", "Grouping duplicate alerts"],
-        answer: 2,
+        options: ["Summarizing related events", "Drafting a timeline", "Grouping duplicate alerts", "Isolating a host or disabling an account"],
+        answer: 3,
         explain: "Summaries and grouping are low-risk drafts. Containment actions affect production and users, so they need deterministic policy or analyst approval."
       },
       {
         q: "The safest role for AI in secure code review is to",
-        options: ["replace review entirely", "flag risky patterns and suggest tests for a human reviewer to verify", "approve its own patches", "ignore local standards"],
-        answer: 1,
+        options: ["flag risky patterns and suggest tests for a human reviewer to verify", "replace review entirely", "approve its own patches", "ignore local standards"],
+        answer: 0,
         explain: "AI can accelerate review by finding candidate risks, but correctness comes from tests, local standards, and human judgment."
       },
       {
@@ -165,20 +165,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "The primary defense against SQL injection is to",
-        options: ["escape quotes by hand", "use prepared statements or bind parameters", "hide database errors", "rename database tables"],
-        answer: 1,
+        options: ["escape quotes by hand", "hide database errors", "use prepared statements or bind parameters", "rename database tables"],
+        answer: 2,
         explain: "Prepared statements and bind parameters keep query structure separate from user data, so input cannot become SQL syntax."
       },
       {
         q: "Framework output encoding helps prevent XSS because it",
-        options: ["turns user-controlled text into inert text for the destination context", "encrypts the browser session", "blocks every network request", "removes the need for authorization"],
-        answer: 0,
+        options: ["removes the need for authorization", "encrypts the browser session", "blocks every network request", "turns user-controlled text into inert text for the destination context"],
+        answer: 3,
         explain: "The browser executes markup and script, so output must be encoded for its context. Framework auto-escaping is valuable unless developers bypass it."
       },
       {
         q: "A safer file-upload design is to",
-        options: ["trust the uploaded filename", "store uploads under a public executable path", "generate server-side names, validate content, isolate storage, and authorize downloads", "accept any file if the user is logged in"],
-        answer: 2,
+        options: ["generate server-side names, validate content, isolate storage, and authorize downloads", "store uploads under a public executable path", "trust the uploaded filename", "accept any file if the user is logged in"],
+        answer: 0,
         explain: "Uploads are untrusted files. Strong handling limits filename abuse, type spoofing, malicious content, direct execution, and unauthorized reads."
       },
       {
@@ -203,14 +203,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "What single thing makes security testing legal rather than criminal?",
-        options: ["Using professional tools", "Explicit, written authorization within a defined scope", "Good intentions", "Testing only at night"],
-        answer: 1,
+        options: ["Using professional tools", "Testing only at night", "Good intentions", "Explicit, written authorization within a defined scope"],
+        answer: 3,
         explain: "Authorization is the bright line. Without written permission and a scope, the same scan that helps a defender is unauthorized access — a crime in most jurisdictions, regardless of intent."
       },
       {
         q: "A 'grey box' penetration test means the tester is given",
-        options: ["nothing but a target", "some access or documentation, like a normal user account", "full source code and architecture", "permission to attack anything"],
-        answer: 1,
+        options: ["some access or documentation, like a normal user account", "nothing but a target", "full source code and architecture", "permission to attack anything"],
+        answer: 0,
         explain: "Grey box hands the tester partial knowledge (often a user account), simulating an insider or phished employee. It skips weeks of front-door brute-forcing and spends budget on deeper flaws."
       },
       {
@@ -221,8 +221,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "The best defense against OSINT-based attacks is to",
-        options: ["block all search engines", "reduce your own public footprint and scrub metadata", "use a stronger firewall", "rotate IP addresses"],
-        answer: 1,
+        options: ["block all search engines", "use a stronger firewall", "reduce your own public footprint and scrub metadata", "rotate IP addresses"],
+        answer: 2,
         explain: "Since OSINT mines public data, defense means minimizing what's exposed: scrub file metadata, keep internal hostnames out of public DNS, monitor certificate-transparency logs, and train staff on what they post."
       }
     ]
@@ -233,14 +233,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "In scanning, the difference between a port scan and enumeration is that enumeration",
-        options: ["is automated while scanning is manual", "pulls specific detail (users, shares, versions) from the services found", "only works on Windows", "is the same thing"],
-        answer: 1,
+        options: ["is automated while scanning is manual", "is the same thing", "only works on Windows", "pulls specific detail (users, shares, versions) from the services found"],
+        answer: 3,
         explain: "Scanning answers 'what's open?'; enumeration answers 'what exactly is it?' — extracting usernames, shares, directories, and version banners from the services discovered."
       },
       {
         q: "A CVE identifier (like CVE-2021-44228) is",
-        options: ["a severity score from 0 to 10", "a unique public name for a specific vulnerability", "a type of exploit", "a patch"],
-        answer: 1,
+        options: ["a unique public name for a specific vulnerability", "a severity score from 0 to 10", "a type of exploit", "a patch"],
+        answer: 0,
         explain: "CVE gives each public vulnerability a unique identifier so everyone refers to the same bug. CVSS is the separate 0–10 severity score; they work together."
       },
       {
@@ -251,8 +251,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "The responsible way to handle a vulnerability you find in someone else's product is",
-        options: ["publish a working exploit immediately", "coordinated disclosure — report privately and give time to patch", "sell it to the highest bidder", "demand payment to stay silent"],
-        answer: 1,
+        options: ["publish a working exploit immediately", "sell it to the highest bidder", "coordinated disclosure — report privately and give time to patch", "demand payment to stay silent"],
+        answer: 2,
         explain: "Coordinated disclosure reports privately (via a security contact, VDP, or bug bounty), allows reasonable time to fix, then publishes after a patch. Full-drop or extortion crosses into harm and crime."
       }
     ]
@@ -263,14 +263,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "In a web-app test, the highest-value findings most often come from",
-        options: ["automated scanners", "manually testing access control — reaching data and actions that should be off-limits", "checking TLS configuration", "counting open ports"],
-        answer: 1,
+        options: ["automated scanners", "counting open ports", "checking TLS configuration", "manually testing access control — reaching data and actions that should be off-limits"],
+        answer: 3,
         explain: "Broken access control is consistently the #1 web risk and usually needs a human who understands what the app should allow. Scanners catch the easy categories; logic and authorization flaws need judgment."
       },
       {
         q: "Which defensive principle most directly limits an attacker's lateral movement after a foothold?",
-        options: ["Output encoding", "Network segmentation", "Password hashing", "HSTS"],
-        answer: 1,
+        options: ["Network segmentation", "Output encoding", "Password hashing", "HSTS"],
+        answer: 0,
         explain: "Segmentation stops a compromised host from freely reaching others. Least privilege blunts privilege escalation; segmentation blunts lateral movement — the post-exploitation chain is the argument for both."
       },
       {
@@ -281,8 +281,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "In a penetration test, the actual product delivered to the client is",
-        options: ["a shell on the server", "a clear, reproducible, risk-rated report with remediation", "a list of open ports", "the exploit code"],
-        answer: 1,
+        options: ["a shell on the server", "a list of open ports", "a clear, reproducible, risk-rated report with remediation", "the exploit code"],
+        answer: 2,
         explain: "The report is the deliverable. A good finding is reproducible, rated by real risk, paired with a specific fix, and closed only after a retest confirms it's gone."
       }
     ]
@@ -295,14 +295,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "MITRE ATT&CK organizes adversary behavior into",
-        options: ["severity scores", "tactics (the goal) and techniques (how it's achieved)", "CVE numbers", "firewall rules"],
-        answer: 1,
+        options: ["severity scores", "firewall rules", "CVE numbers", "tactics (the goal) and techniques (how it's achieved)"],
+        answer: 3,
         explain: "ATT&CK is a knowledge base of tactics (the attacker's goal at each stage) and techniques (how they accomplish it), giving defenders one vocabulary and a way to map detection coverage."
       },
       {
         q: "On the Pyramid of Pain, which indicator is MOST painful for an attacker to change?",
-        options: ["A file hash", "An IP address", "A domain name", "TTPs (their tools and behaviors)"],
-        answer: 3,
+        options: ["TTPs (their tools and behaviors)", "An IP address", "A domain name", "A file hash"],
+        answer: 0,
         explain: "Hashes change with a recompile and IPs rotate hourly — trivial for the attacker. Forcing them to change their tools, techniques and procedures means re-tooling their whole method: the most durable defensive win."
       },
       {
@@ -313,8 +313,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Threat hunting is best described as",
-        options: ["waiting for alerts to fire", "proactively searching for adversaries that evaded automated detection", "running a vulnerability scan", "blocking IP addresses"],
-        answer: 1,
+        options: ["waiting for alerts to fire", "running a vulnerability scan", "proactively searching for adversaries that evaded automated detection", "blocking IP addresses"],
+        answer: 2,
         explain: "Hunting assumes an attacker is already inside and goes looking via hypotheses tested against your data. Its best output is often a new automated detection rule born from a successful hunt."
       }
     ]
@@ -325,14 +325,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "What distinguishes a worm from a virus?",
-        options: ["A worm self-propagates across networks without user action", "A worm is always ransomware", "A virus is harmless", "There is no difference"],
-        answer: 0,
+        options: ["There is no difference", "A worm is always ransomware", "A virus is harmless", "A worm self-propagates across networks without user action"],
+        answer: 3,
         explain: "A virus attaches to a file and spreads when that file is run; a worm propagates by itself across networks with no user needed — which is why worms exploit unpatched, internet-facing services."
       },
       {
         q: "Dynamic malware analysis must always be performed",
-        options: ["on a production server for realism", "in strict isolation — a disposable sandbox or air-gapped VM with snapshots", "on the analyst's daily laptop", "only after disabling antivirus everywhere"],
-        answer: 1,
+        options: ["in strict isolation — a disposable sandbox or air-gapped VM with snapshots", "on a production server for realism", "on the analyst's daily laptop", "only after disabling antivirus everywhere"],
+        answer: 0,
         explain: "Running malware to watch its behavior is powerful but dangerous. Isolation is non-negotiable: a sandbox or air-gapped VM that can't reach production or the internet, with snapshots to revert."
       },
       {
@@ -343,8 +343,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "'Living off the land' refers to attackers",
-        options: ["growing their own malware", "abusing legitimate built-in tools so activity blends into normal operations", "using only zero-days", "attacking farms"],
-        answer: 1,
+        options: ["growing their own malware", "using only zero-days", "abusing legitimate built-in tools so activity blends into normal operations", "attacking farms"],
+        answer: 2,
         explain: "Instead of dropping obvious malware, attackers abuse trusted built-in utilities (scripting engines, admin tools). Defense is baselining — flagging unusual use of legitimate tools, not just known-bad files."
       }
     ]
@@ -355,14 +355,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "Why does the 'order of volatility' say to capture RAM before powering off?",
-        options: ["RAM is the easiest to image", "Memory holds running processes, keys, and network state that vanish on shutdown", "Disk evidence is worthless", "It's required by law everywhere"],
-        answer: 1,
+        options: ["RAM is the easiest to image", "It's required by law everywhere", "Disk evidence is worthless", "Memory holds running processes, keys, and network state that vanish on shutdown"],
+        answer: 3,
         explain: "The most volatile evidence disappears first. RAM contains running malware, decryption keys, and live connections — including fileless malware that never touches disk — so capture it before pulling the plug."
       },
       {
         q: "Chain of custody primarily ensures that",
-        options: ["evidence is encrypted", "there's a documented, unbroken record of who handled evidence, keeping it trustworthy", "the attacker is identified", "logs are deleted"],
-        answer: 1,
+        options: ["there's a documented, unbroken record of who handled evidence, keeping it trustworthy", "evidence is encrypted", "the attacker is identified", "logs are deleted"],
+        answer: 0,
         explain: "Evidence is only as trustworthy as its handling record. Document who collected what and when, hash on acquisition, work on copies not originals — break the chain and the evidence may be worthless."
       },
       {
@@ -373,8 +373,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "A suspiciously cleared event log is, to an investigator,",
-        options: ["proof of innocence", "itself an indicator of compromise — the attempt to hide leaves a trace", "irrelevant", "a normal maintenance event"],
-        answer: 1,
+        options: ["proof of innocence", "irrelevant", "itself an indicator of compromise — the attempt to hide leaves a trace", "a normal maintenance event"],
+        answer: 2,
         explain: "Anti-forensics often is the evidence. A cleared log, wiped history, or impossible timestamps are strong signs of compromise — Locard's principle: the attempt to hide leaves its own trace."
       }
     ]
@@ -385,8 +385,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "A detection hypothesis should state",
-        options: ["the SIEM vendor name", "the attacker behavior you expect to see in telemetry", "the color of the dashboard", "the exact incident owner before triage"],
-        answer: 1,
+        options: ["the SIEM vendor name", "the exact incident owner before triage", "the color of the dashboard", "the attacker behavior you expect to see in telemetry"],
+        answer: 3,
         explain: "Hypothesis-driven detection starts with behavior: if this technique happened, what observable events would prove or disprove it?"
       },
       {
@@ -397,20 +397,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Plain-language rule logic is useful because it",
-        options: ["lets reviewers validate intent before query syntax hides mistakes", "makes the alert secret", "removes the need for testing", "guarantees zero false positives"],
-        answer: 0,
+        options: ["makes the alert secret", "lets reviewers validate intent before query syntax hides mistakes", "removes the need for testing", "guarantees zero false positives"],
+        answer: 1,
         explain: "Before writing SIEM syntax, the team should understand the behavior, time window, threshold, joins, and exclusions in ordinary language."
       },
       {
         q: "False-positive notes should include",
-        options: ["only attacker examples", "known benign activity that can look similar", "user passwords", "the vendor sales contact"],
-        answer: 1,
+        options: ["only attacker examples", "user passwords", "known benign activity that can look similar", "the vendor sales contact"],
+        answer: 2,
         explain: "Tuning depends on known-good examples: admin work, deployments, onboarding, backups, support resets, and maintenance windows."
       },
       {
         q: "A healthy detection test set includes",
-        options: ["only the perfect malicious case", "a should-fire case, a should-not-fire case, and a benign edge case", "no tests until after production", "only screenshots"],
-        answer: 1,
+        options: ["only the perfect malicious case", "only screenshots", "no tests until after production", "a should-fire case, a should-not-fire case, and a benign edge case"],
+        answer: 3,
         explain: "Tests prevent silent drift. Include positive, negative, and edge cases so the rule catches the intended behavior without paging on common benign activity."
       }
     ]
@@ -421,26 +421,26 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "The first artifact in an end-to-end security architecture capstone should usually be",
-        options: ["a color palette", "an asset and data inventory", "a list of exploit names", "a press release"],
-        answer: 1,
+        options: ["an asset and data inventory", "a color palette", "a list of exploit names", "a press release"],
+        answer: 0,
         explain: "You cannot protect what you cannot name. Inventory establishes systems, owners, identities, data classes, retention, and sensitive data flows."
       },
       {
         q: "A threat model is strongest when it focuses on",
-        options: ["trust boundaries, likely abuse cases, high-value assets, and attacker entry points", "only firewall brands", "only low-risk assets", "removing all user features"],
-        answer: 0,
+        options: ["only firewall brands", "trust boundaries, likely abuse cases, high-value assets, and attacker entry points", "only low-risk assets", "removing all user features"],
+        answer: 1,
         explain: "Threat modeling connects assets and trust boundaries to plausible attacker goals, then drives concrete architecture controls."
       },
       {
         q: "A detection plan belongs in architecture review because",
-        options: ["secure systems never need logs", "defenders need telemetry and rules before production incidents happen", "it replaces authorization", "it is only useful for forensics exams"],
-        answer: 1,
+        options: ["secure systems never need logs", "it replaces authorization", "defenders need telemetry and rules before production incidents happen", "it is only useful for forensics exams"],
+        answer: 2,
         explain: "Detection is a design requirement. Decide the telemetry sources, first detections, ownership, and tuning process while the system is being built."
       },
       {
         q: "An incident and recovery plan should define",
-        options: ["only who writes the final report", "containment, evidence preservation, rotation, restore order, communications, and tested RTO/RPO", "the attacker's identity in advance", "no business owners"],
-        answer: 1,
+        options: ["only who writes the final report", "no business owners", "the attacker's identity in advance", "containment, evidence preservation, rotation, restore order, communications, and tested RTO/RPO"],
+        answer: 3,
         explain: "Recovery is a rehearsed sequence, not hope. The plan should cover technical containment and restoration plus evidence and stakeholder communication."
       },
       {
@@ -471,14 +471,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "A common Linux privilege-escalation surface is",
-        options: ["the desktop wallpaper", "misconfigured sudo or SUID binaries that run as root", "the font cache", "disabled logging"],
-        answer: 1,
+        options: ["the desktop wallpaper", "the font cache", "misconfigured sudo or SUID binaries that run as root", "disabled logging"],
+        answer: 2,
         explain: "Most Linux escalation chains a normal-user foothold into root via misconfigured sudo, risky SUID binaries, or world-writable privileged scripts. Least privilege and a minimal SUID set close these paths."
       },
       {
         q: "Which Wi-Fi security standard should you use on a modern network?",
-        options: ["WEP", "Original WPA", "WPA2 at minimum, WPA3 where possible", "No encryption"],
-        answer: 2,
+        options: ["WEP", "Original WPA", "No encryption", "WPA2 at minimum, WPA3 where possible"],
+        answer: 3,
         explain: "WEP and original WPA are broken — treat them as plaintext. WPA3 is best (with protected management frames); WPA2 with a long, unique passphrase is the minimum acceptable."
       }
     ]
@@ -489,8 +489,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "Under the cloud shared-responsibility model, the customer is always responsible for",
-        options: ["the physical data center", "the hypervisor", "their data, identities, and configuration", "the provider's network hardware"],
-        answer: 2,
+        options: ["their data, identities, and configuration", "the hypervisor", "the physical data center", "the provider's network hardware"],
+        answer: 0,
         explain: "The provider secures the cloud infrastructure; you secure what you put in it — data, access/IAM, and configuration. The split shifts by service model (IaaS/PaaS/SaaS) but data and access are always yours."
       },
       {
@@ -501,14 +501,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "'Shift left' in DevSecOps means",
-        options: ["deploy to the left region first", "build security in early during development, where issues are cheapest to fix", "move servers physically", "use left-handed keyboards"],
-        answer: 1,
+        options: ["deploy to the left region first", "move servers physically", "build security in early during development, where issues are cheapest to fix", "use left-handed keyboards"],
+        answer: 2,
         explain: "Shift left integrates security into development and CI (SAST/DAST/SCA, IaC scanning) so flaws are caught early and cheaply, rather than bolted on at the end or found in production."
       },
       {
         q: "When learning the security tool landscape, what matters most first?",
-        options: ["memorizing every product name", "understanding the category — what job a class of tool does", "buying commercial licenses", "the tool's logo"],
-        answer: 1,
+        options: ["memorizing every product name", "the tool's logo", "buying commercial licenses", "understanding the category — what job a class of tool does"],
+        answer: 3,
         explain: "Specific products are interchangeable; the category (recon, scanner, proxy, SIEM, EDR, forensics) is what you reason about. Methodology drives results — tools just apply concepts faster."
       }
     ]
@@ -519,8 +519,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "Capture the Flag (CTF) events are valuable for learning because they",
-        options: ["let you attack real companies legally", "provide safe, legal, permission-rich challenges with instant feedback", "require no thinking", "replace all other study"],
-        answer: 1,
+        options: ["provide safe, legal, permission-rich challenges with instant feedback", "let you attack real companies legally", "require no thinking", "replace all other study"],
+        answer: 0,
         explain: "CTFs are purpose-built playgrounds — no real victims, full permission, immediate feedback. Their categories (web, pwn, crypto, forensics, reversing, OSINT) mirror the real disciplines."
       },
       {
@@ -531,14 +531,14 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Regarding certifications, the healthiest mindset is that they are",
-        options: ["a substitute for hands-on skill", "signals that complement real skill, not replacements for it", "useless", "only for management"],
-        answer: 1,
+        options: ["a substitute for hands-on skill", "useless", "signals that complement real skill, not replacements for it", "only for management"],
+        answer: 2,
         explain: "Certs signal breadth or capability, but skills come first. A home lab, CTF results, and write-ups often speak louder — and make the cert exam straightforward when you take it."
       },
       {
         q: "Across every offensive skill in this atlas, the non-negotiable rule is",
-        options: ["always use the newest tools", "operate ethically and only within explicit authorization", "never write reports", "work alone"],
-        answer: 1,
+        options: ["always use the newest tools", "work alone", "never write reports", "operate ethically and only within explicit authorization"],
+        answer: 3,
         explain: "The skills are for defending systems and testing your own — with permission. Authorization and ethics are what separate a security professional from a criminal, and your reputation is your career."
       }
     ]
@@ -549,8 +549,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "In cloud-native systems, why are workload identities safer than long-lived access keys in files or environment variables?",
-        options: ["They make logging unnecessary", "They issue scoped, short-lived credentials tied to the workload", "They disable all network access", "They only work for administrators"],
-        answer: 1,
+        options: ["They issue scoped, short-lived credentials tied to the workload", "They make logging unnecessary", "They disable all network access", "They only work for administrators"],
+        answer: 0,
         explain: "Workload identities reduce key sprawl by letting the platform issue limited, short-lived credentials to a specific service, pod or function. That shrinks the blast radius if the workload is abused."
       },
       {
@@ -561,20 +561,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Which Kubernetes control is best described as preventing privileged or policy-breaking pods from being admitted?",
-        options: ["Network policy", "Admission policy", "Horizontal scaling", "A service name"],
-        answer: 1,
+        options: ["Network policy", "Horizontal scaling", "Admission policy", "A service name"],
+        answer: 2,
         explain: "Admission policy checks objects before they enter the cluster, blocking risky patterns such as privileged pods, host mounts, untrusted images or missing required labels."
       },
       {
         q: "Serverless event permissions should be designed so that",
-        options: ["every function shares one admin role", "only approved sources can invoke the function and the runtime role is least privilege", "event payloads are trusted automatically", "deploy permissions and runtime permissions are always identical"],
-        answer: 1,
+        options: ["every function shares one admin role", "deploy permissions and runtime permissions are always identical", "event payloads are trusted automatically", "only approved sources can invoke the function and the runtime role is least privilege"],
+        answer: 3,
         explain: "In serverless, invocation rights and runtime rights both matter. Restrict who can trigger the function, validate event payloads, and give the function only the actions it needs."
       },
       {
         q: "A cloud guardrail is most useful when it",
-        options: ["runs once during onboarding", "continuously prevents or detects forbidden configurations", "replaces all incident response", "depends on developers remembering every rule"],
-        answer: 1,
+        options: ["continuously prevents or detects forbidden configurations", "runs once during onboarding", "replaces all incident response", "depends on developers remembering every rule"],
+        answer: 0,
         explain: "Cloud environments change constantly. Guardrails such as policy checks, audit-log alerts and config rules need to run continuously so drift and risky changes are caught quickly."
       }
     ]
@@ -591,26 +591,26 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Retention and disposal controls primarily answer",
-        options: ["how long data is kept and how it is removed when no longer needed", "which font reports use", "how to bypass approvals", "which employee owns every laptop"],
-        answer: 0,
+        options: ["how to bypass approvals", "which font reports use", "how long data is kept and how it is removed when no longer needed", "which employee owns every laptop"],
+        answer: 2,
         explain: "Privacy improves when data is kept only as long as needed for business, legal or safety reasons, then deleted or made unrecoverable through a provable process."
       },
       {
         q: "Why is key ownership a data-access issue?",
-        options: ["Keys only affect performance", "Anyone who can use or administer decryption keys may effectively access the data", "Keys are never rotated", "Encryption removes the need for authorization"],
-        answer: 1,
+        options: ["Keys only affect performance", "Encryption removes the need for authorization", "Keys are never rotated", "Anyone who can use or administer decryption keys may effectively access the data"],
+        answer: 3,
         explain: "Encryption is only as strong as key governance. If broad admins can use or change keys, they may be able to decrypt sensitive stores even if database permissions look restricted."
       },
       {
         q: "Sensitive access logging should focus on",
-        options: ["only failed logins", "reads, exports and unusual access to high-value data with user and purpose context", "raw passwords for auditing", "deleting evidence after review"],
-        answer: 1,
+        options: ["reads, exports and unusual access to high-value data with user and purpose context", "only failed logins", "raw passwords for auditing", "deleting evidence after review"],
+        answer: 0,
         explain: "For sensitive data, defenders need to see who read or exported it, from where, under what purpose and whether the volume or destination looks abnormal. Never log secrets themselves."
       },
       {
         q: "DLP and exfiltration monitoring are meant to detect",
-        options: ["data leaving expected boundaries through email, file sharing, endpoints, SaaS exports or cloud storage", "only malware files", "CPU overheating", "whether users like a policy"],
-        answer: 0,
+        options: ["only malware files", "data leaving expected boundaries through email, file sharing, endpoints, SaaS exports or cloud storage", "CPU overheating", "whether users like a policy"],
+        answer: 1,
         explain: "DLP looks for sensitive data patterns and unusual movement across outbound channels. It complements access control by watching where data actually goes."
       }
     ]
@@ -621,20 +621,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "Where should a mobile app store long-lived tokens if it must keep them on device?",
-        options: ["A plain text file", "Platform secure storage such as the system keychain or keystore", "The clipboard", "A comment in source code"],
-        answer: 1,
+        options: ["A plain text file", "The clipboard", "Platform secure storage such as the system keychain or keystore", "A comment in source code"],
+        answer: 2,
         explain: "Mobile platforms provide protected storage backed by OS controls. Plain files, clipboards and source-code constants are much easier to extract or leak."
       },
       {
         q: "The safest mobile permission pattern is to",
-        options: ["ask for every permission at install", "request only the permission needed for a feature, when the user uses that feature", "hide permission prompts", "treat denied permissions as proof of compromise"],
-        answer: 1,
+        options: ["ask for every permission at install", "treat denied permissions as proof of compromise", "hide permission prompts", "request only the permission needed for a feature, when the user uses that feature"],
+        answer: 3,
         explain: "Least privilege applies to devices too. Ask for the minimum permission at the moment it is needed, and design the app to degrade gracefully when it is denied."
       },
       {
         q: "Why is disabling TLS certificate validation dangerous in a mobile app?",
-        options: ["It makes the app too fast", "It allows impostor servers to intercept or alter traffic", "It prevents all testing", "It only affects images"],
-        answer: 1,
+        options: ["It allows impostor servers to intercept or alter traffic", "It makes the app too fast", "It prevents all testing", "It only affects images"],
+        answer: 0,
         explain: "If certificate validation is disabled, the app cannot reliably know it is talking to the real backend. Fix test certificates instead of teaching the app to trust anything."
       },
       {
@@ -645,8 +645,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Lost-device handling should include",
-        options: ["remote logout and revocation of refresh/session tokens", "waiting for tokens to expire next year", "disabling all user accounts forever", "sharing the user's password with support"],
-        answer: 0,
+        options: ["disabling all user accounts forever", "waiting for tokens to expire next year", "remote logout and revocation of refresh/session tokens", "sharing the user's password with support"],
+        answer: 2,
         explain: "When a device is lost, the user needs a way to revoke that device's sessions or refresh tokens quickly while keeping the account recoverable."
       }
     ]
@@ -657,8 +657,8 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "In OT environments, which security objective often competes most directly with normal IT patch urgency?",
-        options: ["Availability and safety of the physical process", "Color accuracy", "Browser compatibility", "Search ranking"],
-        answer: 0,
+        options: ["Search ranking", "Color accuracy", "Browser compatibility", "Availability and safety of the physical process"],
+        answer: 3,
         explain: "OT systems control physical processes. A rushed change can affect safety or production, so patching needs tested windows and compensating controls while risk is managed."
       },
       {
@@ -669,20 +669,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
       },
       {
         q: "Zones and conduits help OT security by",
-        options: ["grouping similar assets and controlling communication paths between them", "removing the need for monitoring", "making every device internet-facing", "forcing all devices to run the same OS"],
-        answer: 0,
+        options: ["removing the need for monitoring", "grouping similar assets and controlling communication paths between them", "making every device internet-facing", "forcing all devices to run the same OS"],
+        answer: 1,
         explain: "Zones group assets with similar trust and safety needs. Conduits define the controlled paths between zones, giving segmentation a physical-process-aware structure."
       },
       {
         q: "Signed firmware and secure boot primarily help ensure that",
-        options: ["devices only run trusted code from an approved source", "passwords are shorter", "network policies are unnecessary", "all bugs disappear"],
-        answer: 0,
+        options: ["network policies are unnecessary", "passwords are shorter", "devices only run trusted code from an approved source", "all bugs disappear"],
+        answer: 2,
         explain: "Firmware trust controls make unauthorized code harder to install and run. They are essential in products that may live in customer environments for years."
       },
       {
         q: "A mature product security lifecycle includes",
-        options: ["design review, vulnerability intake, patch delivery and end-of-life communication", "ignoring customer reports", "never updating firmware", "using one default password for support"],
-        answer: 0,
+        options: ["using one default password for support", "ignoring customer reports", "never updating firmware", "design review, vulnerability intake, patch delivery and end-of-life communication"],
+        answer: 3,
         explain: "Connected products need a full lifecycle: secure design, coordinated disclosure, update mechanisms, customer communication and a responsible end-of-life plan."
       }
     ]
@@ -693,26 +693,26 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "A useful risk register entry should include",
-        options: ["only a scary title", "asset, threat, weakness, impact, owner, treatment and review date", "private passwords", "only the auditor's name"],
-        answer: 1,
+        options: ["asset, threat, weakness, impact, owner, treatment and review date", "only a scary title", "private passwords", "only the auditor's name"],
+        answer: 0,
         explain: "A risk register drives action when each risk has context, an owner, a treatment decision and a review date. Otherwise it is just a list of worries."
       },
       {
         q: "Control mapping is the practice of",
-        options: ["showing how specific controls satisfy policies, standards, laws or framework requirements", "mapping office Wi-Fi coverage", "guessing risk scores randomly", "hiding failed audits"],
-        answer: 0,
+        options: ["mapping office Wi-Fi coverage", "showing how specific controls satisfy policies, standards, laws or framework requirements", "guessing risk scores randomly", "hiding failed audits"],
+        answer: 1,
         explain: "Mapping connects implemented controls to the requirements they satisfy, reducing duplicate work and making audits evidence-based."
       },
       {
         q: "Which statement best distinguishes policy, standard and procedure?",
-        options: ["They are identical", "Policy states intent, a standard sets the required baseline, and a procedure gives the steps", "A procedure is optional but a policy is code", "Only vendors need them"],
-        answer: 1,
+        options: ["They are identical", "A procedure is optional but a policy is code", "Policy states intent, a standard sets the required baseline, and a procedure gives the steps", "Only vendors need them"],
+        answer: 2,
         explain: "Policies define what must be true, standards define measurable baselines, and procedures tell people how to perform the work consistently."
       },
       {
         q: "Third-party risk focuses on",
-        options: ["the security impact of vendors and partners that handle data, access or critical services", "only employee lunch choices", "never asking vendors questions", "making all vendors administrators"],
-        answer: 0,
+        options: ["making all vendors administrators", "only employee lunch choices", "never asking vendors questions", "the security impact of vendors and partners that handle data, access or critical services"],
+        answer: 3,
         explain: "Vendors can extend your attack surface and privacy obligations. Assess their access, data handling, controls, contracts and incident-notification commitments."
       },
       {
@@ -729,20 +729,20 @@ window.QUIZZES = Object.assign(window.QUIZZES || {}, {
     questions: [
       {
         q: "A Business Impact Analysis primarily identifies",
-        options: ["which business processes are critical and what disruption costs", "which logo to use", "the exact attacker identity", "how to disable logging"],
-        answer: 0,
+        options: ["which logo to use", "which business processes are critical and what disruption costs", "the exact attacker identity", "how to disable logging"],
+        answer: 1,
         explain: "A BIA ranks processes by business impact so recovery planning focuses on what matters most and sets realistic recovery priorities."
       },
       {
         q: "RTO and RPO differ in that",
-        options: ["RTO is restore speed while RPO is tolerable data loss", "RTO is encryption and RPO is logging", "they mean the same thing", "RPO only applies to laptops"],
-        answer: 0,
+        options: ["they mean the same thing", "RTO is encryption and RPO is logging", "RTO is restore speed while RPO is tolerable data loss", "RPO only applies to laptops"],
+        answer: 2,
         explain: "Recovery Time Objective asks how quickly the system must return. Recovery Point Objective asks how much recent data loss the business can tolerate."
       },
       {
         q: "Why do ransomware plans emphasize immutable or offline backups?",
-        options: ["They are cheaper than all storage", "They are harder for attackers to encrypt or delete after compromising production", "They remove the need for patching", "They guarantee no breach occurred"],
-        answer: 1,
+        options: ["They are cheaper than all storage", "They guarantee no breach occurred", "They remove the need for patching", "They are harder for attackers to encrypt or delete after compromising production"],
+        answer: 3,
         explain: "Ransomware often hunts backup systems. Immutable or offline copies preserve a clean recovery path even if production credentials are compromised."
       },
       {

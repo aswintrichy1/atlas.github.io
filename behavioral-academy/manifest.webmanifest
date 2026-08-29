@@ -1,0 +1,16 @@
+{
+  "name": "Compass · The Behavioral Interview Atlas",
+  "short_name": "Compass",
+  "description": "An interactive, fully-offline atlas for behavioral and leadership interviews: a story framework, a reusable story bank, the standard question categories, seniority signals, and hiring-manager rubrics.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0b0e14",
+  "theme_color": "#0b0e14",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
